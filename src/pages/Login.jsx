@@ -1,32 +1,33 @@
 import { useState } from "react";
-import { login } from "../services/authService";
 import "../styles/Login.css";
+import { login } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
-const handleLogin = async (e) => {
-    e.preventDefault();
+    const handleLogin = async (e) => {
+        e.preventDefault();
 
-    if (!email || !password) {
-      alert("Please enter your email and password.");
-      return;
-    }
+        if (!email || !password) {
+            alert("Please enter your email and password.");
+            return;
+        }
 
-    try {
-      const userCredential = await login(email, password);
+        try {
+    await login(email, password);
 
-      console.log("Login Successful");
-      console.log(userCredential.user);
+    alert("Login Successful!");
 
-      alert("Login Successful!");
-    } catch (error) {
-      console.error(error);
+    navigate("/dashboard");
 
-      alert(error.message);
-    }
-  };
+} catch (error) {
+    alert(error.message);
+}
+
+    };
 
 
 
@@ -35,7 +36,6 @@ const handleLogin = async (e) => {
             <div className="login-card">
                 <h1>Voting System</h1>
                 <p>Please sign in to continue.</p>
-
 
                 <form onSubmit={handleLogin}>
                     <div className="input-group">
@@ -68,3 +68,5 @@ const handleLogin = async (e) => {
 }
 
 export default Login;
+
+
