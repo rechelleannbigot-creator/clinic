@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/Login.css";
 import { login } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { auth } from "../services/firebase";
+import { getUserData } from "../services/userService";
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -17,17 +21,56 @@ function Login() {
         }
 
         try {
-    await login(email, password);
+            const userCredential = await login(email, password); // Authenticate the user
+            const userData = await getUserData(userCredential.user.uid);    // Get the user's Firestore document
+            console.log(userData); // Display the data in the console
 
-    alert("Login Successful!");
+            await login(email, password);
 
-    navigate("/dashboard");
+            alert("Login Successful!");
 
-} catch (error) {
-    alert(error.message);
-}
+            if (!userData) {
+                alert("User profile not found.");
+                return;
+            }
+            if (userData.role === "admin") {
+                navigate("/admin");
+            } else if (userData.role === "clinicstaff") {
+                navigate("/staff");
+            } else if (userData.role === "student") {
+                navigate("/student");
+            } else {
+                alert("Invalid user role.");
+            }
+
+
+        } catch (error) {
+            alert(error.message);
+        }
 
     };
+
+    useEffect(() => {
+        const redirectUser = async () => {
+            if (!user) return;
+
+            try {
+                const userData = await getUserData(user.uid);
+
+                if (!userData) return;
+
+                if (userData.role === "admin") {
+                    navigate("/admin", { replace: true });
+                } else if (userData.role === "client") {
+                    navigate("/client", { replace: true });
+                }
+            } catch (error) {
+                console.error("Error checking user role:", error);
+            }
+        };
+
+        redirectUser();
+    }, [user, navigate]);
 
 
 
