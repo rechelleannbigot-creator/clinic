@@ -1,71 +1,312 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+    /* ==========================================
+    RESET
+    ========================================== */
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:'Poppins',sans-serif;
+    }
+
+    body{
+        background:#0f172a;
+    }
+
+    /* ==========================================
+    BACKGROUND
+    ========================================== */
+
+    .login-container{
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding:30px;
+        position:relative;
+
+        background:
+            url("https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/469544521_1766790990748631_7455176523004893345_n.jpg?stp=dst-jpg_tt6&cstp=mx720x540&ctp=s720x540&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHA78t3loOlfB-lMAHOeWGRhOc8_AwN-c-E5zz8DA35z4ZO2wK73yng-ijsJ_hLELlPu3l3zOqskL6f61jdprBZ&_nc_ohc=9bRTQDwe0B4Q7kNvwH2Xemh&_nc_oc=AdpgYs00FCmp5-x77HlIOiWDwomuBMvRwdroh92U5VNjCimnlgT0PLgBzX7IUtupjPA&_nc_zt=23&_nc_ht=scontent.fmnl8-6.fna&_nc_gid=9o9KcMVIaV07eqFc1OkSzg&_nc_ss=7b2a8&oh=00_AQF-6_Xs9ftLVusGODJPEj36khxdJAiQVmGz5lzlBurqzg&oe=6A8A3093");
+
+        background-size:cover;
+        background-position:center;
+        background-repeat:no-repeat;
+        overflow:hidden;
+    }
+
+/* Floating Blur */
+.login-container::before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:#3b82f620;
+    border-radius:50%;
+    filter:blur(120px);
+    top:-180px;
+    left:-180px;
 }
 
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f5f7fa;
+.login-container::after{
+    content:"";
+    position:absolute;
+    width:450px;
+    height:450px;
+    background:#0ea5e920;
+    border-radius:50%;
+    filter:blur(120px);
+    bottom:-150px;
+    right:-150px;
+}
+/* ===========================
+   LOGIN CARD
+=========================== */
+
+.login-card{
+    width:100%;
+    max-width:400px;
+    padding:40px;
+
+    position:relative;
+    z-index:10;
+
+    background:#ffffff;
+
+    border-radius:24px;
+
+    border:1px solid #e5e7eb;
+
+    box-shadow:
+        0 10px 40px rgba(15,23,42,.08),
+        0 2px 8px rgba(15,23,42,.05);
+
+    animation:fadeUp .6s ease;
 }
 
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 20px;
+/* ===========================
+   LOGO
+=========================== */
+
+.logo-section{
+
+    text-align:center;
+    margin-bottom:28px;
 }
 
-.login-card {
-    width: 100%;
-    max-width: 400px;
-    background: white;
-    padding: 35px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,.1);
+.school-logo{
+
+    width:90px;
+    height:90px;
+    margin:auto;
+    display:block;
+    object-fit:contain;
+}
+.logo-section h1{
+    color:#0f172a;
 }
 
-.login-card h1 {
-    text-align: center;
-    margin-bottom: 10px;
+.school-address{
+    color:#64748b;
 }
 
-.login-card p {
-    text-align: center;
-    color: gray;
-    margin-bottom: 25px;
+.logo-section h3{
+    color:#1e293b;
 }
 
-.input-group {
-    margin-bottom: 18px;
+.logo-section span{
+    color:#64748b;
 }
 
-.input-group label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 600;
+/* ===========================
+   INPUTS
+=========================== */
+.input-group label{
+    color:#334155;
+    font-weight:500;
 }
 
-.input-group input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
+.input-group input{
+    width:100%;
+    padding:14px 16px;
+
+    border:1px solid #d1d5db;
+    border-radius:12px;
+
+    background:#f8fafc;
+
+    color:#0f172a;
+
+    transition:.3s;
 }
 
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    background: #2563eb;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
+.input-group input::placeholder{
+    color:#94a3b8;
 }
 
-button:hover {
-    background: #1d4ed8;
+.input-group input:focus{
+    background:#fff;
+    border-color:#2563eb;
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+}
+/* ===========================
+   OPTIONS
+=========================== */
+
+/* ===========================
+   LOGIN OPTIONS
+=========================== */
+
+.login-options{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    margin:18px 0 24px;
+    width:100%;
+}
+
+.remember{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+    font-size:14px;
+    color:#475569;
+}
+
+.remember input[type="checkbox"]{
+    width:16px;
+    height:16px;
+    accent-color:#2563eb;
+    cursor:pointer;
+}
+
+.remember label{
+    cursor:pointer;
+    user-select:none;
+}
+
+.forgot-password{
+    font-size:14px;
+    font-weight:500;
+    color:#2563eb;
+    text-decoration:none;
+    white-space:nowrap;
+    transition:.3s;
+}
+
+.forgot-password:hover{
+    color:#1d4ed8;
+    text-decoration:underline;
+} 
+/* ===========================
+   BUTTON
+=========================== */
+.login-btn{
+    width:100%;
+    padding:15px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#2563eb;
+
+    color:#fff;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.login-btn:hover{
+    background:#1d4ed8;
+    transform:translateY(-2px);
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+.footer{
+
+    margin-top:25px;
+    text-align:center;
+}
+
+.footer p{
+
+    color:#dbeafe;
+    font-size:13px;
+}
+
+/* ===========================
+   ANIMATION
+=========================== */
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+        transform:translateY(40px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:768px){
+
+.login-card{
+
+    padding:35px 25px;
+}
+
+.logo-section h1{
+
+    font-size:24px;
+}
+
+}
+
+@media(max-width:480px){
+
+.login-container{
+
+    padding:20px;
+}
+
+.login-card{
+
+    padding:30px 20px;
+    border-radius:24px;
+}
+
+.logo-section h1{
+
+    font-size:22px;
+}
+
+.login-options{
+
+    flex-direction:column;
+    gap:12px;
+    align-items:flex-start;
+}
+
 }

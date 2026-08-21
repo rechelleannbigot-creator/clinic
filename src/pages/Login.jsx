@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { auth } from "../services/firebase";
 import { getUserData } from "../services/userService";
+import logo from "../assets/lcc-logo.png.jpg";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -74,42 +75,64 @@ function Login() {
 
 
 
-    return (
-        <div className="login-container">
-            <div className="login-card">
-                <h1>Voting System</h1>
-                <p>Please sign in to continue.</p>
+     return (
+      <div className="login-container">
+        <div className="login-overlay"></div>
 
-                <form onSubmit={handleLogin}>
-                    <div className="input-group">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
+        <div className="login-card">
+          <div className="logo-section">
+            <img src={logo} alt="LCC Logo" className="school-logo" />
 
-                    <div className="input-group">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
+            <div className="divider"></div>
 
-                    <button type="submit">
-                        Login
-                    </button>
-                </form>
+            <h3>Clinic Management</h3>
+
+            <span> System</span>
+          </div>
+
+          <form onSubmit={handleLogin}>
+            <div className="input-group">
+              <label>Email</label>
+
+              <input
+                type="email"
+                placeholder=" Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
+
+            <div className="input-group">
+              <label>Password</label>
+
+              <input
+                type="password"
+                placeholder="Enter Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            <div className="login-options">
+              <label className="remember">
+                <input type="checkbox" />
+                Remember me
+              </label>
+
+              <a href="/">Forgot Password?</a>
+            </div>
+
+            <button className="login-btn" type="submit">
+              Login
+            </button>
+          </form>
+
+          <div className="footer">
+            <p>UNITY • CHARITY • TRUTH</p>
+          </div>
         </div>
+      </div>
     );
-}
+  }
 
-export default Login;
-
-
+  export default Login;

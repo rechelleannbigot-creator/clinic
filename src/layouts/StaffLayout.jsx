@@ -1,9 +1,9 @@
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { logout } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
-import "../styles/AdminLayout.css";
+import "../styles/StaffLayout.css";
 
-function AdminLayout() {
+function StaffLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -42,32 +42,7 @@ function AdminLayout() {
             Dashboard
           </NavLink>
 
-          <NavLink
-            to="/admin/manage-users"
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
-          >
-            Manage Users
-          </NavLink>
-
-          <NavLink
-            to="/admin/reports"
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
-          >
-            Reports
-
-          </NavLink>
-          <NavLink
-            to="/admin/page"
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
-          >
-            Page
-          </NavLink>
+          
         </aside>
 
         <main className="content">
@@ -78,4 +53,4 @@ function AdminLayout() {
   );
 }
 
-export default AdminLayout;
+export default StaffLayout;

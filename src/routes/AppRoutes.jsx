@@ -9,6 +9,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import ManageUser from "../pages/Admin/ManageUser";
 import Reports from "../pages/Admin/Reports";
 import Page from "../pages/Admin/Page";
+import StaffLayout from "../layouts/StaffLayout";
 
 
 function AppRoutes() {
@@ -36,12 +37,16 @@ function AppRoutes() {
                 <Route
                     path="/staff"
                     element={
-                        <RoleRoute allowedRole="clinicstaff">
-                            <StaffDashboard />
+                        <RoleRoute allowedRole="staff">
+                            <StaffLayout />
                         </RoleRoute>
 
                     }
-                />
+                >
+                    <Route index element={<StaffDashboard />} />
+                    
+
+                </Route>
 
                 <Route
                     path="/student"
