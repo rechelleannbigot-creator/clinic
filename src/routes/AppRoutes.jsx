@@ -8,6 +8,8 @@ import RoleRoute from "./RoleRoute";
 import AdminLayout from "../layouts/AdminLayout";
 import ManageUser from "../pages/Admin/ManageUser";
 import Reports from "../pages/Admin/Reports";
+import Page from "../pages/Admin/Page";
+
 
 function AppRoutes() {
     return (
@@ -26,6 +28,7 @@ function AppRoutes() {
                     <Route index element={<AdminDashboard />} />
                     <Route path="manage-users" element={<ManageUser />} />
                     <Route path="reports" element={<Reports />} />
+                    <Route path="page" element={<Page />} />
 
                 </Route>
 
