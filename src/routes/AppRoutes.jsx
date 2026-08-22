@@ -3,10 +3,11 @@ import Login from "../pages/Login";
 import ProtectedRoute from "./ProtectedRoute";
 import StaffDashboard from "../pages/Clinicstaff/StaffDashboard";
 import StudentDashboard from "../pages/Student/StudentDashboard";
-import AdminDashboard from "../pages/Admin/Admindashboard";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
 import RoleRoute from "./RoleRoute";
 import AdminLayout from "../layouts/AdminLayout";
 import ManageUser from "../pages/Admin/ManageUser";
+import Patients from "../pages/Admin/Patients";
 import Reports from "../pages/Admin/Reports";
 import StaffLayout from "../layouts/StaffLayout";
 
@@ -27,8 +28,7 @@ function AppRoutes() {
                 >
                     <Route index element={<AdminDashboard />} />
                     <Route path="manage-users" element={<ManageUser />} />
-                    <Route path="reports" element={<Reports />} />
-                    <Route path="page" element={<Page />} />
+                    <Route path="patients" element={<Patients />} />
 
                 </Route>
 

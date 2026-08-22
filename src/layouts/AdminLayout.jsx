@@ -96,10 +96,46 @@ function AdminLayout() {
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-
               <span className="nav-text">Dashboard</span>
             </NavLink>
           </div>
+
+          {/* System Managment */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">SYSTEM MANAGEMENT</div>
+
+            <NavLink
+              to="manage-users"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="User Management"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">User Management</span>
+            </NavLink>
+
+            <NavLink
+              to="patients"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Patients"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Patients</span>
+            </NavLink>
+          </div>
+
+
         </aside>
 
         {/* MOBILE OVERLAY - this overlay is displayed on mobile devices when the sidebar is open. Clicking on it will close the sidebar. */}
