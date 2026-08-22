@@ -80,22 +80,6 @@ function AdminLayout() {
         {/* SIDEBAR */}
         <aside className="sidebar">
           
-            <NavLink
-              to="/admin"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Dashboard"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-
-              <span className="nav-text">Dashboard</span>
-            </NavLink>
-          
           {/* MAIN */}
           <div className="sidebar-section">
             <div className="sidebar-section-title">MAIN</div>
