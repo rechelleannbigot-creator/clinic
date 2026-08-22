@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { auth } from "../services/firebase";
 import { getUserData } from "../services/userService";
-import logo from "../assets/lcc-logo.png.jpg";
+import logo from "../assets/lcc-logo.jpg";
 
 function Login() {
     const [email, setEmail] = useState("");

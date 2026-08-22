@@ -3,12 +3,11 @@ import Login from "../pages/Login";
 import ProtectedRoute from "./ProtectedRoute";
 import StaffDashboard from "../pages/Clinicstaff/StaffDashboard";
 import StudentDashboard from "../pages/Student/StudentDashboard";
-import AdminDashboard from "../pages/Admin/AdminDashboard";
+import AdminDashboard from "../pages/Admin/Admindashboard";
 import RoleRoute from "./RoleRoute";
 import AdminLayout from "../layouts/AdminLayout";
 import ManageUser from "../pages/Admin/ManageUser";
 import Reports from "../pages/Admin/Reports";
-import Page from "../pages/Admin/Page";
 import StaffLayout from "../layouts/StaffLayout";
 
 
