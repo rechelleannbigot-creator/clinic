@@ -134,6 +134,57 @@ function AdminLayout() {
               <span className="nav-text">Patients</span>
             </NavLink>
           </div>
+          {/*Clinic Data */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">CLINIC DATA</div>
+
+            <NavLink
+              to="medical-records"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Medical Records"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Medical Records</span>
+            </NavLink>
+
+            <NavLink
+              to="consultations"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Consultations"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Consultations</span>
+            </NavLink>
+            
+            <NavLink
+              to="medicine-inventory"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Medicine Inventory"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Medicine Inventory</span>
+            </NavLink>
+          </div>
+          
+
 
 
         </aside>
