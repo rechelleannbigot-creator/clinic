@@ -182,10 +182,109 @@ function AdminLayout() {
               </span>
               <span className="nav-text">Medicine Inventory</span>
             </NavLink>
+
+            
+            <NavLink
+              to="medicine-issuance"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Medicine Issuance"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Medicine Issuance</span>
+            </NavLink>
+          </div>
+
+          {/* Reports & Monitoring */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">Reports & Monitoring</div>
+
+            <NavLink
+              to="reports"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Reports"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Reports</span>
+            </NavLink>
+
+            <NavLink
+              to="notifications"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Notifications"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Notifications</span>
+            </NavLink>
+
+            <NavLink
+              to="analytics"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Analytics"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Analytics</span>
+            </NavLink>
+          </div>
+
+          {/* System Settings */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">System Settings</div>
+
+            <NavLink
+              to="my profile"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="My Profile"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">My Profile</span>
+            </NavLink>
+
+            <NavLink
+              to="logout"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Logout"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Logout</span>
+            </NavLink>
           </div>
           
-
-
 
         </aside>
 

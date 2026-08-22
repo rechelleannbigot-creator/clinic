@@ -8,11 +8,18 @@ import RoleRoute from "./RoleRoute";
 import AdminLayout from "../layouts/AdminLayout";
 import ManageUser from "../pages/Admin/ManageUser";
 import Patients from "../pages/Admin/Patients";
-import Reports from "../pages/Admin/Reports";
 import StaffLayout from "../layouts/StaffLayout";
 import MedicalRecords from "../pages/Admin/Medical Records";
 import Consultations from "../pages/Admin/Consultations";
 import MedicineInventory from "../pages/Admin/Medicine Inventory";
+import MedicineIssuance from "../pages/Admin/Medicine Issuance";
+import Reports from "../pages/Admin/Reports";
+import Notification from "../pages/Admin/Notification";
+import Analytics from "../pages/Admin/Analytics";
+import MyProfile from "../pages/Admin/My profile";
+import Logout from "../pages/Admin/Logout";
+
+
 function AppRoutes() {
     return (
         <BrowserRouter>
@@ -33,6 +40,12 @@ function AppRoutes() {
                     <Route path="medical-records" element={<MedicalRecords />} />
                     <Route path="consultations" element={<Consultations />} />
                     <Route path="medicine-inventory" element={<MedicineInventory />} />
+                    <Route path="medicine-issuance" element={<MedicineIssuance />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="notifications" element={<Notification />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="my-profile" element={<MyProfile />} />
+                    <Route path="logout" element={<Logout />} />
 
                 </Route>
 

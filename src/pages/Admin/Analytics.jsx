@@ -1,10 +1,10 @@
-function Reports() {
+function Analytics() {
     return (
         <div>
-            <h1>Reports</h1>
+            <h1>Analytics</h1>
             <p>Welcome Back!</p>
         </div>
     );
 }
 
-export default Reports;
+export default Analytics;
