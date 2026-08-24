@@ -16,10 +16,9 @@ import MedicineIssuance from "../pages/Admin/Medicine Issuance";
 import Reports from "../pages/Admin/Reports";
 import Notification from "../pages/Admin/Notification";
 import Analytics from "../pages/Admin/Analytics";
-import MyProfile from "../pages/Admin/My profile";
 import Logout from "../pages/Admin/Logout";
 import ScanQRCode from "../pages/Clinicstaff/Scan QR code";
-
+import MyProfile from "../pages/Admin/MyProfile";
 
 function AppRoutes() {
     return (

@@ -255,6 +255,21 @@ function AdminLayout() {
             <div className="sidebar-section-title">System Settings</div>
 
             <NavLink
+              to="my-profile"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="My Profile"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">My Profile</span>
+            </NavLink>
+            
+            <NavLink
               to="logout"
               end
               onClick={closeSidebarOnMobile}
@@ -269,20 +284,7 @@ function AdminLayout() {
               <span className="nav-text">Logout</span>
             </NavLink>
             
-            <NavLink
-              to="my profile"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="My Profile"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">My Profile</span>
-            </NavLink>
+            
 
             
           </div>
