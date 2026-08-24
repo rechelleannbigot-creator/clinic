@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { logout } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
@@ -7,7 +7,6 @@ import "../styles/StaffLayout.css";
 import logo from "../assets/lcc-logo.jpg";
 
 import { Menu, LayoutDashboard } from "lucide-react";
-
 
 function StaffLayout() {
   const { user } = useAuth();
@@ -139,7 +138,7 @@ function StaffLayout() {
   );
 }
 
-export default AdminLayout;
+export default StaffLayout;
 
 
 
