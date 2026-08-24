@@ -18,6 +18,7 @@ import Notification from "../pages/Admin/Notification";
 import Analytics from "../pages/Admin/Analytics";
 import MyProfile from "../pages/Admin/My profile";
 import Logout from "../pages/Admin/Logout";
+import ScanQRCode from "../pages/Clinicstaff/Scan QR code";
 
 
 function AppRoutes() {
@@ -60,6 +61,7 @@ function AppRoutes() {
                     }
                 >
                     <Route index element={<StaffDashboard />} />
+                    <Route path="scan-qr-code" element={<ScanQRCode />} />
                     
 
                 </Route>

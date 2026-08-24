@@ -102,6 +102,27 @@ function StaffLayout() {
             </NavLink>
           </div>
 
+          {/* Quick Actions */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">QUICK ACTIONS</div>
+
+            <NavLink
+              to="scan-qr-code"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Scan QR Code"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Scan QR Code</span>
+            </NavLink>
+            </div>
+
+
           </aside>
 
           {/* MOBILE OVERLAY - this overlay is displayed on mobile devices when the sidebar is open. Clicking on it will close the sidebar. */}
