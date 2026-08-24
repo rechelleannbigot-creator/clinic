@@ -86,7 +86,7 @@ function StaffLayout() {
             <div className="sidebar-section-title">MAIN</div>
 
             <NavLink
-              to="/admin"
+              to="/staff"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
