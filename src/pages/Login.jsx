@@ -1,138 +1,191 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "../styles/Login.css";
+
 import { login } from "../services/authService";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { auth } from "../services/firebase";
 import { getUserData } from "../services/userService";
-import logo from "../assets/lcc-logo.jpg";
+
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate = useNavigate();
-    const { user } = useAuth();
+  const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+  // FORM STATE
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-        if (!email || !password) {
-            alert("Please enter your email and password.");
-            return;
-        }
+  const [loading, setLoading] = useState(false);
 
-        try {
-            const userCredential = await login(email, password); // Authenticate the user
-            const userData = await getUserData(userCredential.user.uid);    // Get the user's Firestore document
-            console.log(userData); // Display the data in the console
+  // HANDLE LOGIN
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-            await login(email, password);
+    //  CLEAR / VALIDATE
+    if (!email.trim() || !password) {
+      alert("Please enter your email and password.");
 
-            alert("Login Successful!");
+      return;
+    }
 
-            if (!userData) {
-                alert("User profile not found.");
-                return;
-            }
-            if (userData.role === "admin") {
-                navigate("/admin");
-            } else if (userData.role === "clinicstaff") {
-                navigate("/staff");
-            } else if (userData.role === "student") {
-                navigate("/student");
-            } else {
-                alert("Invalid user role.");
-            }
+    try {
+      setLoading(true);
 
+      //  FIREBASE AUTHENTICATION
+      const userCredential = await login(email.trim(), password);
+      const firebaseUser = userCredential.user;
+      console.log("Authenticated user:", firebaseUser);
 
-        } catch (error) {
-            alert(error.message);
-        }
+      //  GET FIRESTORE USER PROFILE
+      const userData = await getUserData(firebaseUser.uid);
+      console.log("Firestore user profile:", userData);
 
-    };
+      // USER PROFILE DOES NOT EXIST
+      if (!userData) {
+        alert("User profile not found. Please contact the administrator.");
 
-    useEffect(() => {
-        const redirectUser = async () => {
-            if (!user) return;
+        return;
+      }
 
-            try {
-                const userData = await getUserData(user.uid);
+      // TEMPORARY PASSWORD
+      if (userData.mustChangePassword === true) {
+        navigate("/change-password", {
+          replace: true,
+        });
 
-                if (!userData) return;
+        return;
+      }
 
-                if (userData.role === "admin") {
-                    navigate("/admin", { replace: true });
-                } else if (userData.role === "client") {
-                    navigate("/client", { replace: true });
-                }
-            } catch (error) {
-                console.error("Error checking user role:", error);
-            }
-        };
+      // ROLE
+      const role = userData.role?.toLowerCase();
 
-        redirectUser();
-    }, [user, navigate]);
+      // ADMIN
+      if (role === "admin") {
+        navigate("/admin", {
+          replace: true,
+        });
 
+        return;
+      }
 
+      // STAFF
+      if (role === "clinicstaff") {
+        navigate("/staff", {
+          replace: true,
+        });
 
-     return (
-      <div className="login-container">
-        <div className="login-overlay"></div>
+        return;
+      }
 
-        <div className="login-card">
-          <div className="logo-section">
-            <img src={logo} alt="LCC Logo" className="school-logo" />
+      // CUSTOMER
+      if (role === "student") {
+        navigate("/student", {
+          replace: true,
+        });
 
-            <div className="divider"></div>
+        return;
+      }
 
-            <h3>Clinic Management</h3>
+      // INVALID ROLE
+      alert(
+        "Your account does not have a valid role. Please contact the administrator.",
+      );
+    } catch (error) {
+      console.error("Login error:", error);
 
-            <span> System</span>
+      // FIREBASE AUTH ERRORS
+      switch (error.code) {
+        case "auth/invalid-credential":
+          alert("Incorrect email or password.");
+
+          break;
+
+        case "auth/user-not-found":
+          alert("No account was found with this email.");
+
+          break;
+
+        case "auth/wrong-password":
+          alert("Incorrect password.");
+
+          break;
+
+        case "auth/invalid-email":
+          alert("Please enter a valid email address.");
+
+          break;
+
+        case "auth/user-disabled":
+          alert(
+            "This account has been disabled. Please contact the administrator.",
+          );
+
+          break;
+
+        default:
+          alert(error.message || "Login failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-container">
+      <div className="login-overlay"></div>
+
+      <div className="login-card">
+        <div className="logo-section">
+          <img src={logo} alt="LCC Logo" className="school-logo" />
+
+          <div className="divider"></div>
+
+          <h3>Clinic Management</h3>
+
+          <span> System</span>
+        </div>
+
+        <form onSubmit={handleLogin}>
+          <div className="input-group">
+            <label>Email</label>
+
+            <input
+              type="email"
+              placeholder=" Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
-          <form onSubmit={handleLogin}>
-            <div className="input-group">
-              <label>Email</label>
+          <div className="input-group">
+            <label>Password</label>
 
-              <input
-                type="email"
-                placeholder=" Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="input-group">
-              <label>Password</label>
-
-              <input
-                type="password"
-                placeholder="Enter Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            <div className="login-options">
-              <label className="remember">
-                <input type="checkbox" />
-                Remember me
-              </label>
-
-              <a href="/">Forgot Password?</a>
-            </div>
-
-            <button className="login-btn" type="submit">
-              Login
-            </button>
-          </form>
-
-          <div className="footer">
-            <p>UNITY • CHARITY • TRUTH</p>
+            <input
+              type="password"
+              placeholder="Enter Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
+
+          <div className="login-options">
+            <label className="remember">
+              <input type="checkbox" />
+              Remember me
+            </label>
+
+            <a href="/">Forgot Password?</a>
+          </div>
+
+          <button className="login-btn" type="submit">
+            Login
+          </button>
+        </form>
+
+        <div className="footer">
+          <p>UNITY • CHARITY • TRUTH</p>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  export default Login;
+export default Login;
