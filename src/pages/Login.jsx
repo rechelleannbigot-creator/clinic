@@ -1,132 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/Login.css";
-
 import { login } from "../services/authService";
-import { getUserData } from "../services/userService";
-
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { auth } from "../services/firebase";
+import { getUserData } from "../services/userService";
+import logo from "../assets/lcc-logo.jpg";
 
 function Login() {
-  const navigate = useNavigate();
-
-  // FORM STATE
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const [loading, setLoading] = useState(false);
-
-  // HANDLE LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    //  CLEAR / VALIDATE
-    if (!email.trim() || !password) {
+    if (!email || !password) {
       alert("Please enter your email and password.");
-
       return;
     }
 
     try {
-      setLoading(true);
+      const userCredential = await login(email, password); // Authenticate the user
+      const userData = await getUserData(userCredential.user.uid); // Get the user's Firestore document
+      console.log(userData); // Display the data in the console
 
-      //  FIREBASE AUTHENTICATION
-      const userCredential = await login(email.trim(), password);
-      const firebaseUser = userCredential.user;
-      console.log("Authenticated user:", firebaseUser);
+      await login(email, password);
 
-      //  GET FIRESTORE USER PROFILE
-      const userData = await getUserData(firebaseUser.uid);
-      console.log("Firestore user profile:", userData);
+      alert("Login Successful!");
 
-      // USER PROFILE DOES NOT EXIST
       if (!userData) {
-        alert("User profile not found. Please contact the administrator.");
-
+        alert("User profile not found.");
         return;
       }
-
-      // TEMPORARY PASSWORD
-      if (userData.mustChangePassword === true) {
-        navigate("/change-password", {
-          replace: true,
-        });
-
-        return;
+      if (userData.role === "admin") {
+        navigate("/admin");
+      } else if (userData.role === "clinicstaff") {
+        navigate("/staff");
+      } else if (userData.role === "student") {
+        navigate("/student");
+      } else {
+        alert("Invalid user role.");
       }
-
-      // ROLE
-      const role = userData.role?.toLowerCase();
-
-      // ADMIN
-      if (role === "admin") {
-        navigate("/admin", {
-          replace: true,
-        });
-
-        return;
-      }
-
-      // STAFF
-      if (role === "clinicstaff") {
-        navigate("/staff", {
-          replace: true,
-        });
-
-        return;
-      }
-
-      // CUSTOMER
-      if (role === "student") {
-        navigate("/student", {
-          replace: true,
-        });
-
-        return;
-      }
-
-      // INVALID ROLE
-      alert(
-        "Your account does not have a valid role. Please contact the administrator.",
-      );
     } catch (error) {
-      console.error("Login error:", error);
-
-      // FIREBASE AUTH ERRORS
-      switch (error.code) {
-        case "auth/invalid-credential":
-          alert("Incorrect email or password.");
-
-          break;
-
-        case "auth/user-not-found":
-          alert("No account was found with this email.");
-
-          break;
-
-        case "auth/wrong-password":
-          alert("Incorrect password.");
-
-          break;
-
-        case "auth/invalid-email":
-          alert("Please enter a valid email address.");
-
-          break;
-
-        case "auth/user-disabled":
-          alert(
-            "This account has been disabled. Please contact the administrator.",
-          );
-
-          break;
-
-        default:
-          alert(error.message || "Login failed. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+      alert(error.message);
     }
   };
+
+  useEffect(() => {
+    const redirectUser = async () => {
+      if (!user) return;
+
+      try {
+        const userData = await getUserData(user.uid);
+
+        if (!userData) return;
+
+        if (userData.role === "admin") {
+          navigate("/admin", { replace: true });
+        } else if (userData.role === "client") {
+          navigate("/client", { replace: true });
+        }
+      } catch (error) {
+        console.error("Error checking user role:", error);
+      }
+    };
+
+    redirectUser();
+  }, [user, navigate]);
 
   return (
     <div className="login-container">
