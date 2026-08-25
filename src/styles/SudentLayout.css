@@ -1,6 +1,6 @@
-/* MAIN STAFF CONTAINER*/
+/* MAIN STUDENT CONTAINER*/
 
-.staff-header {
+.student-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -13,7 +13,7 @@
 
 /*HEADER*/
 
-.staff-header {
+.student-header {
   height: 70px;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@
 
 /*HEADER LEFT*/
 
-.staff-header-left {
+.student-header-left {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -66,14 +66,14 @@
 }
 
 /*HEADER TITLE*/
-.staff-title {
+.Student-title {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
 }
 
-.staff-title h2 {
+.student-title h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 700;
@@ -85,7 +85,7 @@
 
 /*HEADER LOGO*/
 
-.staff-logo {
+.student-logo {
   width: 42px;
   height: 42px;
   object-fit: contain;
@@ -93,9 +93,9 @@
   flex-shrink: 0;
 }
 
-/*STAFF USER*/
+/*STUDENT USER*/
 
-.staff-user {
+.Student-user {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -103,7 +103,7 @@
   flex-shrink: 0;
 }
 
-.staff-user > span {
+.student-user > span {
   display: block;
 
   max-width: none;
@@ -142,9 +142,9 @@
   transform: scale(0.97);
 }
 
-/*STAFF BODY*/
+/*STUDENT BODY*/
 
-.admin-body {
+.student-body {
   display: flex;
   min-height: calc(100vh - 70px);
 }

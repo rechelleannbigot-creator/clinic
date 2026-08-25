@@ -36,7 +36,7 @@ function Login() {
             }
             if (userData.role === "admin") {
                 navigate("/admin");
-            } else if (userData.role === "staff") {
+            } else if (userData.role === "clinicstaff") {
                 navigate("/staff");
             } else if (userData.role === "student") {
                 navigate("/student");
@@ -64,6 +64,9 @@ function Login() {
                     navigate("/admin", { replace: true });
                 } else if (userData.role === "staff") {
                     navigate("/staff", { replace: true });
+                
+                } else if (userData.role === "student") {
+                    navigate("/student", { replace: true });
                 }
             } catch (error) {
                 console.error("Error checking user role:", error);
