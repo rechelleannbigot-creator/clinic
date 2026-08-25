@@ -50,6 +50,8 @@ function AppRoutes() {
                 </Route>
 
 
+                
+                <Route path="/" element={<Login />} />
                 <Route
                     path="/staff"
                     element={
