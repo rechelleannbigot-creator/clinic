@@ -282,11 +282,7 @@ function AdminLayout() {
                 <LayoutDashboard size={18} />
               </span>
               <span className="nav-text">Logout</span>
-            </NavLink>
-            
-            
-
-            
+            </NavLink> 
           </div>
           
 

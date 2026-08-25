@@ -36,7 +36,7 @@ function Login() {
             }
             if (userData.role === "admin") {
                 navigate("/admin");
-            } else if (userData.role === "clinicstaff") {
+            } else if (userData.role === "staff") {
                 navigate("/staff");
             } else if (userData.role === "student") {
                 navigate("/student");
