@@ -120,20 +120,21 @@ function AdminLayout() {
             </NavLink>
 
             <NavLink
-              to="patients"
+              to="patients-management"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              title="Patients"
+              title="Patients Management"
             >
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Patients</span>
+              <span className="nav-text">Patients Management</span>
             </NavLink>
           </div>
+          
           {/*Clinic Data */}
           <div className="sidebar-section">
             <div className="sidebar-section-title">CLINIC DATA</div>

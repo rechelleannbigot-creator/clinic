@@ -7,9 +7,9 @@ import AdminDashboard from "../pages/Admin/AdminDashboard";
 import RoleRoute from "./RoleRoute";
 import AdminLayout from "../layouts/AdminLayout";
 import ManageUser from "../pages/Admin/ManageUser";
-import Patients from "../pages/Admin/Patients";
+import PatientsManagement from "../pages/Admin/Patients Management";
 import StaffLayout from "../layouts/StaffLayout";
-import MedicalRecords from "../pages/Admin/Medical Records";
+import MedicalRecords from "../pages/Clinicstaff/Medical Records";
 import Consultations from "../pages/Admin/Consultations";
 import MedicineInventory from "../pages/Admin/Medicine Inventory";
 import MedicineIssuance from "../pages/Admin/Medicine Issuance";
@@ -36,8 +36,7 @@ function AppRoutes() {
                 >
                     <Route index element={<AdminDashboard />} />
                     <Route path="manage-users" element={<ManageUser />} />
-                    <Route path="patients" element={<Patients />} />
-                    <Route path="medical-records" element={<MedicalRecords />} />
+                    <Route path="patients-management" element={<PatientsManagement />} />
                     <Route path="consultations" element={<Consultations />} />
                     <Route path="medicine-inventory" element={<MedicineInventory />} />
                     <Route path="medicine-issuance" element={<MedicineIssuance />} />
@@ -63,6 +62,7 @@ function AppRoutes() {
                 >
                     <Route index element={<StaffDashboard />} />
                     <Route path="scan-qr-code" element={<ScanQRCode />} />
+                    <Route path="medical-records" element={<MedicalRecords />} />
                     
 
                 </Route>

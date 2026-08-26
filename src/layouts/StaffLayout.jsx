@@ -119,7 +119,22 @@ function StaffLayout() {
               </span>
               <span className="nav-text">Scan QR Code</span>
             </NavLink>
-            </div>
+
+            <NavLink
+              to="medical-records"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Medical Records"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Medical Records</span>
+            </NavLink>
+          </div>
 
 
           </aside>
