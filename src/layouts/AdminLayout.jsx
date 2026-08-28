@@ -85,18 +85,18 @@ function AdminLayout() {
             <div className="sidebar-section-title">MAIN</div>
 
             <NavLink
-              to="/admin-dashboard"
+              to="/admindashboard"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              title="Admin Dashboard"
+              title="Dashboard"
             >
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Admin Dashboard</span>
+              <span className="nav-text">Dashboard</span>
             </NavLink>
           </div>
 
@@ -105,7 +105,7 @@ function AdminLayout() {
             <div className="sidebar-section-title">SYSTEM MANAGEMENT</div>
 
             <NavLink
-              to="/admin/manage-users"
+              to="manage-users"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
@@ -120,7 +120,7 @@ function AdminLayout() {
             </NavLink>
 
             <NavLink
-              to="/admin/patients-management"
+              to="patients-management"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>

@@ -187,25 +187,60 @@ function StaffLayout() {
             </NavLink>
             </div>
 
-            {/* MIDICINE */}
+            {/* Medicine */}
           <div className="sidebar-section">
-            <div className="sidebar-section-title">MIDICINE</div>
+            <div className="sidebar-section-title">MEDICINE</div>
 
-            <NavLink
-              to="scan-qr-code"
+           <NavLink
+              to="inventory"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              title="Scan QR Code"
+              title="Inventory"
             >
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Scan QR Code</span>
+              <span className="nav-text">Inventory</span>
             </NavLink>
 
+            <NavLink
+              to="issuance"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Issuance"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Issuance</span>
+            </NavLink>
+            </div>
+
+            {/* Reports */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">REPORTS</div>
+
+           <NavLink
+              to="staff-reports"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Staff Reports"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Staff Reports</span>
+            </NavLink>
+            </div>
 
           </aside>
 
