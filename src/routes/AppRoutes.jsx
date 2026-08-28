@@ -11,7 +11,7 @@ import PatientsManagement from "../pages/Admin/Patients Management";
 import StaffLayout from "../layouts/StaffLayout";
 import MedicalRecords from "../pages/Clinicstaff/Medical Records";
 import Consultations from "../pages/Admin/Consultations";
-import MedicineInventory from "../pages/Admin/Medicine Inventory";
+import MedicineInventory from "../pages/Admin/Medicines Inventory";
 import MedicineIssuance from "../pages/Admin/Medicine Issuance";
 import Reports from "../pages/Admin/Reports";
 import Notification from "../pages/Admin/Notification";
@@ -19,6 +19,11 @@ import Analytics from "../pages/Admin/Analytics";
 import Logout from "../pages/Admin/Logout";
 import ScanQRCode from "../pages/Clinicstaff/Scan QR code";
 import MyProfile from "../pages/Admin/MyProfile";
+import NewConsultation from "../pages/Clinicstaff/New Consultation";
+import Patients from "../pages/Clinicstaff/Patients";
+import Consultation from "../pages/Clinicstaff/Consultation";
+import MedicinesInventory from "../pages/Clinicstaff/Medicines Inventory";
+
 
 function AppRoutes() {
     return (
@@ -62,8 +67,11 @@ function AppRoutes() {
                 >
                     <Route index element={<StaffDashboard />} />
                     <Route path="scan-qr-code" element={<ScanQRCode />} />
+                    <Route path="new-consultation" element={<NewConsultation />} />
+                    <Route path="patients" element={<Patients />} />
                     <Route path="medical-records" element={<MedicalRecords />} />
-                    
+                    <Route path="consultation" element={<Consultation />} />
+                    <Route path="medicines-inventory" element={<MedicinesInventory />} />
 
                 </Route>
 

@@ -120,6 +120,42 @@ function StaffLayout() {
               <span className="nav-text">Scan QR Code</span>
             </NavLink>
 
+
+            <NavLink
+              to="new-consultation"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="New Consultation"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">New Consultation</span>
+            </NavLink>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">QUICK ACTIONS</div>
+
+           <NavLink
+              to="Patients"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Patients"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Patients</span>
+            </NavLink>
+
             <NavLink
               to="medical-records"
               end
@@ -134,7 +170,41 @@ function StaffLayout() {
               </span>
               <span className="nav-text">Medical Records</span>
             </NavLink>
-          </div>
+
+            <NavLink
+              to="consultation"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Consultation"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Consultation</span>
+            </NavLink>
+            </div>
+
+            {/* MIDICINE */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">MIDICINE</div>
+
+            <NavLink
+              to="scan-qr-code"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Scan QR Code"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Scan QR Code</span>
+            </NavLink>
 
 
           </aside>

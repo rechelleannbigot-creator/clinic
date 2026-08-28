@@ -85,18 +85,18 @@ function AdminLayout() {
             <div className="sidebar-section-title">MAIN</div>
 
             <NavLink
-              to="/admin"
+              to="/admin-dashboard"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              title="Dashboard"
+              title="Admin Dashboard"
             >
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Dashboard</span>
+              <span className="nav-text">Admin Dashboard</span>
             </NavLink>
           </div>
 
@@ -105,7 +105,7 @@ function AdminLayout() {
             <div className="sidebar-section-title">SYSTEM MANAGEMENT</div>
 
             <NavLink
-              to="manage-users"
+              to="/admin/manage-users"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
@@ -120,7 +120,7 @@ function AdminLayout() {
             </NavLink>
 
             <NavLink
-              to="patients-management"
+              to="/admin/patients-management"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
@@ -138,21 +138,6 @@ function AdminLayout() {
           {/*Clinic Data */}
           <div className="sidebar-section">
             <div className="sidebar-section-title">CLINIC DATA</div>
-
-            <NavLink
-              to="medical-records"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Medical Records"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Medical Records</span>
-            </NavLink>
 
             <NavLink
               to="consultations"
