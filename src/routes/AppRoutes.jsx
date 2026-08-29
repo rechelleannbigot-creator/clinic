@@ -25,6 +25,7 @@ import Consultation from "../pages/Clinicstaff/Consultation";
 import Inventory from "../pages/Clinicstaff/Inventory";
 import Issuance from "../pages/Clinicstaff/Issuance";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
+import Notifications from "../pages/Clinicstaff/Notifications";
 
 function AppRoutes() {
     return (
@@ -75,6 +76,7 @@ function AppRoutes() {
                     <Route path="inventory" element={<Inventory />} />
                     <Route path="issuance" element={<Issuance />} />
                     <Route path="staff-reports" element={<StaffReports />} />
+                    <Route path="notifications" element={<Notifications />} />
 
                 </Route>
 

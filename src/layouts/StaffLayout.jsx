@@ -240,6 +240,21 @@ function StaffLayout() {
               </span>
               <span className="nav-text">Staff Reports</span>
             </NavLink>
+
+            <NavLink
+              to="notifications"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Notifications"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Notifications</span>
+            </NavLink>
             </div>
 
           </aside>
