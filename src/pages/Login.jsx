@@ -8,20 +8,20 @@ import { getUserData } from "../services/userService";
 import logo from "../assets/lcc-logo.jpg";
 
 function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const { user } = useAuth();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
         if (!email || !password) {
-            alert("Please enter your email and password.");
-            return;
-        }
+      alert("Please enter your email and password.");
+      return;
+    }
 
-        try {
+    try {
             const userCredential = await login(email, password); // Authenticate the user
             const userData = await getUserData(userCredential.user.uid);    // Get the user's Firestore document
             console.log(userData); // Display the data in the console
@@ -30,10 +30,10 @@ function Login() {
 
             alert("Login Successful!");
 
-            if (!userData) {
+      if (!userData) {
                 alert("User profile not found.");
-                return;
-            }
+        return;
+      }
             if (userData.role === "admin") {
                 navigate("/admin");
             } else if (userData.role === "clinicstaff") {
@@ -47,7 +47,7 @@ function Login() {
 
         } catch (error) {
             alert(error.message);
-        }
+      }
 
     };
 
@@ -64,11 +64,11 @@ function Login() {
                     navigate("/admin", { replace: true });
                 } else if (userData.role === "staff") {
                     navigate("/staff", { replace: true });
-                
+
                 } else if (userData.role === "student") {
                     navigate("/student", { replace: true });
                 }
-            } catch (error) {
+    } catch (error) {
                 console.error("Error checking user role:", error);
             }
         };
@@ -127,15 +127,15 @@ function Login() {
 
             <button className="login-btn" type="submit">
               Login
-            </button>
-          </form>
+          </button>
+        </form>
 
           <div className="footer">
             <p>UNITY • CHARITY • TRUTH</p>
           </div>
-        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  export default Login;
+export default Login;

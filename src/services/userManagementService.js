@@ -2,9 +2,10 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   signOut,
+  updateEmail,
 } from "firebase/auth";
 
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc,updateDoc, serverTimestamp } from "firebase/firestore";
 
 import { secondaryAuth } from "./secondaryAuth";
 import { db } from "./firebase";
@@ -129,6 +130,74 @@ export const createManagedUser = async ({
     }
   }
 };
+// UPDATE MANAGED USER
+export const updateManagedUser = async ({
+  uid,
+  firstName,
+  lastName,
+  email,
+  phone,
+  role,
+  status,
+  updatedBy,
+}) => {
+  // VALIDATION
+  if (!uid) {
+    throw new Error("User ID is required.");
+  }
+
+  if (!firstName?.trim()) {
+    throw new Error("First name is required.");
+  }
+
+  if (!lastName?.trim()) {
+    throw new Error("Last name is required.");
+  }
+
+  if (!email?.trim()) {
+    throw new Error("Email is required.");
+  }
+
+  if (!["staff", "customer"].includes(role)) {
+    throw new Error("Invalid user role.");
+  }
+
+  try {
+    // FIRESTORE USER DOCUMENT
+    const userRef = doc(db, "users", uid);
+
+    await updateDoc(userRef, {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      phone: phone?.trim() || "",
+      role,
+      status: status || "ACTIVE",
+      updatedAt: serverTimestamp(),
+      updatedBy: updatedBy || null,
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Update managed user error:", error);
+
+    switch (error.code) {
+      case "auth/invalid-email":
+        throw new Error("Please enter a valid email address.");
+
+      case "permission-denied":
+      case "firestore/permission-denied":
+        throw new Error("You do not have permission to update this user.");
+
+      case "not-found":
+        throw new Error("User account could not be found.");
+
+      default:
+        throw new Error(error.message || "Failed to update user.");
+    }
+  }
+};
+
 
 //COMPLETE FIRST-TIME PASSWORD CHANGE
 

@@ -27,6 +27,8 @@ import Issuance from "../pages/Clinicstaff/Issuance";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
 
+
+
 function AppRoutes() {
     return (
         <BrowserRouter>
@@ -80,14 +82,7 @@ function AppRoutes() {
 
                 </Route>
 
-                <Route
-                    path="/student"
-                    element={
-                        <ProtectedRoute>
-                            <StudentDashboard />
-                        </ProtectedRoute>
-                    }
-                />
+            
 
             </Routes>
         </BrowserRouter>
