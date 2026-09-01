@@ -27,8 +27,7 @@ function AdminDashboard() {
                     <h1>Admin Dashboard</h1>
 
                     <p>
-                        Welcome back! Here's what's happening
-                        in your clinic.
+                        Welcome back! Boy.
                     </p>
                 </div>
 

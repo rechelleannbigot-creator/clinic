@@ -1,0 +1,564 @@
+
+/* =========================================
+   ANALYTICS PAGE
+   ========================================= */
+
+.analytics-page {
+    min-height: 100vh;
+    padding: 28px;
+    background: #f5f8fc;
+    color: #172b4d;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.analytics-header h1 {
+    margin: 0 0 6px;
+    color: #12355b;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.analytics-header p {
+    margin: 0;
+    color: #718096;
+    font-size: 14px;
+}
+
+.analytics-period {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border: 1px solid #d9e2ec;
+    border-radius: 8px;
+    background: white;
+    color: #1677ff;
+}
+
+.analytics-period select {
+    border: none;
+    outline: none;
+    background: white;
+    color: #52616f;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* =========================================
+   KPI CARDS
+   ========================================= */
+
+.analytics-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.analytics-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: white;
+    border: 1px solid #e5edf5;
+    border-radius: 13px;
+    box-shadow: 0 3px 12px rgba(23, 43, 77, 0.05);
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+}
+
+.kpi-icon.blue {
+    background: #e8f2ff;
+    color: #1677ff;
+}
+
+.kpi-icon.green {
+    background: #e8f8ef;
+    color: #16a05d;
+}
+
+.kpi-icon.orange {
+    background: #fff4df;
+    color: #e89400;
+}
+
+.kpi-icon.purple {
+    background: #f0eaff;
+    color: #7357d9;
+}
+
+.kpi-content span {
+    display: block;
+    margin-bottom: 4px;
+    color: #718096;
+    font-size: 12px;
+}
+
+.kpi-content strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #172b4d;
+    font-size: 23px;
+}
+
+.kpi-change {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.kpi-change.positive {
+    color: #16a05d;
+}
+
+.kpi-change.negative {
+    color: #dc3545;
+}
+
+/* =========================================
+   ANALYTICS GRID
+   ========================================= */
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.analytics-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.analytics-card {
+    overflow: hidden;
+    padding: 22px;
+    background: white;
+    border: 1px solid #e5edf5;
+    border-radius: 14px;
+    box-shadow: 0 3px 14px rgba(23, 43, 77, 0.05);
+}
+
+.analytics-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.analytics-card-header h2 {
+    margin: 0 0 5px;
+    color: #12355b;
+    font-size: 17px;
+}
+
+.analytics-card-header p {
+    margin: 0;
+    color: #718096;
+    font-size: 12px;
+}
+
+.analytics-card-header > svg {
+    color: #1677ff;
+}
+
+/* =========================================
+   BAR CHART
+   ========================================= */
+
+.chart-area {
+    height: 260px;
+    display: flex;
+    gap: 12px;
+}
+
+.chart-y-axis {
+    width: 35px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 25px;
+    color: #94a3b8;
+    font-size: 10px;
+    text-align: right;
+}
+
+.bar-chart {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 12px;
+    padding: 0 8px 25px;
+    border-bottom: 1px solid #dfe7ef;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 50px,
+        #eef2f7 51px
+    );
+}
+
+.chart-column {
+    height: 100%;
+    flex: 1;
+    max-width: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-column > span {
+    color: #718096;
+    font-size: 10px;
+}
+
+.bars {
+    height: 90%;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3px;
+}
+
+.chart-bar {
+    width: 13px;
+    min-height: 3px;
+    border-radius: 4px 4px 0 0;
+    transition: 0.3s ease;
+}
+
+.patients-bar {
+    background: #91bff7;
+}
+
+.consultation-bar {
+    background: #1677ff;
+}
+
+.chart-bar:hover {
+    opacity: 0.75;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 15px;
+}
+
+.chart-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #718096;
+    font-size: 11px;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 50%;
+}
+
+.legend-dot.patients {
+    background: #91bff7;
+}
+
+.legend-dot.consultations {
+    background: #1677ff;
+}
+
+/* =========================================
+   PATIENT OVERVIEW
+   ========================================= */
+
+.patient-overview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    min-height: 245px;
+}
+
+.donut-chart {
+    width: 155px;
+    height: 155px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: conic-gradient(
+        #1677ff 0deg 173deg,
+        #6fcf97 173deg 360deg
+    );
+    position: relative;
+}
+
+.donut-chart::before {
+    content: "";
+    position: absolute;
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    background: white;
+}
+
+.donut-inner {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.donut-inner strong {
+    color: #12355b;
+    font-size: 22px;
+}
+
+.donut-inner span {
+    color: #718096;
+    font-size: 11px;
+}
+
+.patient-breakdown {
+    min-width: 100px;
+}
+
+.patient-breakdown > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 9px 0;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.patient-breakdown span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #718096;
+    font-size: 12px;
+}
+
+.patient-breakdown strong {
+    color: #263f5d;
+    font-size: 12px;
+}
+
+.breakdown-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.breakdown-dot.male {
+    background: #1677ff;
+}
+
+.breakdown-dot.female {
+    background: #6fcf97;
+}
+
+.breakdown-dot.other {
+    background: #cbd5e1;
+}
+
+/* =========================================
+   CONSULTATION TYPES
+   ========================================= */
+
+.progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.progress-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    color: #52616f;
+    font-size: 12px;
+}
+
+.progress-label strong {
+    color: #263f5d;
+}
+
+.progress-track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #edf2f7;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 20px;
+}
+
+.blue-fill {
+    background: #1677ff;
+}
+
+.green-fill {
+    background: #35b879;
+}
+
+.orange-fill {
+    background: #f0a629;
+}
+
+.purple-fill {
+    background: #8064d8;
+}
+
+/* =========================================
+   MEDICINE ANALYTICS
+   ========================================= */
+
+.medicine-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.medicine-analytics-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.medicine-analytics-item:last-child {
+    border-bottom: none;
+}
+
+.medicine-rank {
+    width: 32px;
+    color: #1677ff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.medicine-name {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.medicine-name strong {
+    color: #263f5d;
+    font-size: 13px;
+}
+
+.medicine-name span {
+    color: #8a99aa;
+    font-size: 10px;
+}
+
+.medicine-percent {
+    color: #1677ff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 1150px) {
+    .analytics-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 800px) {
+    .analytics-page {
+        padding: 18px;
+    }
+
+    .analytics-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .analytics-period {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .analytics-period select {
+        flex: 1;
+    }
+
+    .analytics-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 550px) {
+    .analytics-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .patient-overview {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .patient-breakdown {
+        width: 100%;
+    }
+
+    .chart-area {
+        height: 220px;
+    }
+
+    .chart-bar {
+        width: 8px;
+    }
+}
+

@@ -339,14 +339,7 @@ function Consultations() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Doctor</label>
-                <select required>
-                  <option value="">Select doctor</option>
-                  <option>Dr. Maria Santos</option>
-                  <option>Dr. Jose Reyes</option>
-                </select>
-              </div>
+             
 
               <div className="form-row">
 

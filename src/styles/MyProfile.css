@@ -1,0 +1,470 @@
+
+/* =========================================
+   MY PROFILE PAGE
+   ========================================= */
+
+.profile-page {
+    min-height: 100vh;
+    padding: 28px;
+    background: #f5f8fc;
+    color: #172b4d;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.profile-header h1 {
+    margin: 0 0 6px;
+    color: #12355b;
+    font-size: 28px;
+}
+
+.profile-header p {
+    margin: 0;
+    color: #718096;
+    font-size: 14px;
+}
+
+.edit-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: #1677ff;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.edit-profile-btn:hover {
+    background: #0868eb;
+}
+
+/* =========================================
+   LAYOUT
+   ========================================= */
+
+.profile-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.profile-card {
+    background: white;
+    border: 1px solid #e5edf5;
+    border-radius: 14px;
+    box-shadow: 0 3px 14px rgba(23, 43, 77, 0.05);
+}
+
+/* =========================================
+   PROFILE MAIN CARD
+   ========================================= */
+
+.profile-main-card {
+    overflow: hidden;
+}
+
+.profile-cover {
+    height: 105px;
+    background: linear-gradient(
+        135deg,
+        #1677ff,
+        #0d5fc7
+    );
+}
+
+.profile-avatar-section {
+    position: relative;
+    width: fit-content;
+    margin: -50px auto 0;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid white;
+    border-radius: 50%;
+    background: #e8f2ff;
+    color: #1677ff;
+}
+
+.camera-btn {
+    position: absolute;
+    right: 1px;
+    bottom: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid white;
+    border-radius: 50%;
+    background: #1677ff;
+    color: white;
+    cursor: pointer;
+}
+
+.profile-basic-info {
+    padding: 15px 20px 20px;
+    text-align: center;
+}
+
+.profile-basic-info h2 {
+    margin: 0 0 7px;
+    color: #12355b;
+    font-size: 20px;
+}
+
+.profile-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #e8f2ff;
+    color: #1677ff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.profile-basic-info p {
+    margin: 8px 0 0;
+    color: #718096;
+    font-size: 11px;
+}
+
+.profile-divider {
+    height: 1px;
+    margin: 0 20px;
+    background: #edf2f7;
+}
+
+.profile-contact {
+    padding: 8px 20px 20px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.contact-item > svg {
+    color: #1677ff;
+}
+
+.contact-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.contact-item span {
+    color: #9aa8b8;
+    font-size: 10px;
+}
+
+.contact-item strong {
+    color: #52616f;
+    font-size: 11px;
+    word-break: break-word;
+}
+
+/* =========================================
+   INFORMATION CARD
+   ========================================= */
+
+.profile-info-card {
+    padding: 22px;
+}
+
+.profile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.profile-card-header h2 {
+    margin: 0 0 5px;
+    color: #12355b;
+    font-size: 17px;
+}
+
+.profile-card-header p {
+    margin: 0;
+    color: #718096;
+    font-size: 12px;
+}
+
+.profile-card-header > svg {
+    color: #1677ff;
+}
+
+/* =========================================
+   INFORMATION LIST
+   ========================================= */
+
+.information-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.information-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.information-row:last-child {
+    border-bottom: none;
+}
+
+.information-row span {
+    color: #718096;
+    font-size: 12px;
+}
+
+.information-row strong {
+    color: #263f5d;
+    font-size: 12px;
+    text-align: right;
+}
+
+/* =========================================
+   FORM
+   ========================================= */
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group label {
+    color: #52616f;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.input-wrapper {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 11px;
+    border: 1px solid #d9e2ec;
+    border-radius: 8px;
+    color: #8a99aa;
+}
+
+.input-wrapper:focus-within {
+    border-color: #1677ff;
+    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+.input-wrapper input {
+    width: 100%;
+    border: none;
+    outline: none;
+    color: #263f5d;
+    font-size: 12px;
+}
+
+.form-group > input {
+    height: 40px;
+    box-sizing: border-box;
+    padding: 0 11px;
+    border: 1px solid #d9e2ec;
+    border-radius: 8px;
+    outline: none;
+    color: #263f5d;
+    font-size: 12px;
+}
+
+.readonly-input {
+    background: #f5f8fc;
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 5px;
+}
+
+.cancel-btn,
+.save-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    border: 1px solid #d9e2ec;
+    background: white;
+    color: #718096;
+}
+
+.save-btn {
+    border: none;
+    background: #1677ff;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #0868eb;
+}
+
+/* =========================================
+   SECURITY
+   ========================================= */
+
+.security-card {
+    grid-column: 2;
+    padding: 22px;
+}
+
+.security-content {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px;
+    border: 1px solid #edf2f7;
+    border-radius: 10px;
+}
+
+.security-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #e8f2ff;
+    color: #1677ff;
+}
+
+.security-content h3 {
+    margin: 0 0 4px;
+    color: #263f5d;
+    font-size: 13px;
+}
+
+.security-content p {
+    margin: 0;
+    color: #8a99aa;
+    font-size: 10px;
+}
+
+.change-password-btn {
+    margin-left: auto;
+    padding: 8px 12px;
+    border: 1px solid #cfe0f5;
+    border-radius: 7px;
+    background: white;
+    color: #1677ff;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.change-password-btn:hover {
+    background: #edf5ff;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 900px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .security-card {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-page {
+        padding: 18px;
+    }
+
+    .profile-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .edit-profile-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .information-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .information-row strong {
+        text-align: left;
+    }
+
+    .security-content {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .change-password-btn {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
