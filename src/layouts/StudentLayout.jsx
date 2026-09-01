@@ -1,48 +1,42 @@
 import { useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
-
 import { logout } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
-import "../styles/AdminLayout.css";
+import "../styles/StudentLayout.css";
 import logo from "../assets/lcc-logo.jpg";
 
 import {
     Menu,
     LayoutDashboard,
-    Users,
-    UserRoundSearch,
+    CalendarDays,
     Stethoscope,
-    Pill,
-    ClipboardList,
     FileText,
     Bell,
-    BarChart3,
     User,
     LogOut,
 } from "lucide-react";
 
 
-function AdminLayout() {
-
+function StudentLayout() {
     const { user } = useAuth();
     const navigate = useNavigate();
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
 
-    // =========================================
+    // ========================================
     // SIDEBAR TOGGLE
-    // =========================================
+    // ========================================
 
     const toggleSidebar = () => {
         setSidebarOpen((previous) => !previous);
     };
 
 
-    // =========================================
+    // ========================================
     // CLOSE SIDEBAR ON MOBILE
-    // =========================================
+    // ========================================
 
     const closeSidebarOnMobile = () => {
         if (window.innerWidth <= 700) {
@@ -51,9 +45,9 @@ function AdminLayout() {
     };
 
 
-    // =========================================
+    // ========================================
     // LOGOUT
-    // =========================================
+    // ========================================
 
     const handleLogout = async () => {
         try {
@@ -65,36 +59,32 @@ function AdminLayout() {
     };
 
 
-    // =========================================
-    // NAVIGATION CLASS
-    // =========================================
+    // ========================================
+    // NAVIGATION LINK
+    // ========================================
 
     const navClass = ({ isActive }) =>
-        isActive
-            ? "nav-link active"
-            : "nav-link";
+        isActive ? "nav-link active" : "nav-link";
 
 
     return (
-
         <div
-            className={`admin-layout ${
+            className={`student-layout ${
                 sidebarOpen
                     ? "sidebar-open"
                     : "sidebar-closed"
             }`}
         >
 
-            {/* =====================================
+            {/* ==================================
                 HEADER
-            ====================================== */}
+            ================================== */}
 
-            <header className="admin-header">
+            <header className="student-header">
 
-                <div className="admin-header-left">
+                <div className="student-header-left">
 
                     {/* Sidebar Toggle */}
-
                     <button
                         type="button"
                         className="sidebar-toggle"
@@ -114,26 +104,23 @@ function AdminLayout() {
                     </button>
 
 
-                    {/* Logo + Application Name */}
-
-                    <div className="admin-title">
+                    {/* Logo and Title */}
+                    <div className="student-title">
 
                         <img
                             src={logo}
                             alt="Clinic Management System"
-                            className="admin-logo"
+                            className="student-logo"
                         />
 
                         <div>
-
                             <h2>
                                 Clinic Management System
                             </h2>
 
                             <span>
-                                Administrator Portal
+                                Student Portal
                             </span>
-
                         </div>
 
                     </div>
@@ -141,36 +128,27 @@ function AdminLayout() {
                 </div>
 
 
-                {/* =================================
-                    ADMIN USER
-                ================================== */}
+                {/* Student User */}
+                <div className="student-user">
 
-                <div className="admin-user">
-
-                    <div className="admin-user-info">
+                    <div className="student-user-info">
 
                         <span>
-                            {user?.firstName || "Admin"}{" "}
+                            {user?.firstName || "Student"}{" "}
                             {user?.lastName || ""}
                         </span>
 
                         <small>
-                            Administrator
+                            Student
                         </small>
 
                     </div>
 
 
-                    {/* Avatar */}
-
-                    <div className="admin-avatar">
-
-                        {user?.firstName?.charAt(0) || "A"}
-
+                    <div className="student-avatar">
+                        {user?.firstName?.charAt(0) || "S"}
                     </div>
 
-
-                    {/* Logout */}
 
                     <button
                         type="button"
@@ -179,10 +157,7 @@ function AdminLayout() {
                         title="Logout"
                     >
                         <LogOut size={17} />
-
-                        <span>
-                            Logout
-                        </span>
+                        <span>Logout</span>
                     </button>
 
                 </div>
@@ -190,24 +165,21 @@ function AdminLayout() {
             </header>
 
 
-            {/* =====================================
+            {/* ==================================
                 BODY
-            ====================================== */}
+            ================================== */}
 
-            <div className="admin-body">
+            <div className="student-body">
 
 
-                {/* =================================
+                {/* ==================================
                     SIDEBAR
                 ================================== */}
 
                 <aside className="sidebar">
 
 
-                    {/* =================================
-                        MAIN
-                    ================================== */}
-
+                    {/* MAIN */}
                     <div className="sidebar-section">
 
                         <div className="sidebar-section-title">
@@ -216,13 +188,12 @@ function AdminLayout() {
 
 
                         <NavLink
-                            to="/admin"
+                            to="/student"
                             end
                             onClick={closeSidebarOnMobile}
                             className={navClass}
                             title="Dashboard"
                         >
-
                             <span className="nav-icon">
                                 <LayoutDashboard size={18} />
                             </span>
@@ -230,70 +201,33 @@ function AdminLayout() {
                             <span className="nav-text">
                                 Dashboard
                             </span>
-
                         </NavLink>
 
                     </div>
 
 
-                    {/* =================================
-                        SYSTEM MANAGEMENT
-                    ================================== */}
-
+                    {/* HEALTH SERVICES */}
                     <div className="sidebar-section">
 
                         <div className="sidebar-section-title">
-                            SYSTEM MANAGEMENT
+                            HEALTH SERVICES
                         </div>
 
 
                         <NavLink
-                            to="manage-users"
+                            to="appointments"
                             onClick={closeSidebarOnMobile}
                             className={navClass}
-                            title="User Management"
+                            title="Appointments"
                         >
-
                             <span className="nav-icon">
-                                <Users size={18} />
+                                <CalendarDays size={18} />
                             </span>
 
                             <span className="nav-text">
-                                User Management
+                                Appointments
                             </span>
-
                         </NavLink>
-
-
-                        <NavLink
-                            to="patients-management"
-                            onClick={closeSidebarOnMobile}
-                            className={navClass}
-                            title="Patients Management"
-                        >
-
-                            <span className="nav-icon">
-                                <UserRoundSearch size={18} />
-                            </span>
-
-                            <span className="nav-text">
-                                Patients Management
-                            </span>
-
-                        </NavLink>
-
-                    </div>
-
-
-                    {/* =================================
-                        CLINIC DATA
-                    ================================== */}
-
-                    <div className="sidebar-section">
-
-                        <div className="sidebar-section-title">
-                            CLINIC DATA
-                        </div>
 
 
                         <NavLink
@@ -302,7 +236,6 @@ function AdminLayout() {
                             className={navClass}
                             title="Consultations"
                         >
-
                             <span className="nav-icon">
                                 <Stethoscope size={18} />
                             </span>
@@ -310,75 +243,33 @@ function AdminLayout() {
                             <span className="nav-text">
                                 Consultations
                             </span>
-
                         </NavLink>
 
 
                         <NavLink
-                            to="medicine-inventory"
+                            to="medical-records"
                             onClick={closeSidebarOnMobile}
                             className={navClass}
-                            title="Medicine Inventory"
+                            title="Medical Records"
                         >
-
-                            <span className="nav-icon">
-                                <Pill size={18} />
-                            </span>
-
-                            <span className="nav-text">
-                                Medicine Inventory
-                            </span>
-
-                        </NavLink>
-
-
-                        <NavLink
-                            to="medicine-issuance"
-                            onClick={closeSidebarOnMobile}
-                            className={navClass}
-                            title="Medicine Issuance"
-                        >
-
-                            <span className="nav-icon">
-                                <ClipboardList size={18} />
-                            </span>
-
-                            <span className="nav-text">
-                                Medicine Issuance
-                            </span>
-
-                        </NavLink>
-
-                    </div>
-
-
-                    {/* =================================
-                        REPORTS & MONITORING
-                    ================================== */}
-
-                    <div className="sidebar-section">
-
-                        <div className="sidebar-section-title">
-                            REPORTS & MONITORING
-                        </div>
-
-
-                        <NavLink
-                            to="reports"
-                            onClick={closeSidebarOnMobile}
-                            className={navClass}
-                            title="Reports"
-                        >
-
                             <span className="nav-icon">
                                 <FileText size={18} />
                             </span>
 
                             <span className="nav-text">
-                                Reports
+                                Medical Records
                             </span>
-
                         </NavLink>
+
+                    </div>
+
+
+                    {/* ACCOUNT */}
+                    <div className="sidebar-section">
+
+                        <div className="sidebar-section-title">
+                            ACCOUNT
+                        </div>
 
 
                         <NavLink
@@ -387,7 +278,6 @@ function AdminLayout() {
                             className={navClass}
                             title="Notifications"
                         >
-
                             <span className="nav-icon">
                                 <Bell size={18} />
                             </span>
@@ -395,39 +285,7 @@ function AdminLayout() {
                             <span className="nav-text">
                                 Notifications
                             </span>
-
                         </NavLink>
-
-
-                        <NavLink
-                            to="analytics"
-                            onClick={closeSidebarOnMobile}
-                            className={navClass}
-                            title="Analytics"
-                        >
-
-                            <span className="nav-icon">
-                                <BarChart3 size={18} />
-                            </span>
-
-                            <span className="nav-text">
-                                Analytics
-                            </span>
-
-                        </NavLink>
-
-                    </div>
-
-
-                    {/* =================================
-                        SYSTEM SETTINGS
-                    ================================== */}
-
-                    <div className="sidebar-section">
-
-                        <div className="sidebar-section-title">
-                            SYSTEM SETTINGS
-                        </div>
 
 
                         <NavLink
@@ -436,7 +294,6 @@ function AdminLayout() {
                             className={navClass}
                             title="My Profile"
                         >
-
                             <span className="nav-icon">
                                 <User size={18} />
                             </span>
@@ -444,16 +301,12 @@ function AdminLayout() {
                             <span className="nav-text">
                                 My Profile
                             </span>
-
                         </NavLink>
 
                     </div>
 
 
-                    {/* =================================
-                        SIDEBAR LOGOUT
-                    ================================== */}
-
+                    {/* LOGOUT */}
                     <div className="sidebar-bottom">
 
                         <button
@@ -462,7 +315,6 @@ function AdminLayout() {
                             onClick={handleLogout}
                             title="Logout"
                         >
-
                             <span className="nav-icon">
                                 <LogOut size={18} />
                             </span>
@@ -470,7 +322,6 @@ function AdminLayout() {
                             <span className="nav-text">
                                 Logout
                             </span>
-
                         </button>
 
                     </div>
@@ -478,28 +329,24 @@ function AdminLayout() {
                 </aside>
 
 
-                {/* =================================
+                {/* ==================================
                     MOBILE OVERLAY
                 ================================== */}
 
                 {sidebarOpen && (
-
                     <div
                         className="sidebar-overlay"
                         onClick={toggleSidebar}
                     />
-
                 )}
 
 
-                {/* =================================
+                {/* ==================================
                     MAIN CONTENT
                 ================================== */}
 
                 <main className="content">
-
                     <Outlet />
-
                 </main>
 
             </div>
@@ -509,4 +356,4 @@ function AdminLayout() {
 }
 
 
-export default AdminLayout;
+export default StudentLayout;
