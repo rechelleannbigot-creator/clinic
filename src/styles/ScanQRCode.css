@@ -1,0 +1,430 @@
+.scan-page {
+    min-height: 100vh;
+    padding: 30px;
+    background: #f5f8fc;
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Header */
+.scan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.scan-header h1 {
+    margin: 0 0 6px;
+    color: #14213d;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.scan-header p {
+    margin: 0;
+    color: #718096;
+    font-size: 14px;
+}
+
+.header-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f1ff;
+    color: #2563eb;
+}
+
+/* Scanner Container */
+.scanner-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 35px;
+    background: white;
+    border: 1px solid #e5eaf0;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+    text-align: center;
+}
+
+.scanner-title h2 {
+    margin: 0 0 7px;
+    color: #172033;
+    font-size: 21px;
+}
+
+.scanner-title p {
+    margin: 0 0 28px;
+    color: #8a94a6;
+    font-size: 13px;
+}
+
+/* QR Scanner */
+.qr-scanner {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 25px;
+    border-radius: 18px;
+    background: #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-scanner.scanning {
+    background: #eef6ff;
+}
+
+.scanner-frame {
+    width: 210px;
+    height: 210px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+}
+
+/* Scanner Corners */
+.corner {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    border-color: #2563eb;
+    border-style: solid;
+}
+
+.top-left {
+    top: 0;
+    left: 0;
+    border-width: 4px 0 0 4px;
+    border-radius: 7px 0 0 0;
+}
+
+.top-right {
+    top: 0;
+    right: 0;
+    border-width: 4px 4px 0 0;
+    border-radius: 0 7px 0 0;
+}
+
+.bottom-left {
+    bottom: 0;
+    left: 0;
+    border-width: 0 0 4px 4px;
+    border-radius: 0 0 0 7px;
+}
+
+.bottom-right {
+    bottom: 0;
+    right: 0;
+    border-width: 0 4px 4px 0;
+    border-radius: 0 0 7px 0;
+}
+
+/* Scan Animation */
+.scan-line {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 15px;
+    height: 3px;
+    background: #2563eb;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.7);
+    animation: scan 1.5s infinite ease-in-out;
+}
+
+@keyframes scan {
+    0% {
+        top: 15px;
+    }
+
+    50% {
+        top: 195px;
+    }
+
+    100% {
+        top: 15px;
+    }
+}
+
+.scanner-message {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.scanning-text {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+/* Button */
+.scan-button {
+    width: 100%;
+    max-width: 300px;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 20px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    transition: 0.2s ease;
+}
+
+.scan-button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.scan-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Instructions */
+.scan-instructions {
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #edf0f4;
+    display: grid;
+    gap: 13px;
+    text-align: left;
+}
+
+.instruction {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.instruction span {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #e8f1ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.instruction p {
+    margin: 0;
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Scan Result */
+.scan-result {
+    padding: 20px 10px;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #e9f9f1;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scan-result h2 {
+    margin: 0 0 7px;
+    color: #172033;
+    font-size: 21px;
+}
+
+.scan-result > p {
+    margin: 0 0 25px;
+    color: #8a94a6;
+    font-size: 13px;
+}
+
+/* Patient Result */
+.patient-result {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 400px;
+    margin: 0 auto 25px;
+    padding: 18px;
+    text-align: left;
+    border: 1px solid #e5eaf0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.patient-result-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #e8f1ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.patient-result span {
+    font-size: 11px;
+    color: #8a94a6;
+}
+
+.patient-result h3 {
+    margin: 3px 0;
+    color: #27364b;
+    font-size: 15px;
+}
+
+.patient-result p {
+    margin: 0;
+    color: #64748b;
+    font-size: 11px;
+}
+
+/* Result Buttons */
+.result-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.continue-button,
+.again-button {
+    padding: 11px 18px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+.continue-button {
+    border: none;
+    background: #2563eb;
+    color: white;
+}
+
+.continue-button:hover {
+    background: #1d4ed8;
+}
+
+.again-button {
+    border: 1px solid #dbe2ea;
+    background: white;
+    color: #475569;
+}
+
+.again-button:hover {
+    background: #f8fafc;
+}
+
+/* Security Notice */
+.security-notice {
+    max-width: 720px;
+    margin: 20px auto 0;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.security-notice strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 12px;
+}
+
+.security-notice p {
+    margin: 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    .scan-page {
+        padding: 20px 15px;
+    }
+
+    .scan-header h1 {
+        font-size: 25px;
+    }
+
+    .scanner-container {
+        padding: 25px 18px;
+    }
+
+    .qr-scanner {
+        width: 260px;
+        height: 260px;
+    }
+
+    .scanner-frame {
+        width: 190px;
+        height: 190px;
+    }
+
+    .result-actions {
+        flex-direction: column;
+    }
+
+    .continue-button,
+    .again-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .qr-scanner {
+        width: 230px;
+        height: 230px;
+    }
+
+    .scanner-frame {
+        width: 170px;
+        height: 170px;
+    }
+}
+
