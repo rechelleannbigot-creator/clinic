@@ -17,46 +17,46 @@ function Consultations() {
     {
       id: 1,
       patient: "Juan Dela Cruz",
-      doctor: "Dr. Maria Santos",
+      clinicStaff: "Maria Santos",
       date: "2026-09-01",
       time: "09:00 AM",
-      type: "General Checkup",
+      consultation: "General Checkup",
       status: "Completed",
     },
     {
       id: 2,
       patient: "Maria Clara",
-      doctor: "Dr. Jose Reyes",
+      clinicStaff: "Jose Reyes",
       date: "2026-09-01",
       time: "10:30 AM",
-      type: "Follow-up",
+      consultation: "Follow-up",
       status: "Scheduled",
     },
     {
       id: 3,
       patient: "Pedro Garcia",
-      doctor: "Dr. Maria Santos",
+      clinicStaff: "Maria Santos",
       date: "2026-09-02",
       time: "01:00 PM",
-      type: "Medical Consultation",
+      consultation: "Medical Consultation",
       status: "Scheduled",
     },
     {
       id: 4,
       patient: "Ana Lopez",
-      doctor: "Dr. Jose Reyes",
+      clinicStaff: "Jose Reyes",
       date: "2026-08-30",
       time: "02:30 PM",
-      type: "Follow-up",
+      consultation: "Follow-up",
       status: "Completed",
     },
     {
       id: 5,
       patient: "Carlos Mendoza",
-      doctor: "Dr. Maria Santos",
+      clinicStaff: "Maria Santos",
       date: "2026-08-29",
       time: "03:00 PM",
-      type: "General Checkup",
+      consultation: "General Checkup",
       status: "Cancelled",
     },
   ]);
@@ -66,10 +66,10 @@ function Consultations() {
       consultation.patient
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      consultation.doctor
+      consultation.clinicStaff
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      consultation.type
+      consultation.consultation
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
   );
@@ -81,7 +81,9 @@ function Consultations() {
 
     if (confirmDelete) {
       setConsultations(
-        consultations.filter((consultation) => consultation.id !== id)
+        consultations.filter(
+          (consultation) => consultation.id !== id
+        )
       );
     }
   };
@@ -180,7 +182,7 @@ function Consultations() {
 
           <input
             type="text"
-            placeholder="Search patient, doctor, or consultation type..."
+            placeholder="Search patient, clinic staff, or consultation..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -196,10 +198,10 @@ function Consultations() {
           <thead>
             <tr>
               <th>Patient</th>
-              <th>Doctor</th>
+              <th>Clinic Staff</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Consultation Type</th>
+              <th>Consultation</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -217,13 +219,13 @@ function Consultations() {
                     </div>
                   </td>
 
-                  <td>{consultation.doctor}</td>
+                  <td>{consultation.clinicStaff}</td>
 
                   <td>{consultation.date}</td>
 
                   <td>{consultation.time}</td>
 
-                  <td>{consultation.type}</td>
+                  <td>{consultation.consultation}</td>
 
                   <td>
                     <span
@@ -306,6 +308,7 @@ function Consultations() {
           >
 
             <div className="modal-header">
+
               <div>
                 <h2>New Consultation</h2>
                 <p>Create a new patient consultation.</p>
@@ -317,6 +320,7 @@ function Consultations() {
               >
                 <X size={20} />
               </button>
+
             </div>
 
             <form
@@ -327,8 +331,10 @@ function Consultations() {
               }}
             >
 
+              {/* PATIENT */}
               <div className="form-group">
                 <label>Patient</label>
+
                 <select required>
                   <option value="">Select patient</option>
                   <option>Juan Dela Cruz</option>
@@ -339,8 +345,18 @@ function Consultations() {
                 </select>
               </div>
 
-             
+              {/* CLINIC STAFF */}
+              <div className="form-group">
+                <label>Clinic Staff</label>
 
+                <select required>
+                  <option value="">Select clinic staff</option>
+                  <option>Maria Santos</option>
+                  <option>Jose Reyes</option>
+                </select>
+              </div>
+
+              {/* DATE & TIME */}
               <div className="form-row">
 
                 <div className="form-group">
@@ -355,18 +371,20 @@ function Consultations() {
 
               </div>
 
+              {/* CONSULTATION */}
               <div className="form-group">
-                <label>Consultation Type</label>
+                <label>Consultation</label>
 
                 <select required>
-                  <option value="">Select type</option>
-                  <option>General Checkup</option>
-                  <option>Medical Consultation</option>
+                  <option value="">Select consultation</option>
+                  <option>Follow-up</option>
+                  <option>Follow-up</option>
                   <option>Follow-up</option>
                   <option>Emergency Consultation</option>
                 </select>
               </div>
 
+              {/* NOTES */}
               <div className="form-group">
                 <label>Notes</label>
 
@@ -376,6 +394,7 @@ function Consultations() {
                 ></textarea>
               </div>
 
+              {/* ACTIONS */}
               <div className="modal-actions">
 
                 <button
@@ -407,3 +426,4 @@ function Consultations() {
 }
 
 export default Consultations;
+
