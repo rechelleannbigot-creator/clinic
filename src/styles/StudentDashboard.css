@@ -1,0 +1,191 @@
+.student-dashboard {
+    padding: 30px;
+    background: #f5f8fc;
+    min-height: 100vh;
+}
+
+/* Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    color: #163a5f;
+    font-size: 30px;
+}
+
+.dashboard-header p {
+    margin-top: 8px;
+    color: #718096;
+}
+
+.notification-btn {
+    border: none;
+    background: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Cards */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    transition: 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+}
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    background: #e8f1ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-card h3 {
+    margin: 0;
+    color: #475569;
+    font-size: 15px;
+}
+
+.dashboard-card p {
+    margin: 5px 0;
+    color: #163a5f;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.dashboard-card span {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* Section */
+.dashboard-section {
+    margin-bottom: 30px;
+}
+
+.dashboard-section h2 {
+    color: #163a5f;
+    margin-bottom: 18px;
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.action-card {
+    border: none;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    color: #2563eb;
+    transition: 0.2s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-3px);
+    background: #f8fbff;
+}
+
+.action-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.action-card strong {
+    color: #334155;
+}
+
+.action-card span {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* Welcome Panel */
+.welcome-panel {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    padding: 30px;
+    border-radius: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+.welcome-panel h2 {
+    margin-top: 0;
+}
+
+.welcome-panel p {
+    margin-bottom: 0;
+    max-width: 650px;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .dashboard-cards,
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .student-dashboard {
+        padding: 20px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 24px;
+    }
+
+    .welcome-panel {
+        padding: 22px;
+    }
+
+    .welcome-panel svg {
+        display: none;
+    }
+}

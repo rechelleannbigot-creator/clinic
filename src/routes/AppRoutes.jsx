@@ -183,9 +183,20 @@ function AppRoutes() {
                 {/* =================================
                     STUDENT ROUTES
                 ================================= */}
-                <Route path="/student">
-    <Route index element={<StudentLayout />} />
-</Route>
+                <Route
+                    path="/student"
+                    element={
+                        <RoleRoute allowedRole="student">
+                            <StudentLayout />
+                        </RoleRoute>
+                    }
+                >   
+                <Route index element={<StudentDashboard />} />
+
+                </Route>
+
+                
+                
 
             </Routes>
         </BrowserRouter>

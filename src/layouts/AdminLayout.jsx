@@ -449,32 +449,6 @@ function AdminLayout() {
 
                     </div>
 
-
-                    {/* =================================
-                        SIDEBAR LOGOUT
-                    ================================== */}
-
-                    <div className="sidebar-bottom">
-
-                        <button
-                            type="button"
-                            className="sidebar-logout"
-                            onClick={handleLogout}
-                            title="Logout"
-                        >
-
-                            <span className="nav-icon">
-                                <LogOut size={18} />
-                            </span>
-
-                            <span className="nav-text">
-                                Logout
-                            </span>
-
-                        </button>
-
-                    </div>
-
                 </aside>
 
 
