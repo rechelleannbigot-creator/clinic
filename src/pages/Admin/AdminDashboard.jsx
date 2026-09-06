@@ -9,10 +9,14 @@ import {
     Activity,
 } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+
 import "./AdminDashboard.css";
 
 
 function AdminDashboard() {
+
+    const navigate = useNavigate();
 
     return (
         <div className="admin-dashboard">
@@ -27,14 +31,16 @@ function AdminDashboard() {
                     <h1>Admin Dashboard</h1>
 
                     <p>
-                        Welcome back! Boy.
+                        Welcome back!
                     </p>
                 </div>
 
-
-                <button className="dashboard-notification">
+                <button
+                    className="dashboard-notification"
+                    onClick={() => navigate("/admin/notification")}
+                    title="Notifications"
+                >
                     <Bell size={19} />
-
                     <span></span>
                 </button>
 
@@ -47,9 +53,7 @@ function AdminDashboard() {
 
             <section className="stats-grid">
 
-
                 {/* Total Patients */}
-
                 <div className="stat-card">
 
                     <div className="stat-card-top">
@@ -65,16 +69,13 @@ function AdminDashboard() {
 
                     </div>
 
-
                     <div className="stat-content">
 
                         <span className="stat-label">
                             Total Patients
                         </span>
 
-                        <h2>
-                            1,248
-                        </h2>
+                        <h2>1,248</h2>
 
                         <small>
                             Compared with last month
@@ -86,7 +87,6 @@ function AdminDashboard() {
 
 
                 {/* Appointments */}
-
                 <div className="stat-card">
 
                     <div className="stat-card-top">
@@ -102,16 +102,13 @@ function AdminDashboard() {
 
                     </div>
 
-
                     <div className="stat-content">
 
                         <span className="stat-label">
                             Appointments
                         </span>
 
-                        <h2>
-                            324
-                        </h2>
+                        <h2>324</h2>
 
                         <small>
                             Scheduled this month
@@ -123,7 +120,6 @@ function AdminDashboard() {
 
 
                 {/* Clinic Staff */}
-
                 <div className="stat-card">
 
                     <div className="stat-card-top">
@@ -138,16 +134,13 @@ function AdminDashboard() {
 
                     </div>
 
-
                     <div className="stat-content">
 
                         <span className="stat-label">
                             Clinic Staff
                         </span>
 
-                        <h2>
-                            48
-                        </h2>
+                        <h2>48</h2>
 
                         <small>
                             Active staff members
@@ -159,7 +152,6 @@ function AdminDashboard() {
 
 
                 {/* Clinics */}
-
                 <div className="stat-card">
 
                     <div className="stat-card-top">
@@ -174,16 +166,13 @@ function AdminDashboard() {
 
                     </div>
 
-
                     <div className="stat-content">
 
                         <span className="stat-label">
                             Total Clinics
                         </span>
 
-                        <h2>
-                            12
-                        </h2>
+                        <h2>12</h2>
 
                         <small>
                             Clinics registered
@@ -202,11 +191,7 @@ function AdminDashboard() {
 
             <section className="dashboard-grid">
 
-
-                {/* =================================
-                    APPOINTMENT OVERVIEW
-                ================================== */}
-
+                {/* Appointment Overview */}
                 <div className="dashboard-card appointment-card">
 
                     <div className="card-header">
@@ -221,8 +206,8 @@ function AdminDashboard() {
                             </p>
                         </div>
 
-
                         <select defaultValue="7">
+
                             <option value="7">
                                 Last 7 Months
                             </option>
@@ -234,23 +219,21 @@ function AdminDashboard() {
                             <option value="year">
                                 This Year
                             </option>
+
                         </select>
 
                     </div>
 
 
                     {/* Chart */}
-
                     <div className="bar-chart">
 
                         <div className="chart-y-axis">
-
                             <span>400</span>
                             <span>300</span>
                             <span>200</span>
                             <span>100</span>
                             <span>0</span>
-
                         </div>
 
 
@@ -272,7 +255,6 @@ function AdminDashboard() {
                                     <span>Feb</span>
                                 </div>
 
-
                                 <div className="chart-bar-item">
                                     <div
                                         className="chart-bar"
@@ -280,7 +262,6 @@ function AdminDashboard() {
                                     ></div>
                                     <span>Mar</span>
                                 </div>
-
 
                                 <div className="chart-bar-item">
                                     <div
@@ -290,7 +271,6 @@ function AdminDashboard() {
                                     <span>Apr</span>
                                 </div>
 
-
                                 <div className="chart-bar-item">
                                     <div
                                         className="chart-bar"
@@ -298,7 +278,6 @@ function AdminDashboard() {
                                     ></div>
                                     <span>May</span>
                                 </div>
-
 
                                 <div className="chart-bar-item">
                                     <div
@@ -308,7 +287,6 @@ function AdminDashboard() {
                                     <span>Jun</span>
                                 </div>
 
-
                                 <div className="chart-bar-item">
                                     <div
                                         className="chart-bar"
@@ -317,13 +295,15 @@ function AdminDashboard() {
                                     <span>Jul</span>
                                 </div>
 
-
                                 <div className="chart-bar-item">
+
                                     <div
                                         className="chart-bar current"
                                         style={{ height: "92%" }}
                                     ></div>
+
                                     <span>Aug</span>
+
                                 </div>
 
                             </div>
@@ -335,15 +315,13 @@ function AdminDashboard() {
                 </div>
 
 
-                {/* =================================
-                    PATIENT SUMMARY
-                ================================== */}
-
+                {/* Patient Summary */}
                 <div className="dashboard-card patient-summary-card">
 
                     <div className="card-header">
 
                         <div>
+
                             <h3>
                                 Patient Summary
                             </h3>
@@ -351,6 +329,7 @@ function AdminDashboard() {
                             <p>
                                 Current patient statistics
                             </p>
+
                         </div>
 
                     </div>
@@ -382,11 +361,13 @@ function AdminDashboard() {
                         <div className="legend-row">
 
                             <div>
+
                                 <span className="legend-dot new"></span>
 
                                 <span>
                                     New Patients
                                 </span>
+
                             </div>
 
                             <strong>
@@ -399,11 +380,13 @@ function AdminDashboard() {
                         <div className="legend-row">
 
                             <div>
+
                                 <span className="legend-dot existing"></span>
 
                                 <span>
                                     Existing Patients
                                 </span>
+
                             </div>
 
                             <strong>
@@ -426,10 +409,7 @@ function AdminDashboard() {
             <section className="bottom-grid">
 
 
-                {/* =================================
-                    RECENT APPOINTMENTS
-                ================================== */}
-
+                {/* Recent Appointments */}
                 <div className="dashboard-card appointments-card">
 
                     <div className="card-header">
@@ -447,7 +427,12 @@ function AdminDashboard() {
                         </div>
 
 
-                        <button className="view-btn">
+                        <button
+                            className="view-btn"
+                            onClick={() =>
+                                navigate("/admin/consultations")
+                            }
+                        >
                             View All
                             <ArrowRight size={15} />
                         </button>
@@ -613,10 +598,7 @@ function AdminDashboard() {
                 </div>
 
 
-                {/* =================================
-                    QUICK ACTIONS
-                ================================== */}
-
+                {/* Quick Actions */}
                 <div className="dashboard-card quick-card">
 
                     <div className="card-header">
@@ -639,11 +621,11 @@ function AdminDashboard() {
                     <div className="quick-actions">
 
 
+                        {/* Add Patient */}
                         <button
                             className="quick-action"
                             onClick={() =>
-                                window.location.href =
-                                    "/admin/patients-management"
+                                navigate("/admin/patients-management")
                             }
                         >
 
@@ -668,11 +650,11 @@ function AdminDashboard() {
                         </button>
 
 
+                        {/* New Appointment */}
                         <button
                             className="quick-action"
                             onClick={() =>
-                                window.location.href =
-                                    "/admin/consultations"
+                                navigate("/admin/consultations")
                             }
                         >
 
@@ -697,11 +679,11 @@ function AdminDashboard() {
                         </button>
 
 
+                        {/* Manage Staff */}
                         <button
                             className="quick-action"
                             onClick={() =>
-                                window.location.href =
-                                    "/admin/manage-users"
+                                navigate("/admin/manage-users")
                             }
                         >
 
@@ -726,11 +708,11 @@ function AdminDashboard() {
                         </button>
 
 
+                        {/* Generate Report */}
                         <button
                             className="quick-action"
                             onClick={() =>
-                                window.location.href =
-                                    "/admin/reports"
+                                navigate("/admin/reports")
                             }
                         >
 

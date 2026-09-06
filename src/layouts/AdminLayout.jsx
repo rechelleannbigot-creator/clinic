@@ -312,6 +312,23 @@ function AdminLayout() {
                             </span>
 
                         </NavLink>
+                        
+                        <NavLink
+                            to="medicine-issuance"
+                            onClick={closeSidebarOnMobile}
+                            className={navClass}
+                            title="Medicine Issuance"
+                        >
+
+                            <span className="nav-icon">
+                                <ClipboardList size={18} />
+                            </span>
+
+                            <span className="nav-text">
+                                Medicine Issuance
+                            </span>
+
+                        </NavLink>
 
 
                         <NavLink
@@ -332,22 +349,7 @@ function AdminLayout() {
                         </NavLink>
 
 
-                        <NavLink
-                            to="medicine-issuance"
-                            onClick={closeSidebarOnMobile}
-                            className={navClass}
-                            title="Medicine Issuance"
-                        >
-
-                            <span className="nav-icon">
-                                <ClipboardList size={18} />
-                            </span>
-
-                            <span className="nav-text">
-                                Medicine Issuance
-                            </span>
-
-                        </NavLink>
+                        
 
                     </div>
 
