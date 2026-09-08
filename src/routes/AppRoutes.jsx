@@ -42,6 +42,7 @@ import Notifications from "../pages/Clinicstaff/Notifications";
 // ==============================
 import StudentLayout from "../layouts/StudentLayout";
 import StudentDashboard from "../pages/Student/StudentDashboard";
+import MedicalRecord from "../pages/Student/MedicalRecord";
 
 
 function AppRoutes() {
@@ -192,6 +193,7 @@ function AppRoutes() {
                     }
                 >   
                 <Route index element={<StudentDashboard />} />
+                <Route index element={<MedicalRecord />} />
 
                 </Route>
 

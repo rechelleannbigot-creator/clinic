@@ -4,234 +4,147 @@ import { logout } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
 import "../styles/StudentLayout.css";
+
 import logo from "../assets/lcc-logo.jpg";
 
-import {
-    Menu,
-    LayoutDashboard,
-    CalendarDays,
-    Stethoscope,
-    FileText,
-    Bell,
-    User,
-    LogOut,
-} from "lucide-react";
-
+import { Menu, LayoutDashboard } from "lucide-react";
 
 function StudentLayout() {
-    const { user } = useAuth();
-    const navigate = useNavigate();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  // State to manage the sidebar's open/closed state
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-
-
-    // ========================================
-    // SIDEBAR TOGGLE
-    // ========================================
-
-    const toggleSidebar = () => {
-        setSidebarOpen((previous) => !previous);
-    };
-
-
-    // ========================================
-    // CLOSE SIDEBAR ON MOBILE
-    // ========================================
-
-    const closeSidebarOnMobile = () => {
-        if (window.innerWidth <= 700) {
-            setSidebarOpen(false);
-        }
-    };
+  // Toggle the sidebar open/closed state
+  const toggleSidebar = () => {
+    setSidebarOpen((previous) => !previous);
+  };
+  // Close the sidebar on mobile devices when a link is clicked
+  const closeSidebarOnMobile = () => {
+    if (window.innerWidth <= 700) {
+      setSidebarOpen(false);
+    }
+  };
 
 
     // ========================================
     // LOGOUT
     // ========================================
 
-    const handleLogout = async () => {
-        try {
-            await logout();
-            navigate("/");
-        } catch (error) {
-            alert(error.message);
-        }
-    };
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  return (
+    <div
+      // Apply different classes based on the sidebar's state
+      className={`student-layout ${
+        sidebarOpen ? "sidebar-open" : "sidebar-closed"
+      }`}
+    >
+      {/* HEADER */}
+      <header className="student-header">
+        <div className="student-header-left">
+          {/* Sidebar Toggle */}
+          <button
+            type="button" //type attribute specifies the button's behavior
+            className="sidebar-toggle" //className attribute assigns a CSS class for styling
+            onClick={toggleSidebar} //onClick attribute specifies the function to be called when the button is clicked
+            aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"} //aria-label attribute provides an accessible label for screen readers
+            title={sidebarOpen ? "Close sidebar" : "Open sidebar"} //title attribute provides a tooltip when hovering over the button
+          >
+            <Menu size={22} />
+          </button>
+
+          {/* Application Title */}
+          <div className="student-title">
+            <img src={logo} alt="Clinic Management System" className="student-logo" />
+            <h2>Clinic Management System</h2>
+          </div> 
+        </div>
+
+        {/* Student User */}
+        <div className="student-user">
+          <span title={`${user?.firstName} ${user?.lastName}`}>
+            {user?.firstName} {user?.lastName}
+          </span>
+
+          <button type="button" className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </header>
 
 
-    // ========================================
-    // NAVIGATION LINK
-    // ========================================
+            {/* STUDENT BODY */}
+      <div className="student-body">
+        {/* SIDEBAR */}
+        <aside className="sidebar">
+          
+          {/* MAIN */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">MAIN</div>
 
-    const navClass = ({ isActive }) =>
-        isActive ? "nav-link active" : "nav-link";
+            <NavLink
+              to="/student"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Dashboard"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Dashboard</span>
+            </NavLink>
+          </div>
 
+          {/* Quick Actions */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">QUICK ACTIONS</div>
 
-    return (
-        <div
-            className={`student-layout ${
-                sidebarOpen
-                    ? "sidebar-open"
-                    : "sidebar-closed"
-            }`}
-        >
+            <NavLink
+              to="medical-record"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Medical Record"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Medical Record</span>
+            </NavLink>
 
-            {/* ==================================
-                HEADER
-            ================================== */}
-
-            <header className="student-header">
-
-                <div className="student-header-left">
-
-                    {/* Sidebar Toggle */}
-                    <button
-                        type="button"
-                        className="sidebar-toggle"
-                        onClick={toggleSidebar}
-                        aria-label={
-                            sidebarOpen
-                                ? "Close sidebar"
-                                : "Open sidebar"
-                        }
-                        title={
-                            sidebarOpen
-                                ? "Close sidebar"
-                                : "Open sidebar"
-                        }
-                    >
-                        <Menu size={22} />
-                    </button>
-
-
-                    {/* Logo and Title */}
-                    <div className="student-title">
-
-                        <img
-                            src={logo}
-                            alt="Clinic Management System"
-                            className="student-logo"
-                        />
-
-                        <div>
-                            <h2>
-                                Clinic Management System
-                            </h2>
-
-                            <span>
-                                Student Portal
-                            </span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* Student User */}
-                <div className="student-user">
-
-                    <div className="student-user-info">
-
-                        <span>
-                            {user?.firstName || "Student"}{" "}
-                            {user?.lastName || ""}
-                        </span>
-
-                        <small>
-                            Student
-                        </small>
-
-                    </div>
-
-
-                    <div className="student-avatar">
-                        {user?.firstName?.charAt(0) || "S"}
-                    </div>
-
-
-                    <button
-                        type="button"
-                        className="logout-btn"
-                        onClick={handleLogout}
-                        title="Logout"
-                    >
-                        <LogOut size={17} />
-                        <span>Logout</span>
-                    </button>
-
-                </div>
-
-            </header>
-
-
-            {/* ==================================
-                BODY
-            ================================== */}
-
-            <div className="student-body">
-
-
-                {/* ==================================
-                    SIDEBAR
-                ================================== */}
-
-                <aside className="sidebar">
-
-
-                    {/* MAIN */}
-                    <div className="sidebar-section">
-
-                        <div className="sidebar-section-title">
-                            MAIN
-                        </div>
-
-
-                        <NavLink
-                            to="/student"
-                            end
-                            onClick={closeSidebarOnMobile}
-                            className={navClass}
-                            title="Dashboard"
-                        >
-                            <span className="nav-icon">
-                                <LayoutDashboard size={18} />
-                            </span>
-
-                            <span className="nav-text">
-                                Dashboard
-                            </span>
-                        </NavLink>
-
-                    </div>
-                </aside>
-
-
-                {/* ==================================
-                    MOBILE OVERLAY
-                ================================== */}
-
-                {sidebarOpen && (
-                    <div
-                        className="sidebar-overlay"
-                        onClick={toggleSidebar}
-                    />
-                )}
-
-
-                {/* ==================================
-                    MAIN CONTENT
-                ================================== */}
-
-                <main className="content">
-                    <Outlet />
-                </main>
 
             </div>
 
-        </div>
-    );
+          </aside>
+
+          {/* MOBILE OVERLAY - this overlay is displayed on mobile devices when the sidebar is open. Clicking on it will close the sidebar. */}
+        {sidebarOpen && (
+          <div className="sidebar-overlay" onClick={toggleSidebar} />
+        )}
+
+        {/* MAIN CONTENT - this is where the main content of the admin dashboard will be rendered. The Outlet component is used to render the matched child route components.*/}
+        <main className="content">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 }
 
-
 export default StudentLayout;
+
+
+

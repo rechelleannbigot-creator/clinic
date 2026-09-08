@@ -7,13 +7,16 @@ import {
     Users,
     UserCheck,
     Clock,
+    X,
 } from "lucide-react";
 import "../../styles/Patients.css";
 
 function Patients() {
     const [search, setSearch] = useState("");
+    const [showAddModal, setShowAddModal] = useState(false);
 
-    const patients = [
+    // Patients data
+    const [patients, setPatients] = useState([
         {
             id: "P-001",
             name: "Juan Dela Cruz",
@@ -59,31 +62,108 @@ function Patients() {
             lastVisit: "Aug 25, 2026",
             status: "Active",
         },
-    ];
+    ]);
 
+    // New patient form
+    const [formData, setFormData] = useState({
+        name: "",
+        age: "",
+        gender: "",
+        contact: "",
+        status: "Active",
+    });
+
+    // Handle form input
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    // Add new patient
+    const handleAddPatient = (e) => {
+        e.preventDefault();
+
+        // Generate patient ID
+        const newId = `P-${String(patients.length + 1).padStart(3, "0")}`;
+
+        // Get today's date
+        const today = new Date();
+
+        const lastVisit = today.toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+        });
+
+        const newPatient = {
+            id: newId,
+            name: formData.name,
+            age: Number(formData.age),
+            gender: formData.gender,
+            contact: formData.contact,
+            lastVisit: lastVisit,
+            status: formData.status,
+        };
+
+        // Add patient to the list
+        setPatients([...patients, newPatient]);
+
+        // Reset form
+        setFormData({
+            name: "",
+            age: "",
+            gender: "",
+            contact: "",
+            status: "Active",
+        });
+
+        // Close modal
+        setShowAddModal(false);
+    };
+
+    // Search
     const filteredPatients = patients.filter((patient) =>
         `${patient.id} ${patient.name} ${patient.contact}`
             .toLowerCase()
             .includes(search.toLowerCase())
     );
 
+    // Statistics
+    const totalPatients = patients.length;
+
+    const activePatients = patients.filter(
+        (patient) => patient.status === "Active"
+    ).length;
+
     return (
         <div className="patients-page">
 
-            {/* Header */}
+            {/* =========================
+                HEADER
+            ========================= */}
             <div className="patients-header">
                 <div>
                     <h1>Patients</h1>
                     <p>Manage and view patient information.</p>
                 </div>
 
-                <button className="add-patient-btn">
+                {/* FUNCTIONAL ADD PATIENT BUTTON */}
+                <button
+                    className="add-patient-btn"
+                    onClick={() => setShowAddModal(true)}
+                >
                     <UserPlus size={18} />
                     Add Patient
                 </button>
             </div>
 
-            {/* Statistics */}
+            {/* =========================
+                STATISTICS
+            ========================= */}
             <div className="patient-stats">
 
                 <div className="patient-stat-card">
@@ -93,7 +173,7 @@ function Patients() {
 
                     <div>
                         <span>Total Patients</span>
-                        <h2>248</h2>
+                        <h2>{totalPatients}</h2>
                     </div>
                 </div>
 
@@ -104,7 +184,7 @@ function Patients() {
 
                     <div>
                         <span>Active Patients</span>
-                        <h2>214</h2>
+                        <h2>{activePatients}</h2>
                     </div>
                 </div>
 
@@ -118,9 +198,12 @@ function Patients() {
                         <h2>18</h2>
                     </div>
                 </div>
+
             </div>
 
-            {/* Patient List */}
+            {/* =========================
+                PATIENT LIST
+            ========================= */}
             <div className="patients-card">
 
                 <div className="patients-card-header">
@@ -129,9 +212,10 @@ function Patients() {
                         <p>View and manage registered patients.</p>
                     </div>
 
-                    {/* Search */}
+                    {/* SEARCH */}
                     <div className="patient-search">
                         <Search size={18} />
+
                         <input
                             type="text"
                             placeholder="Search patient..."
@@ -141,9 +225,13 @@ function Patients() {
                     </div>
                 </div>
 
-                {/* Table */}
+                {/* =========================
+                    TABLE
+                ========================= */}
                 <div className="patients-table-wrapper">
+
                     <table className="patients-table">
+
                         <thead>
                             <tr>
                                 <th>Patient ID</th>
@@ -158,6 +246,7 @@ function Patients() {
                         </thead>
 
                         <tbody>
+
                             {filteredPatients.length > 0 ? (
                                 filteredPatients.map((patient) => (
                                     <tr key={patient.id}>
@@ -170,6 +259,7 @@ function Patients() {
 
                                         <td>
                                             <div className="patient-name">
+
                                                 <div className="patient-avatar">
                                                     {patient.name
                                                         .split(" ")
@@ -179,9 +269,15 @@ function Patients() {
                                                 </div>
 
                                                 <div>
-                                                    <strong>{patient.name}</strong>
-                                                    <small>Registered Patient</small>
+                                                    <strong>
+                                                        {patient.name}
+                                                    </strong>
+
+                                                    <small>
+                                                        Registered Patient
+                                                    </small>
                                                 </div>
+
                                             </div>
                                         </td>
 
@@ -195,9 +291,7 @@ function Patients() {
 
                                         <td>
                                             <span
-                                                className={`patient-status ${
-                                                    patient.status.toLowerCase()
-                                                }`}
+                                                className={`patient-status ${patient.status.toLowerCase()}`}
                                             >
                                                 {patient.status}
                                             </span>
@@ -205,9 +299,15 @@ function Patients() {
 
                                         <td>
                                             <div className="patient-actions">
+
                                                 <button
                                                     className="action-btn view"
                                                     title="View Patient"
+                                                    onClick={() =>
+                                                        alert(
+                                                            `Patient ID: ${patient.id}\nName: ${patient.name}\nAge: ${patient.age}\nGender: ${patient.gender}\nContact: ${patient.contact}\nStatus: ${patient.status}`
+                                                        )
+                                                    }
                                                 >
                                                     <Eye size={17} />
                                                 </button>
@@ -215,28 +315,44 @@ function Patients() {
                                                 <button
                                                     className="action-btn edit"
                                                     title="Edit Patient"
+                                                    onClick={() =>
+                                                        alert(
+                                                            `Edit Patient: ${patient.name}`
+                                                        )
+                                                    }
                                                 >
                                                     <Pencil size={17} />
                                                 </button>
+
                                             </div>
                                         </td>
+
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="8" className="no-patients">
+                                    <td
+                                        colSpan="8"
+                                        className="no-patients"
+                                    >
                                         No patients found.
                                     </td>
                                 </tr>
                             )}
+
                         </tbody>
+
                     </table>
                 </div>
 
-                {/* Footer */}
+                {/* =========================
+                    FOOTER
+                ========================= */}
                 <div className="patients-footer">
+
                     <span>
-                        Showing {filteredPatients.length} of {patients.length} patients
+                        Showing {filteredPatients.length} of{" "}
+                        {patients.length} patients
                     </span>
 
                     <div className="pagination">
@@ -246,11 +362,169 @@ function Patients() {
                         <button>3</button>
                         <button>Next</button>
                     </div>
+
                 </div>
+
             </div>
+
+            {/* ==================================================
+                ADD PATIENT MODAL
+            ================================================== */}
+            {showAddModal && (
+                <div
+                    className="patient-modal-overlay"
+                    onClick={() => setShowAddModal(false)}
+                >
+
+                    <div
+                        className="patient-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+
+                        {/* MODAL HEADER */}
+                        <div className="patient-modal-header">
+
+                            <div>
+                                <h2>Add New Patient</h2>
+                                <p>
+                                    Enter the patient's information.
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="modal-close-btn"
+                                onClick={() => setShowAddModal(false)}
+                            >
+                                <X size={20} />
+                            </button>
+
+                        </div>
+
+                        {/* FORM */}
+                        <form onSubmit={handleAddPatient}>
+
+                            <div className="form-grid">
+
+                                {/* FULL NAME */}
+                                <div className="form-group full">
+                                    <label>Full Name</label>
+
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        placeholder="Enter full name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                {/* AGE */}
+                                <div className="form-group">
+                                    <label>Age</label>
+
+                                    <input
+                                        type="number"
+                                        name="age"
+                                        placeholder="Enter age"
+                                        min="1"
+                                        max="120"
+                                        value={formData.age}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                {/* GENDER */}
+                                <div className="form-group">
+                                    <label>Gender</label>
+
+                                    <select
+                                        name="gender"
+                                        value={formData.gender}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="">
+                                            Select Gender
+                                        </option>
+
+                                        <option value="Male">
+                                            Male
+                                        </option>
+
+                                        <option value="Female">
+                                            Female
+                                        </option>
+                                    </select>
+                                </div>
+
+                                {/* CONTACT */}
+                                <div className="form-group">
+                                    <label>Contact Number</label>
+
+                                    <input
+                                        type="text"
+                                        name="contact"
+                                        placeholder="09XX-XXX-XXXX"
+                                        value={formData.contact}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                {/* STATUS */}
+                                <div className="form-group">
+                                    <label>Status</label>
+
+                                    <select
+                                        name="status"
+                                        value={formData.status}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="Active">
+                                            Active
+                                        </option>
+
+                                        <option value="Inactive">
+                                            Inactive
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            {/* BUTTONS */}
+                            <div className="patient-modal-actions">
+
+                                <button
+                                    type="button"
+                                    className="cancel-btn"
+                                    onClick={() => setShowAddModal(false)}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="save-patient-btn"
+                                >
+                                    <UserPlus size={18} />
+                                    Add Patient
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+            )}
+
         </div>
     );
 }
 
 export default Patients;
-
