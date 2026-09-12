@@ -42,8 +42,10 @@ import Notifications from "../pages/Clinicstaff/Notifications";
 // ==============================
 import StudentLayout from "../layouts/StudentLayout";
 import StudentDashboard from "../pages/Student/StudentDashboard";
-import MedicalRecord from "../pages/Student/MedicalRecord";
-
+import MyConsultation from "../pages/Student/MyConsultation";
+import BookConsultation from "../pages/Student/BookConsultation";
+import StudentMedicalRecords from "../pages/Student/StudentMedicalRecords";
+import MyMedicine from "../pages/Student/MyMedicine";
 
 function AppRoutes() {
     return (
@@ -73,7 +75,6 @@ function AppRoutes() {
                         path="manage-users"
                         element={<ManageUser />}
                     />
-
                     <Route
                         path="patients-management"
                         element={<PatientsManagement />}
@@ -193,7 +194,11 @@ function AppRoutes() {
                     }
                 >   
                 <Route index element={<StudentDashboard />} />
-                <Route index element={<MedicalRecord />} />
+                <Route path="my-consultation" element={<MyConsultation />} />
+                <Route path="book-consultation" element={<BookConsultation />} />
+                <Route path="student-medical-records" element={<StudentMedicalRecords />} />
+                <Route path="my-medicine" element={<MyMedicine />} />
+                
 
                 </Route>
 

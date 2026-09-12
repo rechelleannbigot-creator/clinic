@@ -106,24 +106,72 @@ function StudentLayout() {
             </NavLink>
           </div>
 
-          {/* Quick Actions */}
+          {/* Health Services */}
           <div className="sidebar-section">
             <div className="sidebar-section-title">QUICK ACTIONS</div>
 
             <NavLink
-              to="medical-record"
+              to="book-consultation"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              title="Medical Record"
+              title="Book Consultation"
             >
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Medical Record</span>
+              <span className="nav-text">Book Consultation</span>
             </NavLink>
+
+            <NavLink
+              to="my-consultation"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="My Consultation"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">My Consultation</span>
+            </NavLink>
+
+            <NavLink
+              to="student-medical-records"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Student Medical Records"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Student Medical Records</span>
+            </NavLink>
+
+            <NavLink
+              to="my-medicine"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="My Medicine"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">My Medicine</span>
+            </NavLink>
+            
+            
+
 
 
             </div>
