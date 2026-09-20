@@ -169,6 +169,21 @@ function StudentLayout() {
               </span>
               <span className="nav-text">My Medicine</span>
             </NavLink>
+
+            <NavLink
+              to="medical-profile"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Medical Profile"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Medical Profile</span>
+            </NavLink>
             
             
 

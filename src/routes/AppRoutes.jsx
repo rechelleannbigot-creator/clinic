@@ -27,15 +27,15 @@ import Logout from "../pages/Admin/Logout";
 // ==============================
 import StaffLayout from "../layouts/StaffLayout";
 import StaffDashboard from "../pages/Clinicstaff/StaffDashboard";
-import ScanQRCode from "../pages/Clinicstaff/ScanQRcode";
 import NewConsultation from "../pages/Clinicstaff/NewConsultation";
-import Patients from "../pages/Clinicstaff/Patients";
 import MedicalRecords from "../pages/Clinicstaff/MedicalRecords";
 import Consultation from "../pages/Clinicstaff/Consultation";
 import Inventory from "../pages/Clinicstaff/Inventory";
 import Issuance from "../pages/Clinicstaff/Issuance";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
+import StudentMedicalProfile from "../pages/Clinicstaff/StudentMedicalProfile";
+import AddPatient from "../pages/Clinicstaff/AddPatient";
 
 // ==============================
 // Student
@@ -46,6 +46,7 @@ import MyConsultation from "../pages/Student/MyConsultation";
 import BookConsultation from "../pages/Student/BookConsultation";
 import StudentMedicalRecords from "../pages/Student/StudentMedicalRecords";
 import MyMedicine from "../pages/Student/MyMedicine";
+import MedicalProfile from "../pages/Student/MedicalProfile";
 
 function AppRoutes() {
     return (
@@ -136,18 +137,13 @@ function AppRoutes() {
                     <Route index element={<StaffDashboard />} />
 
                     <Route
-                        path="scan-qr-code"
-                        element={<ScanQRCode />}
-                    />
-
-                    <Route
                         path="new-consultation"
                         element={<NewConsultation />}
                     />
 
                     <Route
-                        path="patients"
-                        element={<Patients />}
+                        path="add-patient"
+                        element={<AddPatient />}
                     />
 
                     <Route
@@ -179,7 +175,15 @@ function AppRoutes() {
                         path="notifications"
                         element={<Notifications />}
                     />
+
+                    <Route
+                        path="student-medical-profile"
+                        element={<StudentMedicalProfile />}
+                    />
+                
                 </Route>
+
+
 
 
                 {/* =================================
@@ -198,7 +202,7 @@ function AppRoutes() {
                 <Route path="book-consultation" element={<BookConsultation />} />
                 <Route path="student-medical-records" element={<StudentMedicalRecords />} />
                 <Route path="my-medicine" element={<MyMedicine />} />
-                
+                <Route path="medical-profile" element={<MedicalProfile />} />
 
                 </Route>
 

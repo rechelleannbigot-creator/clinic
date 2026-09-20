@@ -105,22 +105,7 @@ function StaffLayout() {
           <div className="sidebar-section">
             <div className="sidebar-section-title">QUICK ACTIONS</div>
 
-            <NavLink
-              to="scan-qr-code"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Scan QR Code"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Scan QR Code</span>
-            </NavLink>
-
-
+            
             <NavLink
               to="new-consultation"
               end
@@ -141,20 +126,22 @@ function StaffLayout() {
           <div className="sidebar-section">
             <div className="sidebar-section-title">QUICK ACTIONS</div>
 
-           <NavLink
-              to="Patients"
+
+            <NavLink
+              to="add-patient"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              title="Patients"
+              title="Add Patient"
             >
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Patients</span>
+              <span className="nav-text">Add Patient</span>
             </NavLink>
+            
 
             <NavLink
               to="medical-records"
@@ -170,6 +157,22 @@ function StaffLayout() {
               </span>
               <span className="nav-text">Medical Records</span>
             </NavLink>
+
+            <NavLink
+              to="student-medical-profile"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Student Medical Profile"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Student Medical Profile</span>
+            </NavLink>
+
 
             <NavLink
               to="consultation"
