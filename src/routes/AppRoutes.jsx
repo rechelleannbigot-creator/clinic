@@ -27,15 +27,15 @@ import Logout from "../pages/Admin/Logout";
 // ==============================
 import StaffLayout from "../layouts/StaffLayout";
 import StaffDashboard from "../pages/Clinicstaff/StaffDashboard";
-import NewConsultation from "../pages/Clinicstaff/NewConsultation";
 import MedicalRecords from "../pages/Clinicstaff/MedicalRecords";
-import Consultation from "../pages/Clinicstaff/Consultation";
 import Inventory from "../pages/Clinicstaff/Inventory";
 import Issuance from "../pages/Clinicstaff/Issuance";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
 import StudentMedicalProfile from "../pages/Clinicstaff/StudentMedicalProfile";
 import AddPatient from "../pages/Clinicstaff/AddPatient";
+import EmployeeProfiles from "../pages/Clinicstaff/EmployeeProfiles";
+import NewConsultation from "../pages/Clinicstaff/NewConsultation";
 
 // ==============================
 // Student
@@ -136,10 +136,6 @@ function AppRoutes() {
                 >
                     <Route index element={<StaffDashboard />} />
 
-                    <Route
-                        path="new-consultation"
-                        element={<NewConsultation />}
-                    />
 
                     <Route
                         path="add-patient"
@@ -151,10 +147,6 @@ function AppRoutes() {
                         element={<MedicalRecords />}
                     />
 
-                    <Route
-                        path="consultation"
-                        element={<Consultation />}
-                    />
 
                     <Route
                         path="inventory"
@@ -180,7 +172,17 @@ function AppRoutes() {
                         path="student-medical-profile"
                         element={<StudentMedicalProfile />}
                     />
-                
+
+                     <Route
+                        path="employee-profiles"
+                        element={<EmployeeProfiles />}
+                    />
+
+                    <Route
+                        path="New-Consultation"
+                        element={<NewConsultation />}
+                    />
+
                 </Route>
 
 

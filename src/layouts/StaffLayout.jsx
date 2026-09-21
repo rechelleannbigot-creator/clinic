@@ -101,30 +101,9 @@ function StaffLayout() {
             </NavLink>
           </div>
 
-          {/* Quick Actions */}
+          {/* Patient Records */}
           <div className="sidebar-section">
-            <div className="sidebar-section-title">QUICK ACTIONS</div>
-
-            
-            <NavLink
-              to="new-consultation"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="New Consultation"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">New Consultation</span>
-            </NavLink>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">QUICK ACTIONS</div>
+            <div className="sidebar-section-title">PATIENT RECORDS</div>
 
 
             <NavLink
@@ -173,22 +152,43 @@ function StaffLayout() {
               <span className="nav-text">Student Medical Profile</span>
             </NavLink>
 
-
             <NavLink
-              to="consultation"
+              to="employee-profiles"
               end
               onClick={closeSidebarOnMobile}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
-              title="Consultation"
+              title="Employee Profiles"
             >
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Consultation</span>
+              <span className="nav-text">Employee Profiles</span>
+            </NavLink>
+
+            </div>
+
+            {/* Consultation & Visits */}
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">CONULTATIONS & VISITS</div>
+
+           <NavLink
+              to="new-consultation"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="New Consultation"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">New Consultation</span>
             </NavLink>
             </div>
+
 
             {/* Medicine */}
           <div className="sidebar-section">

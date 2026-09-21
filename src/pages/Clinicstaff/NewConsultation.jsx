@@ -1,280 +1,680 @@
 import { useState } from "react";
 import {
-    User,
-    Calendar,
     Activity,
+    UserRound,
+    Search,
+    CalendarDays,
+    ClipboardList,
     Stethoscope,
-    FileText,
+    Pill,
     Save,
-    X
+    RotateCcw,
+    CheckCircle,
+    AlertCircle,
+    FileText,
 } from "lucide-react";
+
 import "../../styles/NewConsultation.css";
 
 function NewConsultation() {
-    const [formData, setFormData] = useState({
-        patient: "",
-        date: new Date().toISOString().split("T")[0],
-        chiefComplaint: "",
-        bloodPressure: "",
-        temperature: "",
-        heartRate: "",
-        weight: "",
+    // Sample patient data
+    // Replace this with data from your database/API when available.
+    const patients = [
+        {
+            id: "P-001",
+            firstName: "Juan",
+            middleName: "Santos",
+            lastName: "Dela Cruz",
+            age: 25,
+            gender: "Male",
+            contact: "09123456789",
+        },
+        {
+            id: "P-002",
+            firstName: "Maria",
+            middleName: "Reyes",
+            lastName: "Santos",
+            age: 31,
+            gender: "Female",
+            contact: "09987654321",
+        },
+        {
+            id: "P-003",
+            firstName: "Robert",
+            middleName: "",
+            lastName: "Lee",
+            age: 22,
+            gender: "Male",
+            contact: "09112223334",
+        },
+        {
+            id: "P-004",
+            firstName: "Ana",
+            middleName: "Garcia",
+            lastName: "Garcia",
+            age: 28,
+            gender: "Female",
+            contact: "09223334455",
+        },
+    ];
+
+    const initialFormData = {
+        patientId: "",
+        consultationDate: new Date().toISOString().split("T")[0],
+        consultationType: "",
+        clinicStaff: "",
+        symptoms: "",
         diagnosis: "",
         treatment: "",
-        notes: ""
+        medicine: "",
+        dosage: "",
+        quantity: "",
+        instructions: "",
+        notes: "",
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [showPatientList, setShowPatientList] = useState(false);
+    const [consultations, setConsultations] = useState([]);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
+
+    const filteredPatients = patients.filter((patient) => {
+        const fullName = [
+            patient.firstName,
+            patient.middleName,
+            patient.lastName,
+        ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+        return (
+            fullName.includes(searchTerm.toLowerCase()) ||
+            patient.id.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = (event) => {
+        const { name, value } = event.target;
 
-        setFormData({
+        setFormData((previous) => ({
+            ...previous,
+            [name]: value,
+        }));
+    };
+
+    const handlePatientSelect = (patient) => {
+        setSelectedPatient(patient);
+        setFormData((previous) => ({
+            ...previous,
+            patientId: patient.id,
+        }));
+
+        setSearchTerm(
+            `${patient.firstName} ${
+                patient.middleName ? patient.middleName + " " : ""
+            }${patient.lastName}`
+        );
+
+        setShowPatientList(false);
+        setMessage("");
+    };
+
+    const handleReset = () => {
+        setFormData(initialFormData);
+        setSelectedPatient(null);
+        setSearchTerm("");
+        setShowPatientList(false);
+        setMessage("");
+        setMessageType("");
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        if (!selectedPatient) {
+            setMessage("Please select a patient before saving.");
+            setMessageType("error");
+            return;
+        }
+
+        if (
+            !formData.consultationType ||
+            !formData.clinicStaff.trim() ||
+            !formData.symptoms.trim() ||
+            !formData.diagnosis.trim()
+        ) {
+            setMessage("Please complete all required fields.");
+            setMessageType("error");
+            return;
+        }
+
+        const newConsultation = {
             ...formData,
-            [name]: value
-        });
-    };
+            consultationId: `CON-${String(
+                consultations.length + 1
+            ).padStart(3, "0")}`,
+            patientName: [
+                selectedPatient.firstName,
+                selectedPatient.middleName,
+                selectedPatient.lastName,
+            ]
+                .filter(Boolean)
+                .join(" "),
+            createdAt: new Date().toISOString(),
+        };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+        setConsultations((previous) => [
+            newConsultation,
+            ...previous,
+        ]);
 
-        console.log("Consultation Data:", formData);
+        setMessage(
+            `Consultation ${newConsultation.consultationId} saved successfully!`
+        );
+        setMessageType("success");
 
-        alert("Consultation saved successfully!");
-
-        setFormData({
-            patient: "",
-            date: new Date().toISOString().split("T")[0],
-            chiefComplaint: "",
-            bloodPressure: "",
-            temperature: "",
-            heartRate: "",
-            weight: "",
-            diagnosis: "",
-            treatment: "",
-            notes: ""
-        });
-    };
-
-    const handleCancel = () => {
-        window.history.back();
+        setFormData(initialFormData);
+        setSelectedPatient(null);
+        setSearchTerm("");
+        setShowPatientList(false);
     };
 
     return (
-        <div className="consultation-page">
+        <div className="new-consultation-page">
+            {/* Page Header */}
+            <div className="consultation-page-header">
+                <div className="consultation-header-icon">
+                    <Stethoscope size={28} />
+                </div>
 
-            {/* Header */}
-            <div className="consultation-header">
                 <div>
                     <h1>New Consultation</h1>
-                    <p>Create a new patient consultation record</p>
+                    <p>
+                        Record patient visits, symptoms, diagnosis, and
+                        treatment details.
+                    </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit}>
+            {/* Notification */}
+            {message && (
+                <div
+                    className={`consultation-alert ${
+                        messageType === "success"
+                            ? "alert-success"
+                            : "alert-error"
+                    }`}
+                >
+                    {messageType === "success" ? (
+                        <CheckCircle size={20} />
+                    ) : (
+                        <AlertCircle size={20} />
+                    )}
 
+                    <span>{message}</span>
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
                 {/* Patient Information */}
-                <div className="consultation-card">
-                    <div className="card-title">
-                        <User size={20} />
-                        <h2>Patient Information</h2>
+                <section className="consultation-card">
+                    <div className="consultation-card-header">
+                        <div className="section-icon">
+                            <UserRound size={21} />
+                        </div>
+
+                        <div>
+                            <h2>Patient Information</h2>
+                            <p>Select the patient for this consultation.</p>
+                        </div>
                     </div>
 
-                    <div className="form-grid">
+                    <div className="consultation-form-grid">
+                        <div className="consultation-field patient-search-field">
+                            <label htmlFor="patientSearch">
+                                Search Patient <span>*</span>
+                            </label>
 
-                        <div className="form-group">
-                            <label>
-                                Patient <span>*</span>
+                            <div className="consultation-search-wrapper">
+                                <Search size={19} />
+
+                                <input
+                                    id="patientSearch"
+                                    type="text"
+                                    placeholder="Search by patient name or ID"
+                                    value={searchTerm}
+                                    onChange={(event) => {
+                                        setSearchTerm(event.target.value);
+                                        setSelectedPatient(null);
+                                        setFormData((previous) => ({
+                                            ...previous,
+                                            patientId: "",
+                                        }));
+                                        setShowPatientList(true);
+                                    }}
+                                    onFocus={() => setShowPatientList(true)}
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            {showPatientList && searchTerm.trim() && (
+                                <div className="patient-search-results">
+                                    {filteredPatients.length > 0 ? (
+                                        filteredPatients.map((patient) => (
+                                            <button
+                                                type="button"
+                                                className="patient-result-item"
+                                                key={patient.id}
+                                                onClick={() =>
+                                                    handlePatientSelect(patient)
+                                                }
+                                            >
+                                                <div className="patient-result-avatar">
+                                                    <UserRound size={20} />
+                                                </div>
+
+                                                <div>
+                                                    <strong>
+                                                        {patient.firstName}{" "}
+                                                        {patient.middleName
+                                                            ? patient.middleName +
+                                                              " "
+                                                            : ""}
+                                                        {patient.lastName}
+                                                    </strong>
+                                                    <span>{patient.id}</span>
+                                                </div>
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div className="no-patient-results">
+                                            No matching patient found.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="consultation-field">
+                            <label>Patient ID</label>
+                            <input
+                                type="text"
+                                value={selectedPatient?.id || ""}
+                                placeholder="Patient ID"
+                                readOnly
+                            />
+                        </div>
+                    </div>
+
+                    {selectedPatient && (
+                        <div className="selected-patient-details">
+                            <div className="selected-patient-heading">
+                                <CheckCircle size={19} />
+                                <strong>Selected Patient</strong>
+                            </div>
+
+                            <div className="consultation-form-grid">
+                                <div className="consultation-field">
+                                    <label>Full Name</label>
+                                    <input
+                                        value={[
+                                            selectedPatient.firstName,
+                                            selectedPatient.middleName,
+                                            selectedPatient.lastName,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(" ")}
+                                        readOnly
+                                    />
+                                </div>
+
+                                <div className="consultation-field">
+                                    <label>Age</label>
+                                    <input
+                                        value={selectedPatient.age}
+                                        readOnly
+                                    />
+                                </div>
+
+                                <div className="consultation-field">
+                                    <label>Gender</label>
+                                    <input
+                                        value={selectedPatient.gender}
+                                        readOnly
+                                    />
+                                </div>
+
+                                <div className="consultation-field">
+                                    <label>Contact Number</label>
+                                    <input
+                                        value={selectedPatient.contact}
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </section>
+
+                {/* Consultation Details */}
+                <section className="consultation-card">
+                    <div className="consultation-card-header">
+                        <div className="section-icon">
+                            <CalendarDays size={21} />
+                        </div>
+
+                        <div>
+                            <h2>Consultation Details</h2>
+                            <p>Enter the consultation schedule and staff.</p>
+                        </div>
+                    </div>
+
+                    <div className="consultation-form-grid">
+                        <div className="consultation-field">
+                            <label htmlFor="consultationDate">
+                                Consultation Date <span>*</span>
+                            </label>
+
+                            <input
+                                id="consultationDate"
+                                type="date"
+                                name="consultationDate"
+                                value={formData.consultationDate}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="consultation-field">
+                            <label htmlFor="consultationType">
+                                Consultation Type <span>*</span>
                             </label>
 
                             <select
-                                name="patient"
-                                value={formData.patient}
+                                id="consultationType"
+                                name="consultationType"
+                                value={formData.consultationType}
                                 onChange={handleChange}
                                 required
                             >
-                                <option value="">Select Patient</option>
-                                <option value="P-001">
-                                    P-001 - Juan Dela Cruz
+                                <option value="">
+                                    Select consultation type
                                 </option>
-                                <option value="P-002">
-                                    P-002 - Maria Santos
+                                <option value="General Checkup">
+                                    General Checkup
                                 </option>
-                                <option value="P-003">
-                                    P-003 - Pedro Garcia
+                                <option value="Medical Consultation">
+                                    Medical Consultation
+                                </option>
+                                <option value="Follow-up">Follow-up</option>
+                                <option value="Emergency Consultation">
+                                    Emergency Consultation
                                 </option>
                             </select>
                         </div>
 
-                        <div className="form-group">
-                            <label>
-                                <Calendar size={16} />
-                                Consultation Date
+                        <div className="consultation-field full-width">
+                            <label htmlFor="clinicStaff">
+                                Clinic Staff <span>*</span>
                             </label>
 
                             <input
-                                type="date"
-                                name="date"
-                                value={formData.date}
+                                id="clinicStaff"
+                                type="text"
+                                name="clinicStaff"
+                                placeholder="Enter clinic staff name"
+                                value={formData.clinicStaff}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                {/* Medical Assessment */}
+                <section className="consultation-card">
+                    <div className="consultation-card-header">
+                        <div className="section-icon">
+                            <Activity size={21} />
+                        </div>
+
+                        <div>
+                            <h2>Medical Assessment</h2>
+                            <p>Document the patient's condition and findings.</p>
+                        </div>
+                    </div>
+
+                    <div className="consultation-form-grid">
+                        <div className="consultation-field full-width">
+                            <label htmlFor="symptoms">
+                                Symptoms / Chief Complaint <span>*</span>
+                            </label>
+
+                            <textarea
+                                id="symptoms"
+                                name="symptoms"
+                                rows="4"
+                                placeholder="Describe the patient's symptoms or chief complaint..."
+                                value={formData.symptoms}
                                 onChange={handleChange}
                                 required
                             />
                         </div>
 
-                    </div>
-                </div>
-
-                {/* Chief Complaint */}
-                <div className="consultation-card">
-                    <div className="card-title">
-                        <Stethoscope size={20} />
-                        <h2>Consultation Details</h2>
-                    </div>
-
-                    <div className="form-group">
-                        <label>
-                            Chief Complaint <span>*</span>
-                        </label>
-
-                        <textarea
-                            name="chiefComplaint"
-                            value={formData.chiefComplaint}
-                            onChange={handleChange}
-                            placeholder="Enter patient's chief complaint..."
-                            rows="4"
-                            required
-                        />
-                    </div>
-                </div>
-
-                {/* Vital Signs */}
-                <div className="consultation-card">
-                    <div className="card-title">
-                        <Activity size={20} />
-                        <h2>Vital Signs</h2>
-                    </div>
-
-                    <div className="vitals-grid">
-
-                        <div className="form-group">
-                            <label>Blood Pressure</label>
-                            <input
-                                type="text"
-                                name="bloodPressure"
-                                value={formData.bloodPressure}
-                                onChange={handleChange}
-                                placeholder="120/80 mmHg"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Temperature</label>
-                            <input
-                                type="text"
-                                name="temperature"
-                                value={formData.temperature}
-                                onChange={handleChange}
-                                placeholder="36.5 °C"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Heart Rate</label>
-                            <input
-                                type="text"
-                                name="heartRate"
-                                value={formData.heartRate}
-                                onChange={handleChange}
-                                placeholder="72 bpm"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Weight</label>
-                            <input
-                                type="text"
-                                name="weight"
-                                value={formData.weight}
-                                onChange={handleChange}
-                                placeholder="60 kg"
-                            />
-                        </div>
-
-                    </div>
-                </div>
-
-                {/* Diagnosis and Treatment */}
-                <div className="consultation-card">
-                    <div className="card-title">
-                        <FileText size={20} />
-                        <h2>Diagnosis & Treatment</h2>
-                    </div>
-
-                    <div className="form-grid">
-
-                        <div className="form-group">
-                            <label>Diagnosis</label>
+                        <div className="consultation-field full-width">
+                            <label htmlFor="diagnosis">
+                                Diagnosis <span>*</span>
+                            </label>
 
                             <textarea
+                                id="diagnosis"
                                 name="diagnosis"
+                                rows="3"
+                                placeholder="Enter the diagnosis..."
                                 value={formData.diagnosis}
                                 onChange={handleChange}
-                                placeholder="Enter diagnosis..."
-                                rows="4"
+                                required
                             />
                         </div>
 
-                        <div className="form-group">
-                            <label>Treatment / Prescription</label>
+                        <div className="consultation-field full-width">
+                            <label htmlFor="treatment">
+                                Treatment / Management
+                            </label>
 
                             <textarea
+                                id="treatment"
                                 name="treatment"
+                                rows="3"
+                                placeholder="Enter treatment or management plan..."
                                 value={formData.treatment}
                                 onChange={handleChange}
-                                placeholder="Enter treatment or prescription..."
-                                rows="4"
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                {/* Medicine Information */}
+                <section className="consultation-card">
+                    <div className="consultation-card-header">
+                        <div className="section-icon">
+                            <Pill size={21} />
+                        </div>
+
+                        <div>
+                            <h2>Medicine Information</h2>
+                            <p>
+                                Record any medicine associated with this
+                                consultation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="consultation-form-grid">
+                        <div className="consultation-field">
+                            <label htmlFor="medicine">Medicine Name</label>
+
+                            <input
+                                id="medicine"
+                                type="text"
+                                name="medicine"
+                                placeholder="Enter medicine name"
+                                value={formData.medicine}
+                                onChange={handleChange}
                             />
                         </div>
 
+                        <div className="consultation-field">
+                            <label htmlFor="dosage">Dosage</label>
+
+                            <input
+                                id="dosage"
+                                type="text"
+                                name="dosage"
+                                placeholder="e.g. 500 mg"
+                                value={formData.dosage}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="consultation-field">
+                            <label htmlFor="quantity">Quantity</label>
+
+                            <input
+                                id="quantity"
+                                type="number"
+                                name="quantity"
+                                min="1"
+                                placeholder="Enter quantity"
+                                value={formData.quantity}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="consultation-field">
+                            <label htmlFor="instructions">
+                                Instructions
+                            </label>
+
+                            <input
+                                id="instructions"
+                                type="text"
+                                name="instructions"
+                                placeholder="e.g. Take after meals"
+                                value={formData.instructions}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                {/* Additional Notes */}
+                <section className="consultation-card">
+                    <div className="consultation-card-header">
+                        <div className="section-icon">
+                            <FileText size={21} />
+                        </div>
+
+                        <div>
+                            <h2>Additional Notes</h2>
+                            <p>Include any other relevant information.</p>
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label>Additional Notes</label>
+                    <div className="consultation-field">
+                        <label htmlFor="notes">Notes</label>
 
                         <textarea
+                            id="notes"
                             name="notes"
+                            rows="4"
+                            placeholder="Enter additional notes..."
                             value={formData.notes}
                             onChange={handleChange}
-                            placeholder="Enter additional consultation notes..."
-                            rows="4"
                         />
                     </div>
-                </div>
+                </section>
 
-                {/* Buttons */}
-                <div className="form-actions">
-
+                {/* Form Actions */}
+                <div className="consultation-form-actions">
                     <button
                         type="button"
-                        className="cancel-btn"
-                        onClick={handleCancel}
+                        className="consultation-reset-btn"
+                        onClick={handleReset}
                     >
-                        <X size={18} />
-                        Cancel
+                        <RotateCcw size={18} />
+                        Clear Form
                     </button>
 
                     <button
                         type="submit"
-                        className="save-btn"
+                        className="consultation-save-btn"
                     >
                         <Save size={18} />
                         Save Consultation
                     </button>
-
                 </div>
-
             </form>
+
+            {/* Recently Saved Consultations */}
+            {consultations.length > 0 && (
+                <section className="consultation-card saved-consultations">
+                    <div className="consultation-card-header">
+                        <div className="section-icon">
+                            <ClipboardList size={21} />
+                        </div>
+
+                        <div>
+                            <h2>Recently Saved Consultations</h2>
+                            <p>
+                                Consultations saved during this page session.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="consultation-table-wrapper">
+                        <table className="consultation-table">
+                            <thead>
+                                <tr>
+                                    <th>Consultation ID</th>
+                                    <th>Patient</th>
+                                    <th>Patient ID</th>
+                                    <th>Date</th>
+                                    <th>Consultation Type</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {consultations.map((consultation) => (
+                                    <tr key={consultation.consultationId}>
+                                        <td>
+                                            <strong>
+                                                {consultation.consultationId}
+                                            </strong>
+                                        </td>
+                                        <td>{consultation.patientName}</td>
+                                        <td>{consultation.patientId}</td>
+                                        <td>
+                                            {consultation.consultationDate}
+                                        </td>
+                                        <td>
+                                            <span className="consultation-type-badge">
+                                                {consultation.consultationType}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            )}
         </div>
     );
 }
 
 export default NewConsultation;
-
