@@ -78,7 +78,7 @@ function StaffReports() {
             {/* Header */}
             <div className="reports-header">
                 <div>
-                    <h1>Staff Reports</h1>
+                    <h1>Reports</h1>
                     <p>
                         View and monitor clinic activities and reports
                     </p>

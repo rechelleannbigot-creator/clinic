@@ -36,6 +36,7 @@ import StudentMedicalProfile from "../pages/Clinicstaff/StudentMedicalProfile";
 import AddPatient from "../pages/Clinicstaff/AddPatient";
 import EmployeeProfiles from "../pages/Clinicstaff/EmployeeProfiles";
 import NewConsultation from "../pages/Clinicstaff/NewConsultation";
+import VisitHistory from "../pages/Clinicstaff/VisitHestory";
 
 // ==============================
 // Student
@@ -181,6 +182,12 @@ function AppRoutes() {
                     <Route
                         path="New-Consultation"
                         element={<NewConsultation />}
+                    />
+
+
+                    <Route
+                        path="Visit-History"
+                        element={<VisitHistory />}
                     />
 
                 </Route>
