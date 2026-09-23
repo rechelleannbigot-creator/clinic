@@ -203,6 +203,21 @@ function StaffLayout() {
               <span className="nav-text">Visit History</span>
             </NavLink>
 
+            <NavLink
+              to="issuance"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Issuance"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">Issuance</span>
+            </NavLink>
+
             </div>
 
 
@@ -225,20 +240,6 @@ function StaffLayout() {
               <span className="nav-text">Inventory</span>
             </NavLink>
 
-            <NavLink
-              to="issuance"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Issuance"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Issuance</span>
-            </NavLink>
             </div>
 
             {/* Reports */}
