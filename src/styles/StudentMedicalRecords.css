@@ -2,371 +2,688 @@
     box-sizing: border-box;
 }
 
-.student-medical-page {
+.student-medical-profile-page {
     min-height: 100vh;
     padding: 30px;
-    background: #f5f8fc;
+    background: #f4f7fb;
     color: #1e293b;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* =========================================
+   STUDENT LIST HEADER
+========================================= */
 
-.medical-header {
+.student-list-header {
+    max-width: 1200px;
+    margin: 0 auto 25px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    justify-content: space-between;
 }
 
-.medical-header h1 {
+.student-list-header h1 {
     margin: 0;
+    color: #0f172a;
     font-size: 28px;
     font-weight: 700;
-    color: #0f172a;
 }
 
-.medical-header p {
-    margin-top: 7px;
+.student-list-header p {
+    margin: 7px 0 0;
     color: #64748b;
     font-size: 14px;
 }
 
-.student-health-badge {
+.student-list-icon {
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 11px 16px;
-    border-radius: 10px;
-    background: #e8f3ff;
+    justify-content: center;
+    border-radius: 12px;
+    background: #e6f2ff;
     color: #1976d2;
-    font-size: 14px;
-    font-weight: 600;
 }
 
-/* =========================
-   SUMMARY
-========================= */
+/* =========================================
+   SEARCH
+========================================= */
 
-.medical-summary {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-bottom: 24px;
-}
-
-.summary-card {
+.student-search-card {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    padding: 18px;
     display: flex;
     align-items: center;
     gap: 15px;
     background: #ffffff;
-    border: 1px solid #e6edf5;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    border: 1px solid #e2e8f0;
+    border-radius: 13px;
 }
 
-.summary-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+.search-box {
+    flex: 1;
+    height: 44px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: #e8f3ff;
-    color: #1976d2;
-}
-
-.summary-card span {
-    display: block;
-    color: #64748b;
-    font-size: 13px;
-    margin-bottom: 5px;
-}
-
-.summary-card strong {
-    font-size: 20px;
-    color: #0f172a;
-}
-
-/* =========================
-   TOOLBAR
-========================= */
-
-.medical-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 18px;
-}
-
-.medical-search {
-    width: 330px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    background: #ffffff;
-    border: 1px solid #dce5ef;
-    border-radius: 10px;
-    padding: 0 14px;
-}
-
-.medical-search svg {
+    gap: 10px;
+    padding: 0 13px;
+    border: 1px solid #d9e2ec;
+    border-radius: 9px;
     color: #94a3b8;
 }
 
-.medical-search input {
+.search-box:focus-within {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.08);
+}
+
+.search-box input {
     width: 100%;
-    height: 43px;
     border: none;
     outline: none;
-    font-size: 14px;
+    background: transparent;
     color: #334155;
+    font-family: inherit;
+    font-size: 14px;
 }
 
-/* =========================
-   TABLE CARD
-========================= */
+.search-box input::placeholder {
+    color: #94a3b8;
+}
 
-.medical-card {
-    background: #ffffff;
-    border-radius: 15px;
-    border: 1px solid #e5ebf2;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+.student-count {
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: #eef6ff;
+    color: #1976d2;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* =========================================
+   STUDENT LIST CARD
+========================================= */
+
+.student-list-card {
+    max-width: 1200px;
+    margin: 0 auto;
     overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
-.medical-card-header {
-    padding: 22px 24px;
+.student-list-title {
+    padding: 22px 25px;
     border-bottom: 1px solid #edf1f5;
 }
 
-.medical-card-header h2 {
+.student-list-title h2 {
     margin: 0;
     font-size: 18px;
     color: #0f172a;
 }
 
-.medical-card-header p {
-    margin: 6px 0 0;
-    color: #64748b;
-    font-size: 13px;
-}
-
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-}
-
-.medical-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 850px;
-}
-
-.medical-table th {
-    background: #f8fafc;
-    color: #64748b;
-    text-align: left;
-    font-size: 12px;
-    text-transform: uppercase;
-    padding: 14px 18px;
-    letter-spacing: 0.4px;
-}
-
-.medical-table td {
-    padding: 16px 18px;
-    border-top: 1px solid #edf1f5;
-    font-size: 14px;
-    color: #475569;
-}
-
-.medical-table td strong {
-    color: #1e293b;
-}
-
-.medical-table tr:hover {
-    background: #f8fbff;
-}
-
-/* =========================
-   STATUS
-========================= */
-
-.status-completed {
-    display: inline-flex;
-    padding: 6px 10px;
-    border-radius: 20px;
-    background: #eaf8ef;
-    color: #16803c;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-/* =========================
-   VIEW BUTTON
-========================= */
-
-.view-record-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 12px;
-    background: #e8f3ff;
-    color: #1976d2;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.view-record-btn:hover {
-    background: #d8ebff;
-}
-
-.empty-records {
-    text-align: center;
-    padding: 45px !important;
-    color: #94a3b8 !important;
-}
-
-/* =========================
-   MODAL
-========================= */
-
-.medical-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    z-index: 1000;
-}
-
-.medical-modal {
-    width: 100%;
-    max-width: 650px;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
-    overflow: hidden;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 22px 24px;
-    border-bottom: 1px solid #edf1f5;
-}
-
-.modal-header h2 {
-    margin: 0;
-    color: #0f172a;
-}
-
-.modal-header p {
+.student-list-title p {
     margin: 5px 0 0;
     color: #64748b;
     font-size: 13px;
 }
 
-.close-modal {
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 8px;
-    background: #f1f5f9;
-    color: #64748b;
-    cursor: pointer;
+/* =========================================
+   TABLE
+========================================= */
+
+.student-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
 }
 
-.close-modal:hover {
-    background: #e2e8f0;
+.student-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
 }
 
-.record-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    padding: 24px;
-}
-
-.detail-item {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 14px;
+.student-table th {
+    padding: 14px 18px;
     background: #f8fafc;
-    border-radius: 10px;
-}
-
-.detail-item.full-width {
-    grid-column: span 2;
-}
-
-.detail-item span {
-    font-size: 12px;
+    border-bottom: 1px solid #e2e8f0;
     color: #64748b;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
-.detail-item strong {
-    font-size: 14px;
-    color: #1e293b;
+.student-table td {
+    padding: 15px 18px;
+    border-bottom: 1px solid #edf1f5;
+    color: #475569;
+    font-size: 13px;
 }
 
-.modal-done-btn {
-    width: calc(100% - 48px);
-    margin: 0 24px 24px;
-    height: 43px;
+.student-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.student-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* =========================================
+   STUDENT NAME
+========================================= */
+
+.student-name-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
     border: none;
+    background: transparent;
+    color: #1976d2;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.student-name-button:hover {
+    color: #125fa3;
+    text-decoration: underline;
+}
+
+.student-avatar {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 9px;
-    background: #1976d2;
-    color: #ffffff;
+    background: #e8f3ff;
+    color: #1976d2;
+}
+
+/* =========================================
+   STATUS
+========================================= */
+
+.status-badge {
+    display: inline-flex;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-badge.completed {
+    background: #eaf8ef;
+    color: #16803c;
+}
+
+.status-badge.pending {
+    background: #fff7df;
+    color: #a16207;
+}
+
+/* =========================================
+   VIEW BUTTON
+========================================= */
+
+.view-profile-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border: 1px solid #cfe2f5;
+    border-radius: 8px;
+    background: #f3f9ff;
+    color: #1976d2;
+    font-family: inherit;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
 }
 
-.modal-done-btn:hover {
+.view-profile-button:hover {
+    background: #e6f2ff;
+}
+
+/* =========================================
+   NO STUDENTS
+========================================= */
+
+.no-student {
+    padding: 60px 20px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.no-student h3 {
+    margin: 12px 0 5px;
+    color: #475569;
+}
+
+.no-student p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* =========================================
+   PROFILE HEADER
+========================================= */
+
+.profile-top-header {
+    max-width: 1100px;
+    margin: 0 auto 25px;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 20px;
+    padding: 9px 13px;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #64748b;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    background: #f8fafc;
+    color: #1976d2;
+}
+
+.profile-student-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.profile-avatar {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #1976d2;
+    color: #ffffff;
+}
+
+.profile-student-info h1 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 25px;
+}
+
+.profile-student-info p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* =========================================
+   SUCCESS
+========================================= */
+
+.profile-success {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    padding: 15px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #b7e4c7;
+    border-radius: 10px;
+    background: #ecfdf3;
+    color: #16803c;
+}
+
+.profile-success p {
+    margin: 3px 0 0;
+    color: #4b765a;
+    font-size: 12px;
+}
+
+/* =========================================
+   MEDICAL CARD
+========================================= */
+
+.medical-card {
+    max-width: 1100px;
+    margin: 0 auto 22px;
+    overflow: hidden;
+    border: 1px solid #e1e8f0;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.medical-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 21px 25px;
+    border-bottom: 1px solid #edf1f5;
+    background: #fbfdff;
+}
+
+.medical-card-header > svg {
+    margin-left: auto;
+    color: #1976d2;
+}
+
+.section-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #1976d2;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.medical-card-header h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+}
+
+.medical-card-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.medical-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 17px;
+    padding: 24px 25px;
+}
+
+.medical-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.medical-form-group.full {
+    grid-column: span 2;
+}
+
+.medical-form-group label,
+.family-history-item label {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.medical-form-group input,
+.medical-form-group select,
+.family-history-item select {
+    width: 100%;
+    height: 43px;
+    padding: 0 12px;
+    border: 1px solid #d7e0ea;
+    border-radius: 8px;
+    outline: none;
+    background: #ffffff;
+    color: #334155;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.medical-form-group input:focus,
+.medical-form-group select:focus,
+.family-history-item select:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.08);
+}
+
+.medical-form-group input::placeholder {
+    color: #a0aec0;
+}
+
+/* =========================================
+   SUBSECTION
+========================================= */
+
+.medical-subsection {
+    padding: 23px 25px;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.medical-subsection:last-child {
+    border-bottom: none;
+}
+
+.medical-subsection h3 {
+    margin: 0 0 15px;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+/* =========================================
+   RADIO
+========================================= */
+
+.radio-group {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 18px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #475569;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.radio-group input {
+    accent-color: #1976d2;
+}
+
+.question-label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* =========================================
+   CHECKBOX
+========================================= */
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.check-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 9px 11px;
+    border: 1px solid #e1e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.check-box:hover {
+    background: #f3f9ff;
+    border-color: #cfe2f5;
+}
+
+.check-box input {
+    width: 16px;
+    height: 16px;
+    accent-color: #1976d2;
+}
+
+/* =========================================
+   FAMILY HISTORY
+========================================= */
+
+.family-history-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 17px;
+    padding: 25px;
+}
+
+.family-history-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.profile-actions {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.cancel-profile-button,
+.save-profile-button {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 17px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cancel-profile-button {
+    border: 1px solid #d8e1ea;
+    background: #ffffff;
+    color: #64748b;
+}
+
+.cancel-profile-button:hover {
+    background: #f8fafc;
+}
+
+.save-profile-button {
+    border: none;
+    background: #1976d2;
+    color: #ffffff;
+}
+
+.save-profile-button:hover {
     background: #1565c0;
 }
 
-/* =========================
+/* =========================================
    RESPONSIVE
-========================= */
+========================================= */
 
 @media (max-width: 768px) {
 
-    .student-medical-page {
+    .student-medical-profile-page {
         padding: 20px 15px;
     }
 
-    .medical-header {
+    .student-list-header {
         align-items: flex-start;
+    }
+
+    .student-list-header h1 {
+        font-size: 22px;
+    }
+
+    .student-list-icon {
+        display: none;
+    }
+
+    .student-search-card {
         flex-direction: column;
-        gap: 15px;
+        align-items: stretch;
     }
 
-    .medical-summary {
+    .student-count {
+        text-align: center;
+    }
+
+    .medical-form-grid {
         grid-template-columns: 1fr;
+        padding: 18px;
     }
 
-    .medical-toolbar {
-        justify-content: stretch;
-    }
-
-    .medical-search {
-        width: 100%;
-    }
-
-    .record-details {
-        grid-template-columns: 1fr;
-    }
-
-    .detail-item.full-width {
+    .medical-form-group.full {
         grid-column: span 1;
+    }
+
+    .medical-card-header {
+        padding: 18px;
+    }
+
+    .medical-card-header > svg {
+        display: none;
+    }
+
+    .medical-subsection {
+        padding: 20px 18px;
+    }
+
+    .checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .family-history-grid {
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .radio-group {
+        flex-wrap: wrap;
+    }
+
+    .profile-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cancel-profile-button,
+    .save-profile-button {
+        width: 100%;
     }
 }

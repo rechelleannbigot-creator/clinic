@@ -18,6 +18,7 @@ function MedicalRecords() {
             patientId: "P-001",
             patient: "Juan Dela Cruz",
             date: "2026-09-04",
+            doctor: "Dr. Maria Santos",
             diagnosis: "Fever and Headache",
             status: "Completed"
         },
@@ -26,7 +27,7 @@ function MedicalRecords() {
             patientId: "P-002",
             patient: "Maria Garcia",
             date: "2026-09-03",
-            
+            doctor: "Dr. John Reyes",
             diagnosis: "Common Cold",
             status: "Completed"
         },
@@ -35,7 +36,7 @@ function MedicalRecords() {
             patientId: "P-003",
             patient: "Pedro Ramos",
             date: "2026-09-02",
-            
+            doctor: "Dr. Maria Santos",
             diagnosis: "Hypertension",
             status: "Follow-up"
         },
@@ -44,7 +45,7 @@ function MedicalRecords() {
             patientId: "P-004",
             patient: "Ana Cruz",
             date: "2026-09-01",
-            
+            doctor: "Dr. John Reyes",
             diagnosis: "Stomach Pain",
             status: "Completed"
         }

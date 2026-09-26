@@ -1,0 +1,601 @@
+/* =========================================
+   PAGE
+========================================= */
+
+.medical-profile-page {
+    min-height: 100vh;
+    background: #eef3f8;
+    padding: 35px 20px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #173b63;
+}
+
+/* =========================================
+   PAPER / FORM
+========================================= */
+
+.medical-form {
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+    background: #ffffff;
+    padding: 45px 55px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.form-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+}
+
+.clinic-logo {
+    flex-shrink: 0;
+}
+
+.logo-circle {
+    width: 95px;
+    height: 95px;
+    border: 3px solid #075aa8;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 48px;
+    font-weight: bold;
+    color: #075aa8;
+}
+
+.clinic-title {
+    text-align: center;
+}
+
+.clinic-title h1 {
+    margin: 0;
+    color: #075aa8;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.clinic-title h2 {
+    margin: 4px 0;
+    color: #075aa8;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.clinic-title h3 {
+    margin: 5px 0 0;
+    color: #075aa8;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.header-line {
+    width: 100%;
+    height: 3px;
+    background: #0875c9;
+    margin: 18px 0 20px;
+}
+
+/* =========================================
+   INSTRUCTION
+========================================= */
+
+.instruction {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    color: #173b63;
+}
+
+.instruction strong {
+    font-size: 17px;
+    min-width: 95px;
+}
+
+.instruction p {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 15px;
+}
+
+/* =========================================
+   SECTION TITLE
+========================================= */
+
+.section-title {
+    display: flex;
+    align-items: center;
+
+    width: fit-content;
+    min-width: 330px;
+
+    margin: 25px 0 14px;
+
+    padding: 6px 20px 6px 0;
+
+    background: #0875c9;
+    color: white;
+
+    border-radius: 20px;
+    overflow: hidden;
+
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.section-number {
+    padding: 0 16px;
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.form-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 13px;
+}
+
+.name-row .form-group {
+    padding-top: 7px;
+}
+
+.form-group label,
+.line-field label {
+    color: #173b63;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.input-with-label {
+    flex: 1;
+    text-align: center;
+}
+
+.input-with-label input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid #4885b8;
+    outline: none;
+    padding: 5px 5px;
+    font-size: 14px;
+    color: #173b63;
+}
+
+.input-with-label small {
+    display: block;
+    margin-top: 3px;
+    color: #27689d;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.form-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.two-column {
+    grid-template-columns: 1fr 2fr;
+}
+
+.three-column {
+    grid-template-columns: 1.5fr 0.7fr 1fr;
+}
+
+.four-column {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.line-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.line-field label {
+    white-space: nowrap;
+}
+
+.line-field input,
+.line-field select {
+    flex: 1;
+    min-width: 0;
+
+    border: none;
+    border-bottom: 1.5px solid #4885b8;
+
+    background: transparent;
+
+    outline: none;
+
+    padding: 5px 4px;
+
+    font-size: 14px;
+    color: #173b63;
+}
+
+.line-field input:focus,
+.line-field select:focus {
+    border-bottom: 2px solid #0875c9;
+}
+
+.line-field input::placeholder {
+    color: #9aaabd;
+}
+
+/* =========================================
+   QUESTIONS
+========================================= */
+
+.question-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 35px;
+
+    margin: 10px 0;
+
+    color: #173b63;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+.radio-option input {
+    width: 15px;
+    height: 15px;
+}
+
+/* =========================================
+   SUB SECTION
+========================================= */
+
+.sub-section {
+    padding-left: 55px;
+    margin: 10px 0 15px;
+}
+
+.sub-section h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #173b63;
+}
+
+/* =========================================
+   VACCINES
+========================================= */
+
+.vaccine-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 45px;
+    row-gap: 8px;
+}
+
+.vaccine-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vaccine-input label {
+    min-width: 80px;
+
+    color: #173b63;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.vaccine-input input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #4885b8;
+    outline: none;
+    padding: 4px;
+    font-size: 13px;
+}
+
+/* =========================================
+   DISEASES
+========================================= */
+
+.disease-question {
+    margin: 15px 0 8px;
+
+    color: #173b63;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.disease-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px 45px;
+
+    padding-left: 55px;
+}
+
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    color: #173b63;
+    cursor: pointer;
+}
+
+.checkbox-option input {
+    width: 15px;
+    height: 15px;
+    accent-color: #0875c9;
+}
+
+/* =========================================
+   HOSPITALIZATION
+========================================= */
+
+.hospitalization-fields {
+    padding-left: 55px;
+}
+
+.hospitalization-fields .line-field {
+    margin-bottom: 8px;
+}
+
+/* =========================================
+   FAMILY HISTORY
+========================================= */
+
+.family-history-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 70px;
+
+    padding: 0 55px;
+}
+
+.family-history-grid .line-field {
+    width: 100%;
+}
+
+/* =========================================
+   SIGNATURE
+========================================= */
+
+.signature-section {
+    width: 45%;
+    margin-left: auto;
+    margin-top: 40px;
+
+    text-align: center;
+}
+
+.signature-section input {
+    width: 100%;
+
+    border: none;
+    border-bottom: 1.5px solid #173b63;
+
+    outline: none;
+
+    padding: 8px;
+
+    text-align: center;
+    font-family: cursive;
+    font-size: 17px;
+}
+
+.signature-section span {
+    display: block;
+    margin-top: 7px;
+
+    color: #173b63;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    margin-top: 35px;
+    padding-top: 20px;
+
+    border-top: 1px solid #dce6ef;
+}
+
+.form-actions button {
+    border: none;
+    border-radius: 7px;
+
+    padding: 11px 24px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cancel-btn {
+    background: #e8eef4;
+    color: #173b63;
+}
+
+.cancel-btn:hover {
+    background: #d9e2eb;
+}
+
+.save-btn {
+    background: #0875c9;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #075da0;
+    transform: translateY(-1px);
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 850px) {
+
+    .medical-profile-page {
+        padding: 15px;
+    }
+
+    .medical-form {
+        padding: 30px 25px;
+    }
+
+    .form-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .clinic-title h1 {
+        font-size: 21px;
+    }
+
+    .clinic-title h2 {
+        font-size: 16px;
+    }
+
+    .clinic-title h3 {
+        font-size: 20px;
+    }
+
+    .two-column,
+    .three-column,
+    .four-column {
+        grid-template-columns: 1fr;
+    }
+
+    .name-row {
+        flex-direction: column;
+    }
+
+    .name-row .form-group {
+        width: 100%;
+    }
+
+    .input-with-label {
+        width: 100%;
+    }
+
+    .vaccine-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .disease-grid {
+        grid-template-columns: 1fr 1fr;
+        padding-left: 20px;
+    }
+
+    .sub-section,
+    .hospitalization-fields {
+        padding-left: 20px;
+    }
+
+    .family-history-grid {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+
+    .signature-section {
+        width: 70%;
+    }
+}
+
+@media (max-width: 550px) {
+
+    .medical-form {
+        padding: 20px 15px;
+    }
+
+    .logo-circle {
+        width: 75px;
+        height: 75px;
+        font-size: 35px;
+    }
+
+    .clinic-title h1 {
+        font-size: 17px;
+    }
+
+    .clinic-title h2 {
+        font-size: 13px;
+    }
+
+    .clinic-title h3 {
+        font-size: 17px;
+    }
+
+    .instruction {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .section-title {
+        width: 100%;
+        min-width: 0;
+        font-size: 14px;
+    }
+
+    .question-row {
+        gap: 15px;
+    }
+
+    .disease-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .signature-section {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+}

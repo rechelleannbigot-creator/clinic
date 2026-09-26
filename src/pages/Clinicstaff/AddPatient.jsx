@@ -33,7 +33,19 @@ const initialFormData = {
     contact: "",
     yearLevel: "",
     course: "",
+    section: "",
 };
+
+const sectionsByYearLevel = {
+    "Grade 7": ["St. Clare", "St. Rita"],
+    "Grade 8": ["St. Alypius", "St.Possidius"],
+    "Grade 9": ["St. Nicholas", "St. Ambrose"],
+    "Grade 10": ["St. Augustine", "St. Monica"],
+    "Grade 11": ["St. Ezekiel", "St. Dominic"],
+    "Grade 12": ["Mo.Teresa", "Mo. Evangelista"],
+};
+
+const isSchoolGrade = (yearLevel) => yearLevel in sectionsByYearLevel;
 
 const initialPatients = [
     {
@@ -139,7 +151,8 @@ function AddPatient() {
         return (
             patient.id.toLowerCase().includes(searchText) ||
             getFullName(patient).toLowerCase().includes(searchText) ||
-            patient.course.toLowerCase().includes(searchText) ||
+            (patient.course || "").toLowerCase().includes(searchText) ||
+            (patient.section || "").toLowerCase().includes(searchText) ||
             patient.yearLevel.toLowerCase().includes(searchText)
         );
     });
@@ -183,6 +196,7 @@ function AddPatient() {
         setFormData((previous) => ({
             ...previous,
             [name]: value,
+            ...(name === "yearLevel" ? { section: "" } : {}),
         }));
     };
 
@@ -213,6 +227,7 @@ function AddPatient() {
             contact: patient.contact || "",
             yearLevel: patient.yearLevel || "",
             course: patient.course || "",
+            section: patient.section || "",
         });
 
         setShowAddModal(true);
@@ -229,8 +244,13 @@ function AddPatient() {
             "gender",
             "contact",
             "yearLevel",
-            "course",
         ];
+
+        if (isSchoolGrade(formData.yearLevel)) {
+            requiredFields.push("section");
+        } else {
+            requiredFields.push("course");
+        }
 
         const hasMissingFields = requiredFields.some(
             (field) => !String(formData[field] || "").trim()
@@ -256,7 +276,12 @@ function AddPatient() {
             gender: formData.gender,
             contact: formData.contact.trim(),
             yearLevel: formData.yearLevel,
-            course: formData.course,
+            course: isSchoolGrade(formData.yearLevel)
+                ? ""
+                : formData.course,
+            section: isSchoolGrade(formData.yearLevel)
+                ? formData.section
+                : "",
         };
 
         if (editingPatientId) {
@@ -491,9 +516,9 @@ function AddPatient() {
                     <div className="patient-search">
                         <Search size={19} />
 
-                        <input
+                            <input
                             type="text"
-                            placeholder="Search name, ID, year level, or course..."
+                                placeholder="Search name, ID, year level, course, or section..."
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
                         />
@@ -519,7 +544,7 @@ function AddPatient() {
                                 <th>Age</th>
                                 <th>Gender</th>
                                 <th>Year Level</th>
-                                <th>Course</th>
+                                <th>Course / Section</th>
                                 <th>Contact</th>
                                 <th>Last Visit</th>
                                 <th>Actions</th>
@@ -557,7 +582,7 @@ function AddPatient() {
                                             </span>
                                         </td>
 
-                                        <td>{patient.course}</td>
+                                        <td>{patient.section || patient.course || "—"}</td>
                                         <td>{patient.contact}</td>
                                         <td>{patient.lastVisit}</td>
 
@@ -834,51 +859,75 @@ function AddPatient() {
                                                 <option value="4th Year">
                                                     4th Year
                                                 </option>
-
-                                                <option value="5th Year">
-                                                    5th Year
-                                                </option>
                                             </optgroup>
                                         </select>
                                     </div>
 
-                                    <div className="form-group">
-                                        <label htmlFor="course">
-                                            Course <span>*</span>
-                                        </label>
+                                    {isSchoolGrade(formData.yearLevel) && (
+                                        <div className="form-group">
+                                            <label htmlFor="section">
+                                                Section <span>*</span>
+                                            </label>
 
-                                        <select
-                                            id="course"
-                                            name="course"
-                                            value={formData.course}
-                                            onChange={handleInputChange}
-                                            required
-                                        >
-                                            <option value="">
-                                                Select course
-                                            </option>
+                                            <select
+                                                id="section"
+                                                name="section"
+                                                value={formData.section}
+                                                onChange={handleInputChange}
+                                                required
+                                            >
+                                                <option value="">
+                                                    Select section
+                                                </option>
+                                                {sectionsByYearLevel[
+                                                    formData.yearLevel
+                                                ].map((section) => (
+                                                    <option
+                                                        key={section}
+                                                        value={section}
+                                                    >
+                                                        {section}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
 
-                                            <option value="BS Information Technology">
-                                                BS Information Technology
-                                            </option>
+                                    {!isSchoolGrade(formData.yearLevel) && (
+                                        <div className="form-group">
+                                            <label htmlFor="course">
+                                                Course <span>*</span>
+                                            </label>
 
-                                            <option value="BS Nursing">
-                                                BS Nursing
-                                            </option>
+                                            <select
+                                                id="course"
+                                                name="course"
+                                                value={formData.course}
+                                                onChange={handleInputChange}
+                                                required
+                                            >
+                                                <option value="">
+                                                    Select course
+                                                </option>
 
-                                            <option value="BS Education">
-                                                BS Education
-                                            </option>
+                                                <option value="BS Information Technology">
+                                                    BS Information Technology
+                                                </option>
 
-                                            <option value="BS Criminology">
-                                                BS Criminology
-                                            </option>
+                                                <option value="BS Education">
+                                                    BS Education
+                                                </option>
 
-                                            <option value="BS Business Administration">
-                                                BS Business Administration
-                                            </option>
-                                        </select>
-                                    </div>
+                                                <option value="BS Hospitality Management">
+                                                    BS Hospitality Management
+                                                </option>
+
+                                                <option value="BS Business Administration">
+                                                    BS Business Administration
+                                                </option>
+                                            </select>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* QR Code Preview */}
@@ -1167,8 +1216,12 @@ function PatientDetailsModal({
                             />
 
                             <DetailItem
-                                label="Course"
-                                value={patient.course}
+                                label={isSchoolGrade(patient.yearLevel) ? "Section" : "Course"}
+                                value={
+                                    isSchoolGrade(patient.yearLevel)
+                                        ? patient.section
+                                        : patient.course
+                                }
                             />
                         </div>
                     </div>
