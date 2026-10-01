@@ -203,27 +203,13 @@ function StaffLayout() {
               <span className="nav-text">Visit History</span>
             </NavLink>
 
-            <NavLink
-              to="issuance"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Issuance"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Issuance</span>
-            </NavLink>
 
             </div>
 
 
-            {/* Medicine */}
+            {/* Inventory */}
           <div className="sidebar-section">
-            <div className="sidebar-section-title">MEDICINE</div>
+            <div className="sidebar-section-title">INVENTORY</div>
 
            <NavLink
               to="inventory"
@@ -237,7 +223,7 @@ function StaffLayout() {
               <span className="nav-icon">
                 <LayoutDashboard size={18} />
               </span>
-              <span className="nav-text">Inventory</span>
+              <span className="nav-text">Manage Inventory</span>
             </NavLink>
 
             </div>
@@ -245,21 +231,6 @@ function StaffLayout() {
             {/* Reports */}
           <div className="sidebar-section">
             <div className="sidebar-section-title">REPORTS</div>
-
-           <NavLink
-              to="staff-reports"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Reports"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Reports</span>
-            </NavLink>
 
             <NavLink
               to="notifications"
@@ -275,6 +246,22 @@ function StaffLayout() {
               </span>
               <span className="nav-text">Notifications</span>
             </NavLink>
+
+            <NavLink
+              to="profile"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              title="Profile"
+            >
+              <span className="nav-icon">
+                <LayoutDashboard size={18} />
+              </span>
+              <span className="nav-text">My Profile</span>
+            </NavLink>
+
             </div>
 
           </aside>

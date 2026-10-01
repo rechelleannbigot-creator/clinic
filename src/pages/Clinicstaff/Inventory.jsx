@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
     Search,
@@ -9,6 +8,7 @@ import {
     Plus,
     Eye,
     X,
+    Trash2,
 } from "lucide-react";
 import "../../styles/Inventory.css";
 
@@ -77,6 +77,18 @@ function Inventory() {
             expirationDate: "2027-11-30",
             status: "Out of Stock",
         },
+
+        // Sample expired medicine
+        {
+            id: "MED-007",
+            name: "Expired Medicine",
+            category: "Tablet",
+            quantity: 12,
+            unit: "Tablets",
+            reorderLevel: 10,
+            expirationDate: "2026-08-15",
+            status: "Available",
+        },
     ]);
 
     const [formData, setFormData] = useState({
@@ -88,43 +100,134 @@ function Inventory() {
         expirationDate: "",
     });
 
-    // =========================
-    // SEARCH
-    // =========================
+    // =========================================================
+    // DATE FUNCTIONS
+    // =========================================================
 
-    const filteredInventory = inventory.filter((item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase())
+    const getToday = () => {
+        const today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        return today;
+    };
+
+    const isExpired = (expirationDate) => {
+        if (!expirationDate) {
+            return false;
+        }
+
+        const expiryDate = new Date(
+            `${expirationDate}T00:00:00`
+        );
+
+        return expiryDate < getToday();
+    };
+
+    const getExpiredDays = (expirationDate) => {
+        if (!expirationDate) {
+            return 0;
+        }
+
+        const expiryDate = new Date(
+            `${expirationDate}T00:00:00`
+        );
+
+        const today = getToday();
+
+        const difference =
+            today.getTime() - expiryDate.getTime();
+
+        return Math.max(
+            0,
+            Math.floor(
+                difference /
+                    (1000 * 60 * 60 * 24)
+            )
+        );
+    };
+
+    // =========================================================
+    // GET MEDICINE STATUS
+    // =========================================================
+
+    const getMedicineStatus = (item) => {
+        // Expiration always has priority
+        if (isExpired(item.expirationDate)) {
+            return "Expired";
+        }
+
+        if (item.quantity === 0) {
+            return "Out of Stock";
+        }
+
+        if (item.quantity <= item.reorderLevel) {
+            return "Low Stock";
+        }
+
+        return "Available";
+    };
+
+    // =========================================================
+    // SEARCH
+    // =========================================================
+
+    const filteredInventory = inventory.filter(
+        (item) =>
+            item.name
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()) ||
+            item.id
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()) ||
+            item.category
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())
     );
 
-    // =========================
+    // =========================================================
+    // EXPIRED MEDICINES
+    // =========================================================
+
+    const expiredMedicines = inventory.filter((item) =>
+        isExpired(item.expirationDate)
+    );
+
+    // =========================================================
     // SUMMARY
-    // =========================
+    // =========================================================
 
     const availableCount = inventory.filter(
-        (item) => item.status === "Available"
+        (item) =>
+            getMedicineStatus(item) === "Available"
     ).length;
 
     const lowStockCount = inventory.filter(
-        (item) => item.status === "Low Stock"
+        (item) =>
+            getMedicineStatus(item) === "Low Stock"
     ).length;
 
     const outOfStockCount = inventory.filter(
-        (item) => item.status === "Out of Stock"
+        (item) =>
+            getMedicineStatus(item) === "Out of Stock"
     ).length;
 
-    // =========================
+    const expiredCount = inventory.filter(
+        (item) =>
+            getMedicineStatus(item) === "Expired"
+    ).length;
+
+    // =========================================================
     // FORM HANDLING
-    // =========================
+    // =========================================================
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        setFormData({
-            ...formData,
+        setFormData((previous) => ({
+            ...previous,
             [name]: value,
-        });
+        }));
     };
 
     const resetForm = () => {
@@ -143,51 +246,56 @@ function Inventory() {
         resetForm();
     };
 
-    // =========================
+    // =========================================================
     // ADD MEDICINE
-    // =========================
+    // =========================================================
 
     const handleAddMedicine = (e) => {
         e.preventDefault();
 
         const quantity = Number(formData.quantity);
-        const reorderLevel = Number(formData.reorderLevel);
+        const reorderLevel = Number(
+            formData.reorderLevel
+        );
 
-        let status = "Available";
-
-        if (quantity === 0) {
-            status = "Out of Stock";
-        } else if (quantity <= reorderLevel) {
-            status = "Low Stock";
-        }
-
-        const newId = `MED-${String(inventory.length + 1).padStart(3, "0")}`;
+        const newId = `MED-${String(
+            inventory.length + 1
+        ).padStart(3, "0")}`;
 
         const newMedicine = {
             id: newId,
-            name: formData.name,
+            name: formData.name.trim(),
             category: formData.category,
-            quantity: quantity,
+            quantity,
             unit: formData.unit,
-            reorderLevel: reorderLevel,
-            expirationDate: formData.expirationDate,
-            status: status,
+            reorderLevel,
+            expirationDate:
+                formData.expirationDate,
+            status: "Available",
         };
 
-        setInventory([...inventory, newMedicine]);
+        setInventory((previous) => [
+            ...previous,
+            newMedicine,
+        ]);
 
         setShowAddModal(false);
-        resetForm();
 
-        alert(`${formData.name} has been successfully added.`);
+        alert(
+            `${formData.name} has been successfully added.`
+        );
+
+        resetForm();
     };
 
-    // =========================
+    // =========================================================
     // VIEW MEDICINE
-    // =========================
+    // =========================================================
 
     const handleView = (item) => {
-        alert(
+        const status = getMedicineStatus(item);
+
+        let message =
             `Medicine Details\n\n` +
             `ID: ${item.id}\n` +
             `Medicine: ${item.name}\n` +
@@ -195,98 +303,208 @@ function Inventory() {
             `Stock: ${item.quantity} ${item.unit}\n` +
             `Reorder Level: ${item.reorderLevel}\n` +
             `Expiration Date: ${item.expirationDate}\n` +
-            `Status: ${item.status}`
+            `Status: ${status}`;
+
+        if (status === "Expired") {
+            message +=
+                `\nExpired: ${getExpiredDays(
+                    item.expirationDate
+                )} days ago`;
+        }
+
+        alert(message);
+    };
+
+    // =========================================================
+    // REMOVE EXPIRED MEDICINE
+    // =========================================================
+
+    const handleRemoveExpired = (item) => {
+        const confirmed = window.confirm(
+            `Are you sure you want to remove "${item.name}" from the expired medicines list?\n\n` +
+                `Medicine ID: ${item.id}\n` +
+                `Expiration Date: ${item.expirationDate}`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        setInventory((previous) =>
+            previous.filter(
+                (medicine) =>
+                    medicine.id !== item.id
+            )
+        );
+
+        alert(
+            `${item.name} has been removed from the inventory.`
         );
     };
+
+    // =========================================================
+    // RETURN
+    // =========================================================
 
     return (
         <div className="inventory-page">
 
-            {/* =========================
+            {/* =================================================
                 HEADER
-            ========================= */}
+            ================================================= */}
 
             <div className="inventory-header">
+
                 <div>
                     <h1>Inventory</h1>
-                    <p>Monitor medicine stock and availability</p>
+
+                    <p>
+                        Monitor medicine stock and availability
+                    </p>
                 </div>
 
                 <button
                     className="add-inventory-btn"
-                    onClick={() => setShowAddModal(true)}
+                    onClick={() =>
+                        setShowAddModal(true)
+                    }
                 >
                     <Plus size={18} />
                     Add Medicine
                 </button>
+
             </div>
 
-            {/* =========================
+            {/* =================================================
                 SUMMARY CARDS
-            ========================= */}
+            ================================================= */}
 
             <div className="inventory-summary">
 
+                {/* TOTAL */}
+
                 <div className="inventory-summary-card">
+
                     <div className="inventory-summary-icon blue">
                         <Package size={23} />
                     </div>
 
                     <div>
-                        <span>Total Medicines</span>
-                        <strong>{inventory.length}</strong>
+                        <span>
+                            Total Medicines
+                        </span>
+
+                        <strong>
+                            {inventory.length}
+                        </strong>
                     </div>
+
                 </div>
 
+                {/* AVAILABLE */}
+
                 <div className="inventory-summary-card">
+
                     <div className="inventory-summary-icon green">
                         <CheckCircle size={23} />
                     </div>
 
                     <div>
-                        <span>Available</span>
-                        <strong>{availableCount}</strong>
+                        <span>
+                            Available
+                        </span>
+
+                        <strong>
+                            {availableCount}
+                        </strong>
                     </div>
+
                 </div>
 
+                {/* LOW STOCK */}
+
                 <div className="inventory-summary-card">
+
                     <div className="inventory-summary-icon orange">
                         <AlertTriangle size={23} />
                     </div>
 
                     <div>
-                        <span>Low Stock</span>
-                        <strong>{lowStockCount}</strong>
+                        <span>
+                            Low Stock
+                        </span>
+
+                        <strong>
+                            {lowStockCount}
+                        </strong>
                     </div>
+
                 </div>
 
+                {/* OUT OF STOCK */}
+
                 <div className="inventory-summary-card">
+
                     <div className="inventory-summary-icon red">
                         <Pill size={23} />
                     </div>
 
                     <div>
-                        <span>Out of Stock</span>
-                        <strong>{outOfStockCount}</strong>
+                        <span>
+                            Out of Stock
+                        </span>
+
+                        <strong>
+                            {outOfStockCount}
+                        </strong>
                     </div>
+
+                </div>
+
+                {/* EXPIRED */}
+
+                <div className="inventory-summary-card">
+
+                    <div className="inventory-summary-icon expired">
+                        <AlertTriangle size={23} />
+                    </div>
+
+                    <div>
+                        <span>
+                            Expired
+                        </span>
+
+                        <strong>
+                            {expiredCount}
+                        </strong>
+                    </div>
+
                 </div>
 
             </div>
 
-            {/* =========================
-                INVENTORY CARD
-            ========================= */}
+            {/* =================================================
+                MAIN INVENTORY
+            ================================================= */}
 
             <div className="inventory-card">
+
+                {/* TOOLBAR */}
 
                 <div className="inventory-toolbar">
 
                     <div>
-                        <h2>Medicine Inventory</h2>
-                        <p>View current medicine stock</p>
+                        <h2>
+                            Medicine Inventory
+                        </h2>
+
+                        <p>
+                            View current medicine stock
+                        </p>
                     </div>
 
                     <div className="inventory-search">
+
                         <Search size={18} />
 
                         <input
@@ -294,122 +512,224 @@ function Inventory() {
                             placeholder="Search medicine..."
                             value={searchTerm}
                             onChange={(e) =>
-                                setSearchTerm(e.target.value)
+                                setSearchTerm(
+                                    e.target.value
+                                )
                             }
                         />
+
                     </div>
 
                 </div>
 
-                {/* =========================
-                    TABLE
-                ========================= */}
+                {/* TABLE */}
 
                 <div className="inventory-table-container">
 
                     <table className="inventory-table">
 
                         <thead>
+
                             <tr>
-                                <th>Medicine ID</th>
-                                <th>Medicine</th>
-                                <th>Category</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                                <th>Action</th>
+
+                                <th>
+                                    Medicine ID
+                                </th>
+
+                                <th>
+                                    Medicine
+                                </th>
+
+                                <th>
+                                    Category
+                                </th>
+
+                                <th>
+                                    Stock
+                                </th>
+
+                                <th>
+                                    Expiration Date
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
                             </tr>
+
                         </thead>
 
                         <tbody>
 
                             {filteredInventory.length > 0 ? (
 
-                                filteredInventory.map((item) => (
+                                filteredInventory.map(
+                                    (item) => {
 
-                                    <tr key={item.id}>
+                                        const status =
+                                            getMedicineStatus(
+                                                item
+                                            );
 
-                                        <td>
-                                            <span className="medicine-id">
-                                                {item.id}
-                                            </span>
-                                        </td>
-
-                                        <td>
-                                            <div className="medicine-info">
-
-                                                <div className="medicine-icon">
-                                                    <Pill size={17} />
-                                                </div>
-
-                                                <strong>
-                                                    {item.name}
-                                                </strong>
-
-                                            </div>
-                                        </td>
-
-                                        <td>
-                                            {item.category}
-                                        </td>
-
-                                        <td>
-                                            <div className="stock-info">
-
-                                                <strong>
-                                                    {item.quantity}
-                                                </strong>
-
-                                                <span>
-                                                    {item.unit}
-                                                </span>
-
-                                            </div>
-                                        </td>
-
-                                        <td>
-
-                                            <span
-                                                className={`inventory-status ${
-                                                    item.status === "Available"
-                                                        ? "available"
-                                                        : item.status === "Low Stock"
-                                                        ? "low-stock"
-                                                        : "out-stock"
-                                                }`}
-                                            >
-                                                {item.status}
-                                            </span>
-
-                                        </td>
-
-                                        <td>
-
-                                            <button
-                                                className="inventory-view-btn"
-                                                onClick={() =>
-                                                    handleView(item)
+                                        return (
+                                            <tr
+                                                key={
+                                                    item.id
                                                 }
                                             >
-                                                <Eye size={16} />
-                                                View
-                                            </button>
 
-                                        </td>
+                                                {/* ID */}
 
-                                    </tr>
+                                                <td>
+                                                    <span className="medicine-id">
+                                                        {
+                                                            item.id
+                                                        }
+                                                    </span>
+                                                </td>
 
-                                ))
+                                                {/* MEDICINE */}
+
+                                                <td>
+
+                                                    <div className="medicine-info">
+
+                                                        <div className="medicine-icon">
+                                                            <Pill
+                                                                size={
+                                                                    17
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        <strong>
+                                                            {
+                                                                item.name
+                                                            }
+                                                        </strong>
+
+                                                    </div>
+
+                                                </td>
+
+                                                {/* CATEGORY */}
+
+                                                <td>
+                                                    {
+                                                        item.category
+                                                    }
+                                                </td>
+
+                                                {/* STOCK */}
+
+                                                <td>
+
+                                                    <div className="stock-info">
+
+                                                        <strong>
+                                                            {
+                                                                item.quantity
+                                                            }
+                                                        </strong>
+
+                                                        <span>
+                                                            {
+                                                                item.unit
+                                                            }
+                                                        </span>
+
+                                                    </div>
+
+                                                </td>
+
+                                                {/* EXPIRATION */}
+
+                                                <td>
+
+                                                    <span
+                                                        className={`expiration-date ${
+                                                            status ===
+                                                            "Expired"
+                                                                ? "expiration-expired"
+                                                                : ""
+                                                        }`}
+                                                    >
+                                                        {
+                                                            item.expirationDate
+                                                        }
+                                                    </span>
+
+                                                </td>
+
+                                                {/* STATUS */}
+
+                                                <td>
+
+                                                    <span
+                                                        className={`inventory-status ${
+                                                            status ===
+                                                            "Available"
+                                                                ? "available"
+                                                                : status ===
+                                                                  "Low Stock"
+                                                                ? "low-stock"
+                                                                : status ===
+                                                                  "Out of Stock"
+                                                                ? "out-stock"
+                                                                : "expired"
+                                                        }`}
+                                                    >
+                                                        {
+                                                            status
+                                                        }
+                                                    </span>
+
+                                                </td>
+
+                                                {/* ACTION */}
+
+                                                <td>
+
+                                                    <button
+                                                        className="inventory-view-btn"
+                                                        onClick={() =>
+                                                            handleView(
+                                                                item
+                                                            )
+                                                        }
+                                                    >
+                                                        <Eye
+                                                            size={
+                                                                16
+                                                            }
+                                                        />
+                                                        View
+                                                    </button>
+
+                                                </td>
+
+                                            </tr>
+                                        );
+                                    }
+                                )
 
                             ) : (
 
                                 <tr>
 
                                     <td
-                                        colSpan="6"
+                                        colSpan="7"
                                         className="inventory-empty"
                                     >
 
-                                        <Package size={40} />
+                                        <Package
+                                            size={40}
+                                        />
 
                                         <p>
                                             No medicines found.
@@ -429,36 +749,347 @@ function Inventory() {
 
             </div>
 
-            {/* =========================
+            {/* =================================================
+                EXPIRED MEDICINES
+            ================================================= */}
+
+            <div className="expired-medicine-card">
+
+                {/* HEADER */}
+
+                <div className="expired-medicine-header">
+
+                    <div className="expired-medicine-title">
+
+                        <div className="expired-medicine-icon">
+
+                            <AlertTriangle
+                                size={21}
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Expired Medicines
+                            </h2>
+
+                            <p>
+                                Medicines that have passed
+                                their expiration date and
+                                should not be issued.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <span className="expired-count">
+
+                        {expiredCount}{" "}
+
+                        {expiredCount === 1
+                            ? "Medicine"
+                            : "Medicines"}
+
+                    </span>
+
+                </div>
+
+                {/* EXPIRED TABLE */}
+
+                <div className="expired-medicine-table-container">
+
+                    {expiredMedicines.length > 0 ? (
+
+                        <table className="expired-medicine-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Medicine ID
+                                    </th>
+
+                                    <th>
+                                        Medicine
+                                    </th>
+
+                                    <th>
+                                        Category
+                                    </th>
+
+                                    <th>
+                                        Remaining Stock
+                                    </th>
+
+                                    <th>
+                                        Expiration Date
+                                    </th>
+
+                                    <th>
+                                        Expired
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {expiredMedicines.map(
+                                    (item) => {
+
+                                        const expiredDays =
+                                            getExpiredDays(
+                                                item.expirationDate
+                                            );
+
+                                        return (
+                                            <tr
+                                                key={
+                                                    item.id
+                                                }
+                                            >
+
+                                                {/* ID */}
+
+                                                <td>
+
+                                                    <span className="expired-medicine-id">
+                                                        {
+                                                            item.id
+                                                        }
+                                                    </span>
+
+                                                </td>
+
+                                                {/* MEDICINE */}
+
+                                                <td>
+
+                                                    <div className="expired-medicine-info">
+
+                                                        <div className="expired-pill-icon">
+
+                                                            <Pill
+                                                                size={
+                                                                    17
+                                                                }
+                                                            />
+
+                                                        </div>
+
+                                                        <strong>
+                                                            {
+                                                                item.name
+                                                            }
+                                                        </strong>
+
+                                                    </div>
+
+                                                </td>
+
+                                                {/* CATEGORY */}
+
+                                                <td>
+                                                    {
+                                                        item.category
+                                                    }
+                                                </td>
+
+                                                {/* STOCK */}
+
+                                                <td>
+
+                                                    <div className="expired-stock">
+
+                                                        <strong>
+                                                            {
+                                                                item.quantity
+                                                            }
+                                                        </strong>
+
+                                                        <span>
+                                                            {
+                                                                item.unit
+                                                            }
+                                                        </span>
+
+                                                    </div>
+
+                                                </td>
+
+                                                {/* EXPIRATION */}
+
+                                                <td>
+
+                                                    <span className="expired-date">
+                                                        {
+                                                            item.expirationDate
+                                                        }
+                                                    </span>
+
+                                                </td>
+
+                                                {/* DAYS EXPIRED */}
+
+                                                <td>
+
+                                                    <span className="expired-badge">
+
+                                                        <AlertTriangle
+                                                            size={
+                                                                14
+                                                            }
+                                                        />
+
+                                                        {
+                                                            expiredDays
+                                                        }{" "}
+
+                                                        {expiredDays ===
+                                                        1
+                                                            ? "day"
+                                                            : "days"}{" "}
+                                                        ago
+
+                                                    </span>
+
+                                                </td>
+
+                                                {/* ACTION */}
+
+                                                <td>
+
+                                                    <div className="expired-actions">
+
+                                                        <button
+                                                            type="button"
+                                                            className="expired-view-btn"
+                                                            onClick={() =>
+                                                                handleView(
+                                                                    item
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <Eye
+                                                                size={
+                                                                    15
+                                                                }
+                                                            />
+
+                                                            View
+
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            className="expired-remove-btn"
+                                                            onClick={() =>
+                                                                handleRemoveExpired(
+                                                                    item
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <Trash2
+                                                                size={
+                                                                    15
+                                                                }
+                                                            />
+
+                                                            Remove
+
+                                                        </button>
+
+                                                    </div>
+
+                                                </td>
+
+                                            </tr>
+                                        );
+                                    }
+                                )}
+
+                            </tbody>
+
+                        </table>
+
+                    ) : (
+
+                        <div className="expired-empty">
+
+                            <CheckCircle
+                                size={38}
+                            />
+
+                            <h3>
+                                No Expired Medicines
+                            </h3>
+
+                            <p>
+                                All medicines are currently
+                                within their expiration dates.
+                            </p>
+
+                        </div>
+
+                    )}
+
+                </div>
+
+            </div>
+
+            {/* =================================================
                 ADD MEDICINE MODAL
-            ========================= */}
+            ================================================= */}
 
             {showAddModal && (
 
                 <div
                     className="medicine-modal-overlay"
-                    onClick={handleCloseModal}
+                    onClick={
+                        handleCloseModal
+                    }
                 >
 
                     <div
                         className="medicine-modal"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
                     >
 
-                        {/* Modal Header */}
+                        {/* MODAL HEADER */}
 
                         <div className="medicine-modal-header">
 
                             <div>
-                                <h2>Add Medicine</h2>
+
+                                <h2>
+                                    Add Medicine
+                                </h2>
+
                                 <p>
-                                    Enter the medicine information below.
+                                    Enter the medicine
+                                    information below.
                                 </p>
+
                             </div>
 
                             <button
                                 className="medicine-modal-close"
-                                onClick={handleCloseModal}
+                                onClick={
+                                    handleCloseModal
+                                }
                                 type="button"
                             >
                                 <X size={20} />
@@ -466,13 +1097,17 @@ function Inventory() {
 
                         </div>
 
-                        {/* Form */}
+                        {/* FORM */}
 
-                        <form onSubmit={handleAddMedicine}>
+                        <form
+                            onSubmit={
+                                handleAddMedicine
+                            }
+                        >
 
                             <div className="medicine-form-grid">
 
-                                {/* Medicine Name */}
+                                {/* MEDICINE NAME */}
 
                                 <div className="medicine-form-group full">
 
@@ -484,14 +1119,18 @@ function Inventory() {
                                         type="text"
                                         name="name"
                                         placeholder="e.g. Paracetamol 500mg"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
+                                        value={
+                                            formData.name
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
                                         required
                                     />
 
                                 </div>
 
-                                {/* Category */}
+                                {/* CATEGORY */}
 
                                 <div className="medicine-form-group">
 
@@ -501,8 +1140,12 @@ function Inventory() {
 
                                     <select
                                         name="category"
-                                        value={formData.category}
-                                        onChange={handleInputChange}
+                                        value={
+                                            formData.category
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
                                         required
                                     >
 
@@ -538,7 +1181,7 @@ function Inventory() {
 
                                 </div>
 
-                                {/* Unit */}
+                                {/* UNIT */}
 
                                 <div className="medicine-form-group">
 
@@ -548,8 +1191,12 @@ function Inventory() {
 
                                     <select
                                         name="unit"
-                                        value={formData.unit}
-                                        onChange={handleInputChange}
+                                        value={
+                                            formData.unit
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
                                         required
                                     >
 
@@ -585,7 +1232,7 @@ function Inventory() {
 
                                 </div>
 
-                                {/* Quantity */}
+                                {/* QUANTITY */}
 
                                 <div className="medicine-form-group">
 
@@ -598,14 +1245,18 @@ function Inventory() {
                                         name="quantity"
                                         min="0"
                                         placeholder="0"
-                                        value={formData.quantity}
-                                        onChange={handleInputChange}
+                                        value={
+                                            formData.quantity
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
                                         required
                                     />
 
                                 </div>
 
-                                {/* Reorder Level */}
+                                {/* REORDER LEVEL */}
 
                                 <div className="medicine-form-group">
 
@@ -618,14 +1269,18 @@ function Inventory() {
                                         name="reorderLevel"
                                         min="0"
                                         placeholder="e.g. 20"
-                                        value={formData.reorderLevel}
-                                        onChange={handleInputChange}
+                                        value={
+                                            formData.reorderLevel
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
                                         required
                                     />
 
                                 </div>
 
-                                {/* Expiration Date */}
+                                {/* EXPIRATION DATE */}
 
                                 <div className="medicine-form-group full">
 
@@ -636,8 +1291,12 @@ function Inventory() {
                                     <input
                                         type="date"
                                         name="expirationDate"
-                                        value={formData.expirationDate}
-                                        onChange={handleInputChange}
+                                        value={
+                                            formData.expirationDate
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
                                         required
                                     />
 
@@ -645,14 +1304,16 @@ function Inventory() {
 
                             </div>
 
-                            {/* Buttons */}
+                            {/* BUTTONS */}
 
                             <div className="medicine-form-actions">
 
                                 <button
                                     type="button"
                                     className="medicine-cancel-btn"
-                                    onClick={handleCloseModal}
+                                    onClick={
+                                        handleCloseModal
+                                    }
                                 >
                                     Cancel
                                 </button>
@@ -661,8 +1322,13 @@ function Inventory() {
                                     type="submit"
                                     className="medicine-save-btn"
                                 >
-                                    <Plus size={18} />
+
+                                    <Plus
+                                        size={18}
+                                    />
+
                                     Add Medicine
+
                                 </button>
 
                             </div>

@@ -29,7 +29,6 @@ import StaffLayout from "../layouts/StaffLayout";
 import StaffDashboard from "../pages/Clinicstaff/StaffDashboard";
 import MedicalRecords from "../pages/Clinicstaff/MedicalRecords";
 import Inventory from "../pages/Clinicstaff/Inventory";
-import Issuance from "../pages/Clinicstaff/Issuance";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
 import StudentMedicalProfile from "../pages/Clinicstaff/StudentMedicalProfile";
@@ -37,6 +36,7 @@ import AddPatient from "../pages/Clinicstaff/AddPatient";
 import EmployeeProfiles from "../pages/Clinicstaff/EmployeeProfiles";
 import NewConsultation from "../pages/Clinicstaff/NewConsultation";
 import VisitHistory from "../pages/Clinicstaff/VisitHestory";
+import Profile from "../pages/Clinicstaff/Profile";
 
 // ==============================
 // Student
@@ -155,11 +155,6 @@ function AppRoutes() {
                     />
 
                     <Route
-                        path="issuance"
-                        element={<Issuance />}
-                    />
-
-                    <Route
                         path="staff-reports"
                         element={<StaffReports />}
                     />
@@ -188,6 +183,11 @@ function AppRoutes() {
                     <Route
                         path="Visit-History"
                         element={<VisitHistory />}
+                    />
+
+                    <Route
+                        path="Profile"
+                        element={<Profile />}
                     />
 
                 </Route>

@@ -19,7 +19,6 @@ function MedicalRecords() {
             patient: "Juan Dela Cruz",
             date: "2026-09-04",
             doctor: "Dr. Maria Santos",
-            diagnosis: "Fever and Headache",
             status: "Completed"
         },
         {
@@ -28,7 +27,6 @@ function MedicalRecords() {
             patient: "Maria Garcia",
             date: "2026-09-03",
             doctor: "Dr. John Reyes",
-            diagnosis: "Common Cold",
             status: "Completed"
         },
         {
@@ -37,7 +35,6 @@ function MedicalRecords() {
             patient: "Pedro Ramos",
             date: "2026-09-02",
             doctor: "Dr. Maria Santos",
-            diagnosis: "Hypertension",
             status: "Follow-up"
         },
         {
@@ -46,24 +43,30 @@ function MedicalRecords() {
             patient: "Ana Cruz",
             date: "2026-09-01",
             doctor: "Dr. John Reyes",
-            diagnosis: "Stomach Pain",
             status: "Completed"
         }
     ];
 
     const filteredRecords = records.filter((record) =>
-        record.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.patientId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.diagnosis.toLowerCase().includes(searchTerm.toLowerCase())
+        record.patient
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+        record.patientId
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+        record.doctor
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
     );
 
     const handleView = (record) => {
         alert(
             `Medical Record: ${record.id}\n\n` +
             `Patient: ${record.patient}\n` +
-            `Diagnosis: ${record.diagnosis}\n` +
+            `Patient ID: ${record.patientId}\n` +
             `Doctor: ${record.doctor}\n` +
-            `Date: ${record.date}`
+            `Date: ${record.date}\n` +
+            `Status: ${record.status}`
         );
     };
 
@@ -89,6 +92,7 @@ function MedicalRecords() {
                     <div className="summary-icon">
                         <FileText size={22} />
                     </div>
+
                     <div>
                         <span>Total Records</span>
                         <strong>{records.length}</strong>
@@ -99,9 +103,10 @@ function MedicalRecords() {
                     <div className="summary-icon">
                         <User size={22} />
                     </div>
+
                     <div>
                         <span>Patients</span>
-                        <strong>4</strong>
+                        <strong>{records.length}</strong>
                     </div>
                 </div>
 
@@ -109,9 +114,10 @@ function MedicalRecords() {
                     <div className="summary-icon">
                         <Stethoscope size={22} />
                     </div>
+
                     <div>
                         <span>Consultations</span>
-                        <strong>4</strong>
+                        <strong>{records.length}</strong>
                     </div>
                 </div>
 
@@ -129,11 +135,14 @@ function MedicalRecords() {
 
                     <div className="search-box">
                         <Search size={18} />
+
                         <input
                             type="text"
-                            placeholder="Search patient or diagnosis..."
+                            placeholder="Search patient or doctor..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) =>
+                                setSearchTerm(e.target.value)
+                            }
                         />
                     </div>
 
@@ -142,13 +151,13 @@ function MedicalRecords() {
                 {/* Table */}
                 <div className="table-container">
                     <table className="records-table">
+
                         <thead>
                             <tr>
                                 <th>Record ID</th>
                                 <th>Patient</th>
                                 <th>Date</th>
                                 <th>Doctor</th>
-                                <th>Diagnosis</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -159,14 +168,17 @@ function MedicalRecords() {
                                 filteredRecords.map((record) => (
                                     <tr key={record.id}>
 
+                                        {/* Record ID */}
                                         <td>
                                             <span className="record-id">
                                                 {record.id}
                                             </span>
                                         </td>
 
+                                        {/* Patient */}
                                         <td>
                                             <div className="patient-info">
+
                                                 <div className="patient-avatar">
                                                     <User size={17} />
                                                 </div>
@@ -175,13 +187,16 @@ function MedicalRecords() {
                                                     <strong>
                                                         {record.patient}
                                                     </strong>
+
                                                     <small>
                                                         {record.patientId}
                                                     </small>
                                                 </div>
+
                                             </div>
                                         </td>
 
+                                        {/* Date */}
                                         <td>
                                             <div className="date-info">
                                                 <Calendar size={15} />
@@ -189,6 +204,7 @@ function MedicalRecords() {
                                             </div>
                                         </td>
 
+                                        {/* Doctor */}
                                         <td>
                                             <div className="doctor-info">
                                                 <Stethoscope size={15} />
@@ -196,10 +212,7 @@ function MedicalRecords() {
                                             </div>
                                         </td>
 
-                                        <td>
-                                            {record.diagnosis}
-                                        </td>
-
+                                        {/* Status */}
                                         <td>
                                             <span
                                                 className={`status-badge ${
@@ -213,6 +226,7 @@ function MedicalRecords() {
                                             </span>
                                         </td>
 
+                                        {/* Action */}
                                         <td>
                                             <button
                                                 className="view-btn"
@@ -230,15 +244,19 @@ function MedicalRecords() {
                             ) : (
                                 <tr>
                                     <td
-                                        colSpan="7"
+                                        colSpan="6"
                                         className="no-records"
                                     >
                                         <FileText size={35} />
-                                        <p>No medical records found.</p>
+
+                                        <p>
+                                            No medical records found.
+                                        </p>
                                     </td>
                                 </tr>
                             )}
                         </tbody>
+
                     </table>
                 </div>
 
@@ -248,4 +266,3 @@ function MedicalRecords() {
 }
 
 export default MedicalRecords;
-
