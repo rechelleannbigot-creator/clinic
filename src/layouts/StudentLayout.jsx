@@ -1,213 +1,418 @@
+
 import { useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
+import {
+    LayoutDashboard,
+    Stethoscope,
+    FileText,
+    CalendarPlus,
+    Pill,
+    UserRound,
+    Bell,
+    LogOut,
+    Menu,
+    X,
+    HeartPulse,
+    ClipboardList,
+    UserCircle
+} from "lucide-react";
+
 import { logout } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/lcc-logo.jpg";
 
 import "../styles/StudentLayout.css";
 
-import logo from "../assets/lcc-logo.jpg";
-
-import { Menu, LayoutDashboard } from "lucide-react";
-
 function StudentLayout() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  // State to manage the sidebar's open/closed state
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
-  // Toggle the sidebar open/closed state
-  const toggleSidebar = () => {
-    setSidebarOpen((previous) => !previous);
-  };
-  // Close the sidebar on mobile devices when a link is clicked
-  const closeSidebarOnMobile = () => {
-    if (window.innerWidth <= 700) {
-      setSidebarOpen(false);
-    }
-  };
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate("/");
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
+    const closeSidebarOnMobile = () => {
+        if (window.innerWidth <= 700) {
+            setSidebarOpen(false);
+        }
+    };
+
+    return (
+        <div
+            className={`student-layout ${
+                sidebarOpen ? "sidebar-open" : "sidebar-closed"
+            }`}
+        >
+
+            {/* =====================================================
+                HEADER
+            ===================================================== */}
+
+            <header className="student-header">
+
+                <div className="student-header-left">
+
+                    <button
+                        className="sidebar-toggle"
+                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                        aria-label="Toggle sidebar"
+                    >
+                        {sidebarOpen ? (
+                            <X size={20} />
+                        ) : (
+                            <Menu size={20} />
+                        )}
+                    </button>
+
+                    <div className="student-title">
+
+                        <img
+                            src={logo}
+                            alt="LCCI Logo"
+                        />
+
+                        <div>
+                            <h2>
+                                Clinic Management System
+                            </h2>
+
+                            <span>
+                                Student Health Services
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
 
 
-    // ========================================
-    // LOGOUT
-    // ========================================
+                {/* USER AREA */}
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/");
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+                <div className="student-user">
 
-  return (
-    <div
-      // Apply different classes based on the sidebar's state
-      className={`student-layout ${
-        sidebarOpen ? "sidebar-open" : "sidebar-closed"
-      }`}
-    >
-      {/* HEADER */}
-      <header className="student-header">
-        <div className="student-header-left">
-          {/* Sidebar Toggle */}
-          <button
-            type="button" //type attribute specifies the button's behavior
-            className="sidebar-toggle" //className attribute assigns a CSS class for styling
-            onClick={toggleSidebar} //onClick attribute specifies the function to be called when the button is clicked
-            aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"} //aria-label attribute provides an accessible label for screen readers
-            title={sidebarOpen ? "Close sidebar" : "Open sidebar"} //title attribute provides a tooltip when hovering over the button
-          >
-            <Menu size={22} />
-          </button>
+                    <div className="student-user-info">
 
-          {/* Application Title */}
-          <div className="student-title">
-            <img src={logo} alt="Clinic Management System" className="student-logo" />
-            <h2>Clinic Management System</h2>
-          </div> 
+                        <span>
+                            {user?.name ||
+                                user?.displayName ||
+                                "Student"}
+                        </span>
+
+                        <small>
+                            Student
+                        </small>
+
+                    </div>
+
+                    <div className="student-avatar">
+                        {(
+                            user?.name ||
+                            user?.displayName ||
+                            "S"
+                        )
+                            .charAt(0)
+                            .toUpperCase()}
+                    </div>
+
+                    <button
+                        className="logout-btn"
+                        onClick={handleLogout}
+                        title="Logout"
+                    >
+                        <LogOut size={16} />
+
+                        <span>
+                            Logout
+                        </span>
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            {/* =====================================================
+                MOBILE OVERLAY
+            ===================================================== */}
+
+            <div
+                className="sidebar-overlay"
+                onClick={() => setSidebarOpen(false)}
+            ></div>
+
+
+            {/* =====================================================
+                SIDEBAR
+            ===================================================== */}
+
+            <aside className="sidebar">
+
+                {/* BRAND */}
+
+                <div className="sidebar-brand">
+
+                    <div className="sidebar-brand-icon">
+                        <HeartPulse size={20} />
+                    </div>
+
+                    <div className="sidebar-brand-text">
+
+                        <strong>
+                            Student Portal
+                        </strong>
+
+                        <span>
+                            Health & Wellness
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                {/* =================================================
+                    MAIN MENU
+                ================================================= */}
+
+                <div className="sidebar-section">
+
+                    <div className="sidebar-section-title">
+                        Main Menu
+                    </div>
+
+
+                    {/* Dashboard */}
+
+                    <NavLink
+                        to="/student/dashboard"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${
+                                isActive ? "active" : ""
+                            }`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <LayoutDashboard size={18} />
+                        </span>
+
+                        <span className="nav-text">
+                            Dashboard
+                        </span>
+                    </NavLink>
+
+
+                    {/* My Medical Records */}
+
+                    <NavLink
+                        to="/student/medical-records"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${
+                                isActive ? "active" : ""
+                            }`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <FileText size={18} />
+                        </span>
+
+                        <span className="nav-text">
+                            Medical Records
+                        </span>
+                    </NavLink>
+
+
+                    {/* My Consultations */}
+
+                    <NavLink
+                        to="/student/my-consultation"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${
+                                isActive ? "active" : ""
+                            }`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <Stethoscope size={18} />
+                        </span>
+
+                        <span className="nav-text">
+                            My Consultations
+                        </span>
+                    </NavLink>
+
+                </div>
+
+
+                {/* =================================================
+                    HEALTH SERVICES
+                ================================================= */}
+
+                <div className="sidebar-section">
+
+                    <div className="sidebar-section-title">
+                        Health Services
+                    </div>
+
+
+                    {/* Book Consultation */}
+
+                    <NavLink
+                        to="/student/book-consultation"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${
+                                isActive ? "active" : ""
+                            }`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <CalendarPlus size={18} />
+                        </span>
+
+                        <span className="nav-text">
+                            Book Consultation
+                        </span>
+                    </NavLink>
+
+
+                    {/* Medicine */}
+
+                    <NavLink
+                        to="/student/my-medicine"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${
+                                isActive ? "active" : ""
+                            }`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <Pill size={18} />
+                        </span>
+
+                        <span className="nav-text">
+                            My Medicine
+                        </span>
+                    </NavLink>
+
+                </div>
+
+
+                {/* =================================================
+                    ACCOUNT
+                ================================================= */}
+
+                <div className="sidebar-section">
+
+                    <div className="sidebar-section-title">
+                        Account
+                    </div>
+
+
+                    {/* Medical Profile */}
+
+                    <NavLink
+                        to="/student/medical-profile"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${
+                                isActive ? "active" : ""
+                            }`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <UserRound size={18} />
+                        </span>
+
+                        <span className="nav-text">
+                            Medical Profile
+                        </span>
+                    </NavLink>
+
+
+                    {/* Notifications */}
+
+                    <NavLink
+                        to="/student/notifications"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${
+                                isActive ? "active" : ""
+                            }`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <Bell size={18} />
+                        </span>
+
+                        <span className="nav-text">
+                            Notifications
+                        </span>
+                    </NavLink>
+
+                </div>
+
+
+                {/* =================================================
+                    SIDEBAR BOTTOM
+                ================================================= */}
+
+                <div className="sidebar-bottom">
+
+                    <div className="sidebar-profile">
+
+                        <div className="sidebar-profile-avatar">
+                            {(
+                                user?.name ||
+                                user?.displayName ||
+                                "S"
+                            )
+                                .charAt(0)
+                                .toUpperCase()}
+                        </div>
+
+                        <div className="sidebar-profile-info">
+
+                            <strong>
+                                {user?.name ||
+                                    user?.displayName ||
+                                    "Student"}
+                            </strong>
+
+                            <span>
+                                Student Account
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+
+            {/* =====================================================
+                MAIN CONTENT
+            ===================================================== */}
+
+            <main className="content">
+                <Outlet />
+            </main>
+
         </div>
-
-        {/* Student User */}
-        <div className="student-user">
-          <span title={`${user?.firstName} ${user?.lastName}`}>
-            {user?.firstName} {user?.lastName}
-          </span>
-
-          <button type="button" className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </header>
-
-
-            {/* STUDENT BODY */}
-      <div className="student-body">
-        {/* SIDEBAR */}
-        <aside className="sidebar">
-          
-          {/* MAIN */}
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">MAIN</div>
-
-            <NavLink
-              to="/student"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Dashboard"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Dashboard</span>
-            </NavLink>
-          </div>
-
-          {/* Health Services */}
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">QUICK ACTIONS</div>
-
-            <NavLink
-              to="book-consultation"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Book Consultation"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Book Consultation</span>
-            </NavLink>
-
-            <NavLink
-              to="my-consultation"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="My Consultation"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">My Consultation</span>
-            </NavLink>
-
-            <NavLink
-              to="student-medical-records"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Student Medical Records"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Student Medical Records</span>
-            </NavLink>
-
-            <NavLink
-              to="my-medicine"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="My Medicine"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">My Medicine</span>
-            </NavLink>
-
-            <NavLink
-              to="medical-profile"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-              title="Medical Profile"
-            >
-              <span className="nav-icon">
-                <LayoutDashboard size={18} />
-              </span>
-              <span className="nav-text">Medical Profile</span>
-            </NavLink>
-            
-            
-
-
-
-            </div>
-
-          </aside>
-
-          {/* MOBILE OVERLAY - this overlay is displayed on mobile devices when the sidebar is open. Clicking on it will close the sidebar. */}
-        {sidebarOpen && (
-          <div className="sidebar-overlay" onClick={toggleSidebar} />
-        )}
-
-        {/* MAIN CONTENT - this is where the main content of the admin dashboard will be rendered. The Outlet component is used to render the matched child route components.*/}
-        <main className="content">
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default StudentLayout;
-
-
 
