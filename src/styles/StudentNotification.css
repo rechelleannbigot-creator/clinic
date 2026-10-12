@@ -1,0 +1,459 @@
+
+.student-notification-container {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+  color: #1e293b;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+/* Header */
+.student-notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.student-notification-header h2 {
+  margin: 0 0 8px;
+  color: #173b63;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.student-notification-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.student-notification-header-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  color: #1677c8;
+  background: #eaf3ff;
+  border-radius: 14px;
+}
+
+.student-notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  color: #ffffff;
+  background: #dc2626;
+  border: 2px solid #ffffff;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Summary Cards */
+.student-notification-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.student-notification-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 105px;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #e7edf5;
+  border-radius: 13px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03);
+}
+
+.student-notification-summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.student-notification-summary-icon.total {
+  color: #1677c8;
+  background: #eaf3ff;
+}
+
+.student-notification-summary-icon.unread {
+  color: #b7791f;
+  background: #fff6df;
+}
+
+.student-notification-summary-card p {
+  margin: 0 0 7px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.student-notification-summary-card h3 {
+  margin: 0;
+  color: #173b63;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+/* Main Panel */
+.student-notification-panel {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e7edf5;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03);
+}
+
+.student-notification-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px;
+}
+
+.student-notification-panel-header h3 {
+  margin: 0 0 7px;
+  color: #173b63;
+  font-size: 18px;
+}
+
+.student-notification-panel-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.student-mark-all-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 10px 13px;
+  color: #1677c8;
+  background: #ffffff;
+  border: 1px solid #cfe3f8;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.student-mark-all-button:hover:not(:disabled) {
+  background: #edf5ff;
+}
+
+.student-mark-all-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Filters */
+.student-notification-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  border-bottom: 1px solid #e9eef5;
+}
+
+.student-notification-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 14px;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.student-notification-filter:hover {
+  color: #1677c8;
+}
+
+.student-notification-filter.active {
+  color: #1677c8;
+  border-bottom-color: #1677c8;
+  font-weight: 700;
+}
+
+.student-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  color: #ffffff;
+  background: #1677c8;
+  border-radius: 20px;
+  font-size: 10px;
+}
+
+/* Notification List */
+.student-notification-list {
+  padding: 0 24px;
+}
+
+.student-notification-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 22px 0;
+  border-bottom: 1px solid #edf1f6;
+}
+
+.student-notification-card.unread {
+  background: #f8fbff;
+  margin: 0 -24px;
+  padding: 22px 24px;
+}
+
+.student-notification-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  color: #1677c8;
+  background: #eaf3ff;
+  border-radius: 12px;
+}
+
+.student-notification-item-icon.medicine {
+  color: #16805d;
+  background: #e7f8ef;
+}
+
+.student-notification-item-icon.medical-record {
+  color: #7c5ac7;
+  background: #f1eaff;
+}
+
+.student-notification-item-icon.announcement {
+  color: #b7791f;
+  background: #fff5dd;
+}
+
+.student-notification-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-notification-item-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+
+.student-notification-item-heading h4 {
+  margin: 0;
+  color: #173b63;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.student-unread-badge {
+  padding: 4px 8px;
+  color: #1677c8;
+  background: #eaf3ff;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.student-notification-item-content > p {
+  margin: 0 0 13px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.student-notification-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.student-notification-meta > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.student-notification-type {
+  padding: 4px 8px;
+  color: #475569;
+  background: #f1f5f9;
+  border-radius: 5px;
+  font-size: 10px;
+}
+
+.student-mark-read-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  color: #1677c8;
+  background: #ffffff;
+  border: 1px solid #dbe7f4;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.student-mark-read-button:hover {
+  color: #ffffff;
+  background: #1677c8;
+  border-color: #1677c8;
+}
+
+/* Empty State */
+.student-notification-empty {
+  padding: 55px 20px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.student-notification-empty > svg {
+  margin-bottom: 12px;
+}
+
+.student-notification-empty h3 {
+  margin: 0 0 8px;
+  color: #173b63;
+  font-size: 17px;
+}
+
+.student-notification-empty p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* Footer */
+.student-notification-footer {
+  padding: 17px 24px;
+  color: #94a3b8;
+  background: #fbfcfe;
+  border-top: 1px solid #edf1f6;
+  font-size: 11px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .student-notification-header h2 {
+    font-size: 23px;
+  }
+
+  .student-notification-summary {
+    gap: 12px;
+  }
+
+  .student-notification-summary-card {
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .student-notification-panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .student-notification-filters {
+    padding: 0 15px;
+  }
+
+  .student-notification-list {
+    padding: 0 18px;
+  }
+
+  .student-notification-card.unread {
+    margin: 0 -18px;
+    padding: 20px 18px;
+  }
+
+  .student-notification-card {
+    gap: 11px;
+  }
+
+  .student-notification-item-icon {
+    width: 39px;
+    height: 39px;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-notification-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .student-notification-header {
+    gap: 10px;
+  }
+
+  .student-notification-header p {
+    font-size: 12px;
+  }
+
+  .student-notification-header-icon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .student-notification-item-heading h4 {
+    font-size: 13px;
+  }
+
+  .student-notification-item-content > p {
+    font-size: 12px;
+  }
+
+  .student-notification-card {
+    flex-wrap: wrap;
+  }
+
+  .student-mark-read-button {
+    margin-left: auto;
+  }
+
+  .student-notification-meta {
+    gap: 8px;
+  }
+
+  .student-mark-all-button {
+    font-size: 11px;
+  }
+}

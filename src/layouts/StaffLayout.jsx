@@ -183,27 +183,7 @@ function StaffLayout() {
                 Add Patient
               </span>
             </NavLink>
-
-            {/* Medical Records */}
-            <NavLink
-              to="medical-records"
-              end
-              onClick={closeSidebarOnMobile}
-              className={({ isActive }) =>
-                isActive
-                  ? "nav-link active"
-                  : "nav-link"
-              }
-              title="Medical Records"
-            >
-              <span className="nav-icon">
-                <FileText size={18} />
-              </span>
-
-              <span className="nav-text">
-                Medical Records
-              </span>
-            </NavLink>
+            
 
             {/* Student Medical Profile */}
             <NavLink

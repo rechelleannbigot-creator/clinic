@@ -27,7 +27,6 @@ import Logout from "../pages/Admin/Logout";
 // ==============================
 import StaffLayout from "../layouts/StaffLayout";
 import StaffDashboard from "../pages/Clinicstaff/StaffDashboard";
-import MedicalRecords from "../pages/Clinicstaff/MedicalRecords";
 import Inventory from "../pages/Clinicstaff/Inventory";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
@@ -43,26 +42,17 @@ import Profile from "../pages/Clinicstaff/Profile";
 // ==============================
 import StudentLayout from "../layouts/StudentLayout";
 import StudentDashboard from "../pages/Student/StudentDashboard";
-import MyConsultation from "../pages/Student/MyConsultation";
-import BookConsultation from "../pages/Student/BookConsultation";
-import StudentMedicalRecords from "../pages/Student/StudentMedicalRecords";
-import MyMedicine from "../pages/Student/MyMedicine";
 import MedicalProfile from "../pages/Student/MedicalProfile";
+import StudentNotifications from "../pages/Student/StudentNotification";
 
 function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-
-                {/* =================================
-                    LOGIN
-                ================================= */}
+                {/* LOGIN */}
                 <Route path="/" element={<Login />} />
 
-
-                {/* =================================
-                    ADMIN ROUTES
-                ================================= */}
+                {/* ADMIN ROUTES */}
                 <Route
                     path="/admin"
                     element={
@@ -72,61 +62,19 @@ function AppRoutes() {
                     }
                 >
                     <Route index element={<AdminDashboard />} />
-
-                    <Route
-                        path="manage-users"
-                        element={<ManageUser />}
-                    />
-                    <Route
-                        path="patients-management"
-                        element={<PatientsManagement />}
-                    />
-
-                    <Route
-                        path="consultations"
-                        element={<Consultations />}
-                    />
-
-                    <Route
-                        path="medicine-inventory"
-                        element={<MedicineInventory />}
-                    />
-
-                    <Route
-                        path="medicine-issuance"
-                        element={<MedicineIssuance />}
-                    />
-
-                    <Route
-                        path="reports"
-                        element={<Reports />}
-                    />
-
-                    <Route
-                        path="notifications"
-                        element={<Notification />}
-                    />
-
-                    <Route
-                        path="analytics"
-                        element={<Analytics />}
-                    />
-
-                    <Route
-                        path="my-profile"
-                        element={<MyProfile />}
-                    />
-
-                    <Route
-                        path="logout"
-                        element={<Logout />}
-                    />
+                    <Route path="manage-users" element={<ManageUser />} />
+                    <Route path="patients-management" element={<PatientsManagement />} />
+                    <Route path="consultations" element={<Consultations />} />
+                    <Route path="medicine-inventory" element={<MedicineInventory />} />
+                    <Route path="medicine-issuance" element={<MedicineIssuance />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="notifications" element={<Notification />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="my-profile" element={<MyProfile />} />
+                    <Route path="logout" element={<Logout />} />
                 </Route>
 
-
-                {/* =================================
-                    CLINIC STAFF ROUTES
-                ================================= */}
+                {/* CLINIC STAFF ROUTES */}
                 <Route
                     path="/staff"
                     element={
@@ -136,68 +84,18 @@ function AppRoutes() {
                     }
                 >
                     <Route index element={<StaffDashboard />} />
-
-
-                    <Route
-                        path="add-patient"
-                        element={<AddPatient />}
-                    />
-
-                    <Route
-                        path="medical-records"
-                        element={<MedicalRecords />}
-                    />
-
-
-                    <Route
-                        path="inventory"
-                        element={<Inventory />}
-                    />
-
-                    <Route
-                        path="staff-reports"
-                        element={<StaffReports />}
-                    />
-
-                    <Route
-                        path="notifications"
-                        element={<Notifications />}
-                    />
-
-                    <Route
-                        path="student-medical-profile"
-                        element={<StudentMedicalProfile />}
-                    />
-
-                     <Route
-                        path="employee-profiles"
-                        element={<EmployeeProfiles />}
-                    />
-
-                    <Route
-                        path="New-Consultation"
-                        element={<NewConsultation />}
-                    />
-
-
-                    <Route
-                        path="Visit-History"
-                        element={<VisitHistory />}
-                    />
-
-                    <Route
-                        path="Profile"
-                        element={<Profile />}
-                    />
-
+                    <Route path="add-patient" element={<AddPatient />} />
+                    <Route path="inventory" element={<Inventory />} />
+                    <Route path="staff-reports" element={<StaffReports />} />
+                    <Route path="notifications" element={<Notifications />} />
+                    <Route path="student-medical-profile" element={<StudentMedicalProfile />} />
+                    <Route path="employee-profiles" element={<EmployeeProfiles />} />
+                    <Route path="New-Consultation" element={<NewConsultation />} />
+                    <Route path="Visit-History" element={<VisitHistory />} />
+                    <Route path="Profile" element={<Profile />} />
                 </Route>
 
-
-
-
-                {/* =================================
-                    STUDENT ROUTES
-                ================================= */}
+                {/* STUDENT ROUTES */}
                 <Route
                     path="/student"
                     element={
@@ -205,19 +103,12 @@ function AppRoutes() {
                             <StudentLayout />
                         </RoleRoute>
                     }
-                >   
-                <Route index element={<StudentDashboard />} />
-                <Route path="my-consultation" element={<MyConsultation />} />
-                <Route path="book-consultation" element={<BookConsultation />} />
-                <Route path="student-medical-records" element={<StudentMedicalRecords />} />
-                <Route path="my-medicine" element={<MyMedicine />} />
-                <Route path="medical-profile" element={<MedicalProfile />} />
-
+                >
+                    <Route index element={<StudentDashboard />} />
+                    <Route path="dashboard" element={<StudentDashboard />} />
+                    <Route path="notifications" element={<StudentNotifications />} />/
+                    <Route path="medical-profile" element={<MedicalProfile />} />
                 </Route>
-
-                
-                
-
             </Routes>
         </BrowserRouter>
     );

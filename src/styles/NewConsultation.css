@@ -1,219 +1,181 @@
-/* =========================================================
+
+/* =========================================
    NEW CONSULTATION PAGE
-========================================================= */
+========================================= */
 
 .new-consultation-page {
     min-height: 100vh;
+    padding: 30px;
     background: #f4f7fb;
-    padding: 32px;
+    color: #25364a;
     font-family: "Inter", "Segoe UI", Arial, sans-serif;
-    color: #1f2937;
-    box-sizing: border-box;
 }
-
-.new-consultation-page *,
-.new-consultation-page *::before,
-.new-consultation-page *::after {
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   PAGE HEADER
-========================================================= */
 
 .consultation-page-header {
     display: flex;
     align-items: center;
-    gap: 16px;
-    max-width: 1200px;
-    margin: 0 auto 25px;
+    gap: 18px;
+    margin-bottom: 28px;
 }
 
-.consultation-header-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 14px;
-    background: #e8f2ff;
-    color: #1677c8;
+.consultation-header-icon,
+.section-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    color: #1677c8;
+    background: #e7f1ff;
+    border-radius: 12px;
+}
+
+.consultation-header-icon {
+    width: 60px;
+    height: 60px;
 }
 
 .consultation-page-header h1 {
-    margin: 0;
+    margin: 0 0 7px;
     color: #173b63;
     font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
+    font-weight: 750;
 }
 
 .consultation-page-header p {
-    margin: 5px 0 0;
+    margin: 0;
     color: #718096;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   ALERTS
+========================================= */
+
+.consultation-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 18px;
+    margin-bottom: 22px;
+    border: 1px solid transparent;
+    border-radius: 10px;
     font-size: 14px;
     line-height: 1.5;
 }
 
-
-/* =========================================================
-   ALERT / NOTIFICATION
-========================================================= */
-
-.consultation-alert {
-    max-width: 1200px;
-    margin: 0 auto 20px;
-    min-height: 50px;
-    padding: 13px 16px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    font-size: 14px;
-    font-weight: 500;
-    border: 1px solid transparent;
-}
-
 .alert-success {
-    background: #ecfdf3;
-    border-color: #b7ebca;
-    color: #16803c;
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
 }
 
 .alert-error {
-    background: #fff1f2;
-    border-color: #fecdd3;
-    color: #c62828;
+    color: #b91c1c;
+    background: #fef2f2;
+    border-color: #fecaca;
 }
 
-
-/* =========================================================
-   CONSULTATION CARD
-========================================================= */
+/* =========================================
+   FORM CARDS
+========================================= */
 
 .consultation-card {
-    max-width: 1200px;
-    margin: 0 auto 22px;
+    padding: 26px;
+    margin-bottom: 24px;
     background: #ffffff;
-    border: 1px solid #e4eaf1;
+    border: 1px solid #e6edf5;
     border-radius: 15px;
-    box-shadow: 0 3px 14px rgba(23, 59, 99, 0.05);
-    overflow: visible;
+    box-shadow: 0 4px 18px rgba(28, 55, 90, 0.04);
 }
 
 .consultation-card-header {
     display: flex;
     align-items: center;
-    gap: 13px;
-    padding: 21px 24px;
-    border-bottom: 1px solid #edf1f5;
+    gap: 14px;
+    padding-bottom: 22px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #edf1f6;
 }
 
 .section-icon {
-    width: 43px;
-    height: 43px;
-    border-radius: 11px;
-    background: #eaf4ff;
-    color: #1677c8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    width: 45px;
+    height: 45px;
 }
 
 .consultation-card-header h2 {
-    margin: 0;
+    margin: 0 0 6px;
     color: #173b63;
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .consultation-card-header p {
-    margin: 4px 0 0;
+    margin: 0;
     color: #7a8797;
     font-size: 13px;
-    line-height: 1.45;
+    line-height: 1.6;
 }
 
-
-/* =========================================================
-   FORM GRID
-========================================================= */
+/* =========================================
+   FORM GRID AND FIELDS
+========================================= */
 
 .consultation-form-grid {
-    padding: 24px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
+    gap: 22px;
 }
 
 .consultation-field {
     position: relative;
+    display: flex;
+    flex-direction: column;
     min-width: 0;
+    gap: 9px;
 }
 
 .consultation-field.full-width {
     grid-column: 1 / -1;
 }
 
-
-/* =========================================================
-   LABELS
-========================================================= */
-
 .consultation-field label {
-    display: block;
-    margin-bottom: 8px;
-    color: #344054;
+    color: #34465b;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 650;
 }
 
 .consultation-field label span {
-    color: #e53935;
-    margin-left: 2px;
+    color: #dc3545;
 }
-
-
-/* =========================================================
-   INPUTS / SELECTS / TEXTAREAS
-========================================================= */
 
 .consultation-field input,
 .consultation-field select,
 .consultation-field textarea {
     width: 100%;
-    border: 1px solid #d7e0e9;
-    border-radius: 9px;
-    background: #ffffff;
+    min-width: 0;
+    padding: 12px 14px;
     color: #25364a;
-    font-family: inherit;
-    font-size: 14px;
+    background: #ffffff;
+    border: 1px solid #d9e2ed;
+    border-radius: 9px;
     outline: none;
+    font: inherit;
+    font-size: 14px;
     transition:
         border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+        box-shadow 0.2s ease;
 }
 
 .consultation-field input,
 .consultation-field select {
-    height: 46px;
-    padding: 0 13px;
+    min-height: 46px;
 }
 
 .consultation-field textarea {
-    min-height: 105px;
-    padding: 12px 13px;
+    min-height: 95px;
     resize: vertical;
-    line-height: 1.55;
-}
-
-.consultation-field input::placeholder,
-.consultation-field textarea::placeholder {
-    color: #a0acba;
+    line-height: 1.6;
 }
 
 .consultation-field input:focus,
@@ -224,32 +186,175 @@
 }
 
 .consultation-field input[readonly] {
+    color: #526477;
     background: #f7f9fc;
-    color: #596b7f;
-    cursor: default;
 }
 
+.consultation-field input::placeholder,
+.consultation-field textarea::placeholder {
+    color: #9aa7b6;
+}
 
-/* =========================================================
+/* =========================================
+   QR CODE SCANNER
+========================================= */
+
+.patient-qr-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    background: #f5f9ff;
+    border: 1px solid #d8e6f5;
+    border-radius: 14px;
+}
+
+.patient-qr-description {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.patient-qr-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    color: #1677c8;
+    background: #e2efff;
+    border-radius: 12px;
+}
+
+.patient-qr-description strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #173b63;
+    font-size: 16px;
+}
+
+.patient-qr-description p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.patient-qr-scan-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: fit-content;
+    min-height: 45px;
+    padding: 12px 20px;
+    color: #ffffff;
+    background: #1677c8;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.patient-qr-scan-btn:hover {
+    background: #125fa3;
+}
+
+.patient-qr-scanner-panel {
+    width: 100%;
+    max-width: 480px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #dce5ef;
+    border-radius: 12px;
+}
+
+.patient-qr-scanner-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.patient-qr-scanner-heading span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #173b63;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.patient-qr-scanner-heading button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.patient-qr-reader {
+    width: 100%;
+    min-height: 100px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.patient-qr-reader video {
+    border-radius: 10px;
+}
+
+.patient-qr-reader img {
+    max-width: 100%;
+}
+
+.patient-qr-hint {
+    margin: 12px 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.patient-qr-cancel-btn {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.patient-qr-cancel-btn:hover {
+    background: #e2e8f0;
+}
+
+/* =========================================
    PATIENT SEARCH
-========================================================= */
-
-.patient-search-field {
-    z-index: 20;
-}
+========================================= */
 
 .consultation-search-wrapper {
-    height: 46px;
     display: flex;
     align-items: center;
     gap: 10px;
+    min-height: 46px;
     padding: 0 13px;
-    border: 1px solid #d7e0e9;
-    border-radius: 9px;
+    color: #7b8da2;
     background: #ffffff;
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    border: 1px solid #d9e2ed;
+    border-radius: 9px;
 }
 
 .consultation-search-wrapper:focus-within {
@@ -257,173 +362,145 @@
     box-shadow: 0 0 0 3px rgba(22, 119, 200, 0.1);
 }
 
-.consultation-search-wrapper svg {
-    color: #7b8b9c;
-    flex-shrink: 0;
-}
-
 .consultation-search-wrapper input {
-    height: 100%;
-    border: 0;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    padding: 12px 0;
+    color: #25364a;
+    background: transparent;
+    border: none;
     outline: none;
     box-shadow: none;
-    padding: 0;
 }
 
 .consultation-search-wrapper input:focus {
-    border: 0;
+    border: none;
     box-shadow: none;
 }
 
-
-/* =========================================================
-   PATIENT SEARCH RESULTS
-========================================================= */
+.patient-search-field {
+    z-index: 5;
+}
 
 .patient-search-results {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 5px);
     left: 0;
     right: 0;
-    background: #ffffff;
-    border: 1px solid #dbe4ec;
-    border-radius: 10px;
-    box-shadow: 0 12px 28px rgba(23, 59, 99, 0.14);
-    overflow: hidden;
-    z-index: 100;
-    max-height: 280px;
+    z-index: 20;
+    max-height: 260px;
     overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #dce5ef;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(23, 59, 99, 0.12);
 }
 
 .patient-result-item {
-    width: 100%;
-    padding: 12px 14px;
     display: flex;
     align-items: center;
     gap: 12px;
-    border: 0;
-    border-bottom: 1px solid #edf1f5;
-    background: #ffffff;
+    width: 100%;
+    padding: 13px;
     text-align: left;
+    background: #ffffff;
+    border: none;
+    border-bottom: 1px solid #edf1f6;
     cursor: pointer;
-    font-family: inherit;
-    transition: background 0.18s ease;
 }
 
 .patient-result-item:last-child {
-    border-bottom: 0;
+    border-bottom: none;
 }
 
 .patient-result-item:hover {
-    background: #f3f8fd;
+    background: #f3f8ff;
 }
 
 .patient-result-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 9px;
-    background: #eaf4ff;
-    color: #1677c8;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    color: #1677c8;
+    background: #e7f1ff;
+    border-radius: 50%;
+}
+
+.patient-result-item strong,
+.patient-result-item span {
+    display: block;
 }
 
 .patient-result-item strong {
-    display: block;
-    color: #243b53;
-    font-size: 14px;
-    font-weight: 600;
+    margin-bottom: 4px;
+    color: #173b63;
+    font-size: 13px;
 }
 
 .patient-result-item span {
-    display: block;
-    margin-top: 3px;
-    color: #8190a2;
+    color: #8492a5;
     font-size: 12px;
 }
 
 .no-patient-results {
-    padding: 18px;
-    color: #7c8998;
+    padding: 20px;
+    color: #7b8796;
     font-size: 13px;
     text-align: center;
 }
 
-
-/* =========================================================
-   SELECTED PATIENT DETAILS
-========================================================= */
+/* =========================================
+   SELECTED PATIENT
+========================================= */
 
 .selected-patient-details {
-    margin: 0 24px 24px;
-    padding: 18px;
-    background: #f7fbff;
-    border: 1px solid #dcecfb;
-    border-radius: 11px;
+    padding: 20px;
+    margin-top: 24px;
+    background: #f8fbff;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
 }
 
 .selected-patient-heading {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    color: #1677c8;
+    gap: 9px;
+    margin-bottom: 20px;
+    color: #18794e;
     font-size: 14px;
 }
 
-.selected-patient-heading svg {
-    flex-shrink: 0;
-}
-
-
-/* =========================================================
-   MEDICINE SELECTOR
-========================================================= */
+/* =========================================
+   MEDICINE DROPDOWN
+========================================= */
 
 .medicine-select-wrapper {
     position: relative;
-    width: 100%;
 }
 
 .medicine-select-button {
-    width: 100%;
-    min-height: 46px;
-    padding: 0 13px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    border: 1px solid #d7e0e9;
-    border-radius: 9px;
+    gap: 12px;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    color: #64748b;
     background: #ffffff;
-    color: #7c8998;
-    font-family: inherit;
-    font-size: 14px;
+    border: 1px solid #d9e2ed;
+    border-radius: 9px;
     text-align: left;
     cursor: pointer;
-    outline: none;
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
 }
 
-.medicine-select-button:hover {
-    border-color: #b8c8d8;
-    background: #fbfdff;
-}
-
-.medicine-select-button:focus {
+.medicine-select-button:hover,
+.medicine-select-button.medicine-selected {
     border-color: #1677c8;
-    box-shadow: 0 0 0 3px rgba(22, 119, 200, 0.1);
-}
-
-.medicine-select-button svg:last-child {
-    color: #8292a3;
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
 }
 
 .medicine-button-content {
@@ -433,248 +510,165 @@
     min-width: 0;
 }
 
-.medicine-button-content svg {
-    color: #1677c8;
-    flex-shrink: 0;
-}
-
 .medicine-button-content span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.medicine-selected {
-    color: #243b53;
-    border-color: #b8d6ed;
-    background: #f8fbfe;
-}
-
-
-/* =========================================================
-   MEDICINE DROPDOWN
-========================================================= */
-
 .medicine-dropdown {
     position: absolute;
-    top: calc(100% + 7px);
+    top: calc(100% + 6px);
     left: 0;
     right: 0;
-    background: #ffffff;
-    border: 1px solid #dbe4ec;
-    border-radius: 11px;
-    box-shadow: 0 14px 30px rgba(23, 59, 99, 0.15);
+    z-index: 15;
     overflow: hidden;
-    z-index: 200;
+    background: #ffffff;
+    border: 1px solid #dce5ef;
+    border-radius: 11px;
+    box-shadow: 0 12px 30px rgba(23, 59, 99, 0.12);
 }
 
 .medicine-dropdown-header {
-    min-height: 48px;
-    padding: 10px 14px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    background: #f7faff;
-    border-bottom: 1px solid #e8eef4;
-}
-
-.medicine-dropdown-header strong {
+    gap: 8px;
+    padding: 14px;
     color: #173b63;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.medicine-dropdown-header span {
-    color: #8290a0;
+    background: #f7faff;
+    border-bottom: 1px solid #e8eef5;
     font-size: 12px;
 }
 
+.medicine-dropdown-header span {
+    color: #8190a3;
+}
+
 .medicine-options {
-    max-height: 300px;
+    max-height: 280px;
     overflow-y: auto;
 }
 
 .medicine-option {
-    width: 100%;
-    min-height: 66px;
-    padding: 10px 14px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    border: 0;
-    border-bottom: 1px solid #edf1f5;
-    background: #ffffff;
-    font-family: inherit;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
     text-align: left;
+    background: #ffffff;
+    border: none;
+    border-bottom: 1px solid #edf1f6;
     cursor: pointer;
-    transition:
-        background 0.18s ease,
-        transform 0.18s ease;
 }
 
 .medicine-option:last-child {
-    border-bottom: 0;
+    border-bottom: none;
 }
 
 .medicine-option:hover {
-    background: #f3f8fd;
-}
-
-.medicine-option:active {
-    transform: scale(0.995);
+    background: #f3f8ff;
 }
 
 .medicine-option-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 9px;
-    background: #eaf4ff;
-    color: #1677c8;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    color: #1677c8;
+    background: #e7f1ff;
+    border-radius: 9px;
 }
 
 .medicine-option-info {
+    display: flex;
     flex: 1;
+    flex-direction: column;
+    gap: 5px;
     min-width: 0;
 }
 
 .medicine-option-info strong {
-    display: block;
-    color: #243b53;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.medicine-option-info span {
-    display: block;
-    margin-top: 3px;
-    color: #7e8c9d;
+    color: #173b63;
     font-size: 12px;
 }
 
+.medicine-option-info span {
+    color: #8190a3;
+    font-size: 11px;
+}
+
 .medicine-stock {
-    min-width: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     text-align: right;
 }
 
 .medicine-stock small {
-    display: block;
-    color: #8b98a8;
+    color: #8190a3;
     font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
 }
 
 .medicine-stock strong {
-    display: block;
-    margin-top: 2px;
-    color: #16803c;
+    color: #18794e;
     font-size: 13px;
 }
 
-
-/* =========================================================
-   SCROLLBARS
-========================================================= */
-
-.patient-search-results::-webkit-scrollbar,
-.medicine-options::-webkit-scrollbar {
-    width: 6px;
-}
-
-.patient-search-results::-webkit-scrollbar-track,
-.medicine-options::-webkit-scrollbar-track {
-    background: #f4f6f8;
-}
-
-.patient-search-results::-webkit-scrollbar-thumb,
-.medicine-options::-webkit-scrollbar-thumb {
-    background: #c5d0dc;
-    border-radius: 10px;
-}
-
-.patient-search-results::-webkit-scrollbar-thumb:hover,
-.medicine-options::-webkit-scrollbar-thumb:hover {
-    background: #aebdcb;
-}
-
-
-/* =========================================================
-   FORM ACTIONS
-========================================================= */
+/* =========================================
+   FORM ACTION BUTTONS
+========================================= */
 
 .consultation-form-actions {
-    max-width: 1200px;
-    margin: 4px auto 28px;
     display: flex;
-    align-items: center;
     justify-content: flex-end;
     gap: 12px;
+    margin: 28px 0;
 }
 
 .consultation-reset-btn,
 .consultation-save-btn {
-    min-height: 46px;
-    padding: 0 18px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 9px;
+    min-height: 46px;
+    padding: 12px 20px;
     border-radius: 9px;
-    font-family: inherit;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 650;
     cursor: pointer;
     transition:
         background 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
+        border-color 0.2s ease;
 }
 
 .consultation-reset-btn {
-    border: 1px solid #d5dee7;
+    color: #475569;
     background: #ffffff;
-    color: #596b7f;
+    border: 1px solid #d7e0eb;
 }
 
 .consultation-reset-btn:hover {
-    background: #f7f9fb;
-    border-color: #bdc9d5;
-    color: #34495e;
+    background: #f1f5f9;
 }
 
 .consultation-save-btn {
-    border: 1px solid #1677c8;
-    background: #1677c8;
     color: #ffffff;
-    box-shadow: 0 4px 10px rgba(22, 119, 200, 0.18);
+    background: #1677c8;
+    border: 1px solid #1677c8;
 }
 
 .consultation-save-btn:hover {
     background: #125fa3;
     border-color: #125fa3;
-    box-shadow: 0 6px 14px rgba(22, 119, 200, 0.23);
 }
 
-.consultation-reset-btn:active,
-.consultation-save-btn:active {
-    transform: translateY(1px);
-}
-
-
-/* =========================================================
-   RECENTLY SAVED CONSULTATIONS
-========================================================= */
-
-.saved-consultations {
-    margin-bottom: 40px;
-}
+/* =========================================
+   SAVED CONSULTATIONS TABLE
+========================================= */
 
 .consultation-table-wrapper {
     width: 100%;
@@ -683,229 +677,123 @@
 
 .consultation-table {
     width: 100%;
-    min-width: 760px;
     border-collapse: collapse;
-}
-
-.consultation-table thead {
-    background: #f7f9fc;
-}
-
-.consultation-table th {
-    padding: 13px 18px;
-    color: #637387;
-    border-bottom: 1px solid #e4eaf0;
-    font-size: 11px;
-    font-weight: 700;
-    text-align: left;
-    text-transform: uppercase;
-    letter-spacing: 0.45px;
     white-space: nowrap;
 }
 
-.consultation-table td {
-    padding: 15px 18px;
-    color: #4b5d70;
-    border-bottom: 1px solid #edf1f5;
-    font-size: 13px;
-    vertical-align: middle;
+.consultation-table th {
+    padding: 15px 14px;
+    color: #526477;
+    background: #f5f8fc;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
 }
 
-.consultation-table tbody tr {
-    transition: background 0.18s ease;
+.consultation-table td {
+    padding: 16px 14px;
+    color: #536477;
+    border-bottom: 1px solid #edf1f6;
+    font-size: 13px;
 }
 
 .consultation-table tbody tr:hover {
-    background: #f9fbfd;
-}
-
-.consultation-table tbody tr:last-child td {
-    border-bottom: 0;
+    background: #f9fbfe;
 }
 
 .consultation-table td strong {
     color: #173b63;
-    font-weight: 700;
 }
-
-
-/* =========================================================
-   CONSULTATION TYPE BADGE
-========================================================= */
 
 .consultation-type-badge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 27px;
-    padding: 4px 9px;
+    display: inline-block;
+    padding: 6px 10px;
+    color: #1763a6;
+    background: #e8f3ff;
     border-radius: 20px;
-    background: #eaf4ff;
-    color: #1677c8;
     font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
+    font-weight: 650;
 }
 
-
-/* =========================================================
-   TABLE EMPTY / GENERAL
-========================================================= */
-
-.consultation-table td:nth-child(6) {
-    color: #596b7f;
-}
-
-
-/* =========================================================
-   RESPONSIVE - TABLET
-========================================================= */
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
 
 @media (max-width: 900px) {
     .new-consultation-page {
-        padding: 25px 20px;
+        padding: 22px;
+    }
+
+    .consultation-card {
+        padding: 22px;
     }
 
     .consultation-form-grid {
-        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .new-consultation-page {
+        padding: 14px;
+    }
+
+    .consultation-page-header {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .consultation-header-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .consultation-page-header h1 {
+        font-size: 22px;
+    }
+
+    .consultation-card {
+        padding: 17px;
+        border-radius: 12px;
+    }
+
+    .consultation-card-header {
+        gap: 11px;
+        padding-bottom: 17px;
+        margin-bottom: 19px;
+    }
+
+    .consultation-card-header h2 {
+        font-size: 16px;
+    }
+
+    .consultation-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
     }
 
     .consultation-field.full-width {
         grid-column: auto;
     }
 
-    .consultation-page-header h1 {
-        font-size: 25px;
+    .patient-qr-section {
+        padding: 15px;
     }
 
-    .consultation-card-header {
-        padding: 19px 20px;
+    .patient-qr-scan-btn {
+        width: 100%;
     }
 
-    .consultation-form-grid {
-        padding: 20px;
-    }
-
-    .selected-patient-details {
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-}
-
-
-/* =========================================================
-   RESPONSIVE - MOBILE
-========================================================= */
-
-@media (max-width: 600px) {
-    .new-consultation-page {
-        padding: 18px 12px;
-    }
-
-    .consultation-page-header {
-        align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .consultation-header-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 11px;
-    }
-
-    .consultation-page-header h1 {
-        font-size: 21px;
-        line-height: 1.25;
-    }
-
-    .consultation-page-header p {
-        font-size: 12px;
-        margin-top: 4px;
-    }
-
-    .consultation-alert {
-        padding: 11px 13px;
-        font-size: 13px;
-    }
-
-    .consultation-card {
-        border-radius: 12px;
-        margin-bottom: 17px;
-    }
-
-    .consultation-card-header {
-        padding: 16px;
-        gap: 10px;
-    }
-
-    .section-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 9px;
-    }
-
-    .consultation-card-header h2 {
-        font-size: 15px;
-    }
-
-    .consultation-card-header p {
-        font-size: 11px;
-    }
-
-    .consultation-form-grid {
-        padding: 16px;
-        gap: 16px;
+    .patient-qr-scanner-panel {
+        padding: 10px;
     }
 
     .selected-patient-details {
-        margin: 0 16px 16px;
-        padding: 14px;
-    }
-
-    .consultation-field input,
-    .consultation-field select,
-    .consultation-search-wrapper,
-    .medicine-select-button {
-        min-height: 44px;
-    }
-
-    .consultation-field textarea {
-        min-height: 95px;
-    }
-
-    .medicine-dropdown {
-        position: fixed;
-        left: 12px;
-        right: 12px;
-        top: auto;
-        max-height: 70vh;
-    }
-
-    .medicine-options {
-        max-height: calc(70vh - 48px);
-    }
-
-    .medicine-option {
-        padding: 11px 12px;
-    }
-
-    .medicine-option-info strong {
-        font-size: 13px;
-    }
-
-    .medicine-option-info span {
-        font-size: 11px;
-    }
-
-    .medicine-stock {
-        min-width: 40px;
+        padding: 15px;
     }
 
     .consultation-form-actions {
         flex-direction: column-reverse;
-        align-items: stretch;
-        gap: 9px;
-        margin-bottom: 22px;
     }
 
     .consultation-reset-btn,
@@ -913,54 +801,7 @@
         width: 100%;
     }
 
-    .consultation-table th,
-    .consultation-table td {
-        padding: 12px 13px;
-    }
-}
-
-
-/* =========================================================
-   VERY SMALL MOBILE
-========================================================= */
-
-@media (max-width: 400px) {
-    .new-consultation-page {
-        padding: 14px 9px;
-    }
-
-    .consultation-page-header {
-        gap: 9px;
-    }
-
-    .consultation-header-icon {
-        width: 43px;
-        height: 43px;
-    }
-
-    .consultation-page-header h1 {
-        font-size: 19px;
-    }
-
-    .consultation-page-header p {
-        font-size: 11px;
-    }
-
-    .consultation-card-header {
-        padding: 14px;
-    }
-
-    .consultation-form-grid {
-        padding: 14px;
-    }
-
-    .selected-patient-details {
-        margin-left: 14px;
-        margin-right: 14px;
-    }
-
-    .medicine-dropdown {
-        left: 9px;
-        right: 9px;
+    .consultation-table {
+        min-width: 760px;
     }
 }
