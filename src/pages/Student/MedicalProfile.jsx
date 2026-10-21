@@ -1,697 +1,1299 @@
 import { useState } from "react";
+import {
+    Search,
+    Users,
+    Eye,
+    User,
+    HeartPulse,
+    Hospital,
+    ArrowLeft,
+    Save,
+    CheckCircle,
+} from "lucide-react";
+
 import "../../styles/MedicalProfile.css";
 
 function MedicalProfile() {
-    const [formData, setFormData] = useState({
-        lastName: "",
-        firstName: "",
-        middleInitial: "",
-        suffix: "",
-        yearSection: "",
-        address: "",
-        contactPerson: "",
-        telephone: "",
-        cellNumber: "",
-        birthDate: "",
-        age: "",
-        sex: "",
-        height: "",
-        weight: "",
-        nationality: "",
-        religion: "",
-        bloodType: "",
+    // ==========================================
+    // STUDENT LIST
+    // ==========================================
 
-        allergy: "",
-        allergyFood: "",
-        allergyMedicine: "",
-        allergyOthers: "",
+    const students = [
+        {
+            id: "STU-001",
+            name: "Christian Joseph Castillo",
+            yearSection: "BSIT 4",
+            sex: "Male",
+            age: 22,
+            status: "Completed",
 
-        immunized: "",
-        hospitalization: "",
-        lastHospitalized: "",
-        hospitalizationCause: "",
-        medicationTaken: "",
-        hospitalConfined: "",
-        operation: "",
-        operationAge: "",
-        operationCause: "",
-        operationHospital: "",
+            profile: {
+                lastName: "Castillo",
+                firstName: "Christian Joseph",
+                middleInitial: "",
+                yearSection: "BSIT 4",
+                sex: "Male",
+                address: "Isabela Negros Occidental",
+                contactPerson: "Maria Castillo",
+                telephone: "",
+                cellphone: "09XXXXXXXXX",
+                dateOfBirth: "2004-11-04",
+                age: "22",
+                nationality: "Filipino",
+                religion: "Catholic",
+                height: "",
+                weight: "",
+                bloodType: "",
 
-        parentSignature: ""
-    });
+                hasAllergy: "No",
+                allergyFood: "",
+                allergyMedicine: "",
+                allergyOther: "",
 
-    const [diseases, setDiseases] = useState({
-        measles: false,
-        mumps: false,
-        hepA: false,
-        hepB: false,
-        typhoid: false,
-        chickenPox: false,
-        bronchitis: false,
-        pneumonia: false,
-        asthma: false,
-        others: false
-    });
+                immunized: "Yes",
+                hepatitisA: "Yes",
+                hepatitisB: "Yes",
+                typhoid: "Yes",
+                rabies: "",
+                influenza: "Yes",
+                chickenpoxVaccine: "",
+                measlesVaccine: "Yes",
+                cholera: "",
+                dpt: "Yes",
+                opv: "Yes",
 
-    const [vaccines, setVaccines] = useState({
-        hepA: "",
-        hepB: "",
-        typhoid: "",
-        rabies: "",
-        influenza: "",
-        chickenPox: "",
-        measles: "",
-        cholera: "",
-        dpt: "",
-        opv: ""
-    });
+                measles: "",
+                mumps: "",
+                hepatitisAHistory: "",
+                hepatitisBHistory: "",
+                typhoidFever: "",
+                chickenPox: "",
+                bronchitis: "",
+                pneumonia: "",
+                asthma: "",
+                otherDisease: "",
+
+                hospitalized: "No",
+                lastHospitalized: "",
+                hospitalizationCause: "",
+                medicationTaken: "",
+                hospitalConfined: "",
+
+                operation: "No",
+                operationAge: "",
+                operationCause: "",
+                operationHospital: "",
+
+                cardiacDisease: "No",
+                hypertension: "No",
+                diabetes: "No",
+                tuberculosis: "No",
+                familyAsthma: "No",
+            },
+        },
+
+        {
+            id: "STU-002",
+            name: "Maria Santos",
+            yearSection: "BSN 3",
+            sex: "Female",
+            age: 21,
+            status: "Completed",
+
+            profile: {
+                lastName: "Santos",
+                firstName: "Maria",
+                middleInitial: "A",
+                yearSection: "BSN 3",
+                sex: "Female",
+                address: "Isabela Negros Occidental",
+                contactPerson: "Juan Santos",
+                telephone: "",
+                cellphone: "09XXXXXXXXX",
+                dateOfBirth: "2005-02-15",
+                age: "21",
+                nationality: "Filipino",
+                religion: "Catholic",
+                height: "160 cm",
+                weight: "55 kg",
+                bloodType: "O+",
+
+                hasAllergy: "Yes",
+                allergyFood: "Shrimp",
+                allergyMedicine: "None",
+                allergyOther: "",
+
+                immunized: "Yes",
+                hepatitisA: "Yes",
+                hepatitisB: "Yes",
+                typhoid: "Yes",
+                rabies: "",
+                influenza: "Yes",
+                chickenpoxVaccine: "Yes",
+                measlesVaccine: "Yes",
+                cholera: "",
+                dpt: "Yes",
+                opv: "Yes",
+
+                measles: "",
+                mumps: "",
+                hepatitisAHistory: "",
+                hepatitisBHistory: "",
+                typhoidFever: "",
+                chickenPox: "",
+                bronchitis: "",
+                pneumonia: "",
+                asthma: "",
+                otherDisease: "",
+
+                hospitalized: "No",
+                lastHospitalized: "",
+                hospitalizationCause: "",
+                medicationTaken: "",
+                hospitalConfined: "",
+
+                operation: "No",
+                operationAge: "",
+                operationCause: "",
+                operationHospital: "",
+
+                cardiacDisease: "No",
+                hypertension: "No",
+                diabetes: "No",
+                tuberculosis: "No",
+                familyAsthma: "No",
+            },
+        },
+
+        {
+            id: "STU-003",
+            name: "Robert Lee",
+            yearSection: "BSIT 3",
+            sex: "Male",
+            age: 20,
+            status: "Pending",
+
+            profile: {
+                lastName: "Lee",
+                firstName: "Robert",
+                middleInitial: "",
+                yearSection: "BSIT 3",
+                sex: "Male",
+                address: "",
+                contactPerson: "",
+                telephone: "",
+                cellphone: "",
+                dateOfBirth: "",
+                age: "20",
+                nationality: "Filipino",
+                religion: "",
+                height: "",
+                weight: "",
+                bloodType: "",
+
+                hasAllergy: "",
+                allergyFood: "",
+                allergyMedicine: "",
+                allergyOther: "",
+
+                immunized: "",
+                hepatitisA: "",
+                hepatitisB: "",
+                typhoid: "",
+                rabies: "",
+                influenza: "",
+                chickenpoxVaccine: "",
+                measlesVaccine: "",
+                cholera: "",
+                dpt: "",
+                opv: "",
+
+                measles: "",
+                mumps: "",
+                hepatitisAHistory: "",
+                hepatitisBHistory: "",
+                typhoidFever: "",
+                chickenPox: "",
+                bronchitis: "",
+                pneumonia: "",
+                asthma: "",
+                otherDisease: "",
+
+                hospitalized: "",
+                lastHospitalized: "",
+                hospitalizationCause: "",
+                medicationTaken: "",
+                hospitalConfined: "",
+
+                operation: "",
+                operationAge: "",
+                operationCause: "",
+                operationHospital: "",
+
+                cardiacDisease: "",
+                hypertension: "",
+                diabetes: "",
+                tuberculosis: "",
+                familyAsthma: "",
+            },
+        },
+
+        {
+            id: "STU-004",
+            name: "Angela Cruz",
+            yearSection: "BSBA 2",
+            sex: "Female",
+            age: 19,
+            status: "Completed",
+
+            profile: {
+                lastName: "Cruz",
+                firstName: "Angela",
+                middleInitial: "M",
+                yearSection: "BSBA 2",
+                sex: "Female",
+                address: "Baguio City",
+                contactPerson: "Pedro Cruz",
+                telephone: "",
+                cellphone: "09XXXXXXXXX",
+                dateOfBirth: "2007-01-20",
+                age: "19",
+                nationality: "Filipino",
+                religion: "Catholic",
+                height: "158 cm",
+                weight: "52 kg",
+                bloodType: "A+",
+
+                hasAllergy: "No",
+                allergyFood: "",
+                allergyMedicine: "",
+                allergyOther: "",
+
+                immunized: "Yes",
+                hepatitisA: "Yes",
+                hepatitisB: "Yes",
+                typhoid: "Yes",
+                rabies: "",
+                influenza: "Yes",
+                chickenpoxVaccine: "Yes",
+                measlesVaccine: "Yes",
+                cholera: "",
+                dpt: "Yes",
+                opv: "Yes",
+
+                measles: "",
+                mumps: "",
+                hepatitisAHistory: "",
+                hepatitisBHistory: "",
+                typhoidFever: "",
+                chickenPox: "",
+                bronchitis: "",
+                pneumonia: "",
+                asthma: "",
+                otherDisease: "",
+
+                hospitalized: "No",
+                lastHospitalized: "",
+                hospitalizationCause: "",
+                medicationTaken: "",
+                hospitalConfined: "",
+
+                operation: "No",
+                operationAge: "",
+                operationCause: "",
+                operationHospital: "",
+
+                cardiacDisease: "No",
+                hypertension: "No",
+                diabetes: "No",
+                tuberculosis: "No",
+                familyAsthma: "No",
+            },
+        },
+    ];
+
+    // ==========================================
+    // STATES
+    // ==========================================
+
+    const [search, setSearch] = useState("");
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [formData, setFormData] = useState(null);
+    const [saved, setSaved] = useState(false);
+
+    // ==========================================
+    // OPEN PROFILE
+    // ==========================================
+
+    const handleOpenProfile = (student) => {
+        setSelectedStudent(student);
+        setFormData({ ...student.profile });
+        setSaved(false);
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
+    // ==========================================
+    // BACK TO LIST
+    // ==========================================
+
+    const handleBack = () => {
+        setSelectedStudent(null);
+        setFormData(null);
+        setSaved(false);
+    };
+
+    // ==========================================
+    // FORM CHANGE
+    // ==========================================
 
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value
+        setFormData((previous) => ({
+            ...previous,
+            [name]: value,
         }));
+
+        setSaved(false);
     };
 
-    const handleDiseaseChange = (e) => {
+    // ==========================================
+    // CHECKBOX
+    // ==========================================
+
+    const handleCheckbox = (e) => {
         const { name, checked } = e.target;
 
-        setDiseases((prev) => ({
-            ...prev,
-            [name]: checked
+        setFormData((previous) => ({
+            ...previous,
+            [name]: checked ? "Yes" : "",
         }));
+
+        setSaved(false);
     };
 
-    const handleVaccineChange = (e) => {
-        const { name, value } = e.target;
+    // ==========================================
+    // SAVE
+    // ==========================================
 
-        setVaccines((prev) => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = (e) => {
+    const handleSave = (e) => {
         e.preventDefault();
 
-        console.log("Medical Profile:", {
-            ...formData,
-            diseases,
-            vaccines
-        });
+        console.log("Updated Medical Profile:", formData);
 
-        alert("Medical profile saved successfully!");
+        setSaved(true);
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
 
-    return (
-        <div className="medical-profile-page">
-            <form className="medical-form" onSubmit={handleSubmit}>
+    // ==========================================
+    // FILTER STUDENTS
+    // ==========================================
 
-                {/* HEADER */}
-                <div className="form-header">
-                    <div className="clinic-logo">
-                        <div className="logo-circle">
-                            ✚
+    const filteredStudents = students.filter((student) =>
+        `${student.name} ${student.id} ${student.yearSection}`
+            .toLowerCase()
+            .includes(search.toLowerCase())
+    );
+
+    // ==========================================
+    // MEDICAL PROFILE VIEW
+    // ==========================================
+
+    if (selectedStudent && formData) {
+        return (
+            <div className="student-medical-profile-page">
+
+                {/* PROFILE HEADER */}
+
+                <div className="profile-top-header">
+
+                    <button
+                        className="back-button"
+                        onClick={handleBack}
+                    >
+                        <ArrowLeft size={18} />
+                        Back to Students
+                    </button>
+
+                    <div className="profile-student-info">
+                        <div className="profile-avatar">
+                            <User size={25} />
+                        </div>
+
+                        <div>
+                            <h1>{selectedStudent.name}</h1>
+
+                            <p>
+                                {selectedStudent.id} •{" "}
+                                {selectedStudent.yearSection}
+                            </p>
                         </div>
                     </div>
 
-                    <div className="clinic-title">
-                        <h1>LA CONSOLACION COLLEGE ISABELA</h1>
-                        <h2>ISABELA NEGROS OCCIDENTAL</h2>
-                        <h3>HEALTH SERVICES CENTER</h3>
-                    </div>
                 </div>
 
-                <div className="header-line"></div>
+                {/* SUCCESS */}
 
-                {/* INSTRUCTION */}
-                <div className="instruction">
-                    <strong>Instruction:</strong>
+                {saved && (
+                    <div className="profile-success">
+                        <CheckCircle size={20} />
+
+                        <div>
+                            <strong>
+                                Medical profile saved successfully.
+                            </strong>
+
+                            <p>
+                                The student's medical information has
+                                been updated.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <form onSubmit={handleSave}>
+
+                    {/* ==================================
+                        I. PERSONAL INFORMATION
+                    ================================== */}
+
+                    <section className="medical-card">
+
+                        <div className="medical-card-header">
+
+                            <div className="section-number">
+                                I
+                            </div>
+
+                            <div>
+                                <h2>Personal Information</h2>
+
+                                <p>
+                                    Student personal and contact
+                                    information
+                                </p>
+                            </div>
+
+                            <User size={22} />
+
+                        </div>
+
+                        <div className="medical-form-grid">
+
+                            <FormInput
+                                label="Last Name"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="First Name"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Middle Initial"
+                                name="middleInitial"
+                                value={formData.middleInitial}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Year & Section"
+                                name="yearSection"
+                                value={formData.yearSection}
+                                onChange={handleChange}
+                            />
+
+                            <FormSelect
+                                label="Sex"
+                                name="sex"
+                                value={formData.sex}
+                                onChange={handleChange}
+                                options={[
+                                    "Male",
+                                    "Female",
+                                ]}
+                            />
+
+                            <FormInput
+                                label="Date of Birth"
+                                type="date"
+                                name="dateOfBirth"
+                                value={formData.dateOfBirth}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Age"
+                                type="number"
+                                name="age"
+                                value={formData.age}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Nationality"
+                                name="nationality"
+                                value={formData.nationality}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Religion"
+                                name="religion"
+                                value={formData.religion}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Height"
+                                name="height"
+                                value={formData.height}
+                                onChange={handleChange}
+                                placeholder="e.g. 170 cm"
+                            />
+
+                            <FormInput
+                                label="Weight"
+                                name="weight"
+                                value={formData.weight}
+                                onChange={handleChange}
+                                placeholder="e.g. 65 kg"
+                            />
+
+                            <FormSelect
+                                label="Blood Type"
+                                name="bloodType"
+                                value={formData.bloodType}
+                                onChange={handleChange}
+                                options={[
+                                    "A+",
+                                    "A-",
+                                    "B+",
+                                    "B-",
+                                    "AB+",
+                                    "AB-",
+                                    "O+",
+                                    "O-",
+                                    "Unknown",
+                                ]}
+                            />
+
+                            <FormInput
+                                label="Current Address"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleChange}
+                                full
+                            />
+
+                            <FormInput
+                                label="Person to Contact"
+                                name="contactPerson"
+                                value={formData.contactPerson}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Telephone Number"
+                                name="telephone"
+                                value={formData.telephone}
+                                onChange={handleChange}
+                            />
+
+                            <FormInput
+                                label="Cellphone Number"
+                                name="cellphone"
+                                value={formData.cellphone}
+                                onChange={handleChange}
+                            />
+
+                        </div>
+                    </section>
+
+                    {/* ==================================
+                        II. MEDICAL HISTORY
+                    ================================== */}
+
+                    <section className="medical-card">
+
+                        <div className="medical-card-header">
+
+                            <div className="section-number">
+                                II
+                            </div>
+
+                            <div>
+                                <h2>Medical History</h2>
+
+                                <p>
+                                    Allergies, immunization and
+                                    previous diseases
+                                </p>
+                            </div>
+
+                            <HeartPulse size={22} />
+
+                        </div>
+
+                        {/* ALLERGY */}
+
+                        <div className="medical-subsection">
+
+                            <h3>History of Allergy</h3>
+
+                            <div className="radio-group">
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="hasAllergy"
+                                        value="Yes"
+                                        checked={
+                                            formData.hasAllergy === "Yes"
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                    Yes
+                                </label>
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="hasAllergy"
+                                        value="No"
+                                        checked={
+                                            formData.hasAllergy === "No"
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                    No
+                                </label>
+
+                            </div>
+
+                            <div className="medical-form-grid">
+
+                                <FormInput
+                                    label="Food"
+                                    name="allergyFood"
+                                    value={formData.allergyFood}
+                                    onChange={handleChange}
+                                />
+
+                                <FormInput
+                                    label="Medicine"
+                                    name="allergyMedicine"
+                                    value={formData.allergyMedicine}
+                                    onChange={handleChange}
+                                />
+
+                                <FormInput
+                                    label="Others"
+                                    name="allergyOther"
+                                    value={formData.allergyOther}
+                                    onChange={handleChange}
+                                />
+
+                            </div>
+
+                        </div>
+
+                        {/* IMMUNIZATION */}
+
+                        <div className="medical-subsection">
+
+                            <h3>Immunization</h3>
+
+                            <div className="radio-group">
+
+                                <span className="question-label">
+                                    Have you been immunized?
+                                </span>
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="immunized"
+                                        value="Yes"
+                                        checked={
+                                            formData.immunized === "Yes"
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                    Yes
+                                </label>
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="immunized"
+                                        value="No"
+                                        checked={
+                                            formData.immunized === "No"
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                    No
+                                </label>
+
+                            </div>
+
+                            <div className="checkbox-grid">
+
+                                {[
+                                    ["Hepatitis A", "hepatitisA"],
+                                    ["Hepatitis B", "hepatitisB"],
+                                    ["Typhoid", "typhoid"],
+                                    ["Rabies", "rabies"],
+                                    ["Influenza", "influenza"],
+                                    [
+                                        "Chicken Pox",
+                                        "chickenpoxVaccine",
+                                    ],
+                                    [
+                                        "Measles",
+                                        "measlesVaccine",
+                                    ],
+                                    ["Cholera", "cholera"],
+                                    ["DPT", "dpt"],
+                                    ["OPV", "opv"],
+                                ].map(([label, name]) => (
+                                    <label
+                                        className="check-box"
+                                        key={name}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            name={name}
+                                            checked={
+                                                formData[name] === "Yes"
+                                            }
+                                            onChange={handleCheckbox}
+                                        />
+
+                                        {label}
+                                    </label>
+                                ))}
+
+                            </div>
+
+                        </div>
+
+                        {/* DISEASES */}
+
+                        <div className="medical-subsection">
+
+                            <h3>
+                                Which of these diseases have you
+                                had?
+                            </h3>
+
+                            <div className="checkbox-grid">
+
+                                {[
+                                    ["Measles", "measles"],
+                                    ["Mumps", "mumps"],
+                                    [
+                                        "Hepatitis A",
+                                        "hepatitisAHistory",
+                                    ],
+                                    [
+                                        "Hepatitis B",
+                                        "hepatitisBHistory",
+                                    ],
+                                    [
+                                        "Typhoid Fever",
+                                        "typhoidFever",
+                                    ],
+                                    ["Chicken Pox", "chickenPox"],
+                                    ["Bronchitis", "bronchitis"],
+                                    ["Pneumonia", "pneumonia"],
+                                    ["Asthma", "asthma"],
+                                ].map(([label, name]) => (
+                                    <label
+                                        className="check-box"
+                                        key={name}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            name={name}
+                                            checked={
+                                                formData[name] === "Yes"
+                                            }
+                                            onChange={handleCheckbox}
+                                        />
+
+                                        {label}
+                                    </label>
+                                ))}
+
+                            </div>
+
+                            <FormInput
+                                label="Others"
+                                name="otherDisease"
+                                value={formData.otherDisease}
+                                onChange={handleChange}
+                                placeholder="Specify other disease"
+                            />
+
+                        </div>
+
+                    </section>
+
+                    {/* ==================================
+                        III. HOSPITALIZATION
+                    ================================== */}
+
+                    <section className="medical-card">
+
+                        <div className="medical-card-header">
+
+                            <div className="section-number">
+                                III
+                            </div>
+
+                            <div>
+                                <h2>Hospitalization</h2>
+
+                                <p>
+                                    Previous hospitalization and
+                                    operations
+                                </p>
+                            </div>
+
+                            <Hospital size={22} />
+
+                        </div>
+
+                        <div className="medical-subsection">
+
+                            <div className="radio-group">
+
+                                <span className="question-label">
+                                    Have you been hospitalized?
+                                </span>
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="hospitalized"
+                                        value="Yes"
+                                        checked={
+                                            formData.hospitalized ===
+                                            "Yes"
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                    Yes
+                                </label>
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="hospitalized"
+                                        value="No"
+                                        checked={
+                                            formData.hospitalized ===
+                                            "No"
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                    No
+                                </label>
+
+                            </div>
+
+                            <div className="medical-form-grid">
+
+                                <FormInput
+                                    label="When were you last hospitalized?"
+                                    type="date"
+                                    name="lastHospitalized"
+                                    value={
+                                        formData.lastHospitalized
+                                    }
+                                    onChange={handleChange}
+                                />
+
+                                <FormInput
+                                    label="What was the cause?"
+                                    name="hospitalizationCause"
+                                    value={
+                                        formData.hospitalizationCause
+                                    }
+                                    onChange={handleChange}
+                                />
+
+                                <FormInput
+                                    label="Medication Taken"
+                                    name="medicationTaken"
+                                    value={formData.medicationTaken}
+                                    onChange={handleChange}
+                                />
+
+                                <FormInput
+                                    label="Hospital Where You Were Confined"
+                                    name="hospitalConfined"
+                                    value={formData.hospitalConfined}
+                                    onChange={handleChange}
+                                />
+
+                            </div>
+
+                        </div>
+
+                        <div className="medical-subsection">
+
+                            <h3>Previous Operation</h3>
+
+                            <div className="medical-form-grid">
+
+                                <FormSelect
+                                    label="Have you undergone any operation?"
+                                    name="operation"
+                                    value={formData.operation}
+                                    onChange={handleChange}
+                                    options={[
+                                        "Yes",
+                                        "No",
+                                    ]}
+                                />
+
+                                <FormInput
+                                    label="At What Age?"
+                                    type="number"
+                                    name="operationAge"
+                                    value={formData.operationAge}
+                                    onChange={handleChange}
+                                />
+
+                                <FormInput
+                                    label="What Cause?"
+                                    name="operationCause"
+                                    value={formData.operationCause}
+                                    onChange={handleChange}
+                                />
+
+                                <FormInput
+                                    label="Hospital Where Confined"
+                                    name="operationHospital"
+                                    value={formData.operationHospital}
+                                    onChange={handleChange}
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                    {/* ==================================
+                        IV. FAMILY HISTORY
+                    ================================== */}
+
+                    <section className="medical-card">
+
+                        <div className="medical-card-header">
+
+                            <div className="section-number">
+                                IV
+                            </div>
+
+                            <div>
+                                <h2>Family History of Disease</h2>
+
+                                <p>
+                                    Family history of common diseases
+                                </p>
+                            </div>
+
+                            <Users size={22} />
+
+                        </div>
+
+                        <div className="family-history-grid">
+
+                            {[
+                                [
+                                    "Cardiac Disease",
+                                    "cardiacDisease",
+                                ],
+                                [
+                                    "Hypertension",
+                                    "hypertension",
+                                ],
+                                [
+                                    "Diabetes",
+                                    "diabetes",
+                                ],
+                                [
+                                    "Tuberculosis",
+                                    "tuberculosis",
+                                ],
+                                [
+                                    "Asthma",
+                                    "familyAsthma",
+                                ],
+                            ].map(([label, name]) => (
+                                <div
+                                    className="family-history-item"
+                                    key={name}
+                                >
+                                    <label>{label}</label>
+
+                                    <select
+                                        name={name}
+                                        value={formData[name]}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">
+                                            Select
+                                        </option>
+
+                                        <option value="Yes">
+                                            Yes
+                                        </option>
+
+                                        <option value="No">
+                                            No
+                                        </option>
+                                    </select>
+                                </div>
+                            ))}
+
+                        </div>
+
+                    </section>
+
+                    {/* ACTION */}
+
+                    <div className="profile-actions">
+
+                        <button
+                            type="button"
+                            className="cancel-profile-button"
+                            onClick={handleBack}
+                        >
+                            <ArrowLeft size={18} />
+                            Back to Student List
+                        </button>
+
+                        <button
+                            type="submit"
+                            className="save-profile-button"
+                        >
+                            <Save size={18} />
+                            Save Medical Profile
+                        </button>
+
+                    </div>
+
+                </form>
+            </div>
+        );
+    }
+
+    // ==========================================
+    // STUDENT LIST VIEW
+    // ==========================================
+
+    return (
+        <div className="student-medical-profile-page">
+
+            {/* HEADER */}
+
+            <div className="student-list-header">
+
+                <div>
+                    <h1>Medical Profiles</h1>
 
                     <p>
-                        Accomplish this form so as to provide us your medical
-                        health profile.
-                        <br />
-                        The assistance of your present guardian is needed.
+                        Select a student to view their complete
+                        medical health profile.
                     </p>
                 </div>
 
-                {/* ======================================
-                    I. PERSONAL INFORMATION
-                ====================================== */}
-                <SectionTitle number="I." title="PERSONAL INFORMATION" />
-
-                <div className="form-row name-row">
-                    <div className="form-group">
-                        <label>Name:</label>
-                    </div>
-
-                    <div className="input-with-label">
-                        <input
-                            type="text"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                        />
-                        <small>Last name</small>
-                    </div>
-
-                    <div className="input-with-label">
-                        <input
-                            type="text"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                        />
-                        <small>First name</small>
-                    </div>
-
-                    <div className="input-with-label">
-                        <input
-                            type="text"
-                            name="middleInitial"
-                            value={formData.middleInitial}
-                            onChange={handleChange}
-                        />
-                        <small>Middle Initial</small>
-                    </div>
+                <div className="student-list-icon">
+                    <Users size={25} />
                 </div>
 
-                <div className="form-grid two-column">
-                    <FormInput
-                        label="Yr. & Sec."
-                        name="yearSection"
-                        value={formData.yearSection}
-                        onChange={handleChange}
-                    />
+            </div>
 
-                    <FormInput
-                        label="Current Address"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                    />
-                </div>
+            {/* SEARCH */}
 
-                <FormInput
-                    label="Person to be contacted"
-                    name="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleChange}
-                />
+            <div className="student-search-card">
 
-                <div className="form-grid two-column">
-                    <FormInput
-                        label="Tel. No."
-                        name="telephone"
-                        value={formData.telephone}
-                        onChange={handleChange}
-                    />
+                <div className="search-box">
 
-                    <FormInput
-                        label="Cell Number"
-                        name="cellNumber"
-                        value={formData.cellNumber}
-                        onChange={handleChange}
-                    />
-                </div>
+                    <Search size={19} />
 
-                <div className="form-grid three-column">
-                    <FormInput
-                        label="Date of Birth"
-                        name="birthDate"
-                        type="date"
-                        value={formData.birthDate}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Age"
-                        name="age"
-                        type="number"
-                        value={formData.age}
-                        onChange={handleChange}
-                    />
-
-                    <FormSelect
-                        label="Sex"
-                        name="sex"
-                        value={formData.sex}
-                        onChange={handleChange}
-                        options={["Male", "Female"]}
-                    />
-                </div>
-
-                <div className="form-grid four-column">
-                    <FormInput
-                        label="Height"
-                        name="height"
-                        value={formData.height}
-                        onChange={handleChange}
-                        placeholder="e.g. 5'8"
-                    />
-
-                    <FormInput
-                        label="Weight"
-                        name="weight"
-                        value={formData.weight}
-                        onChange={handleChange}
-                        placeholder="kg"
-                    />
-
-                    <FormInput
-                        label="Nationality"
-                        name="nationality"
-                        value={formData.nationality}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Religion"
-                        name="religion"
-                        value={formData.religion}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <FormInput
-                    label="Blood Type"
-                    name="bloodType"
-                    value={formData.bloodType}
-                    onChange={handleChange}
-                />
-
-                {/* ======================================
-                    II. MEDICAL HISTORY
-                ====================================== */}
-                <SectionTitle number="II." title="MEDICAL HISTORY" />
-
-                <Question>
-                    <span>Do you have history of allergy?</span>
-
-                    <Radio
-                        name="allergy"
-                        value="Yes"
-                        label="Yes"
-                        checked={formData.allergy === "Yes"}
-                        onChange={handleChange}
-                    />
-
-                    <Radio
-                        name="allergy"
-                        value="No"
-                        label="No"
-                        checked={formData.allergy === "No"}
-                        onChange={handleChange}
-                    />
-                </Question>
-
-                <div className="sub-section">
-                    <h4>If yes, please specify:</h4>
-
-                    <FormInput
-                        label="Food"
-                        name="allergyFood"
-                        value={formData.allergyFood}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Medicine"
-                        name="allergyMedicine"
-                        value={formData.allergyMedicine}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Others"
-                        name="allergyOthers"
-                        value={formData.allergyOthers}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <Question>
-                    <span>Have you been immunized?</span>
-
-                    <Radio
-                        name="immunized"
-                        value="Yes"
-                        label="Yes"
-                        checked={formData.immunized === "Yes"}
-                        onChange={handleChange}
-                    />
-
-                    <Radio
-                        name="immunized"
-                        value="No"
-                        label="No"
-                        checked={formData.immunized === "No"}
-                        onChange={handleChange}
-                    />
-                </Question>
-
-                <div className="sub-section">
-                    <h4>If yes, please specify:</h4>
-
-                    <div className="vaccine-grid">
-                        <VaccineInput
-                            label="Hep A"
-                            name="hepA"
-                            value={vaccines.hepA}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="Influenza"
-                            name="influenza"
-                            value={vaccines.influenza}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="DPT"
-                            name="dpt"
-                            value={vaccines.dpt}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="Hep B"
-                            name="hepB"
-                            value={vaccines.hepB}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="Chicken pox"
-                            name="chickenPox"
-                            value={vaccines.chickenPox}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="OPV"
-                            name="opv"
-                            value={vaccines.opv}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="Typhoid"
-                            name="typhoid"
-                            value={vaccines.typhoid}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="Measles"
-                            name="measles"
-                            value={vaccines.measles}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="Rabies"
-                            name="rabies"
-                            value={vaccines.rabies}
-                            onChange={handleVaccineChange}
-                        />
-
-                        <VaccineInput
-                            label="Cholera"
-                            name="cholera"
-                            value={vaccines.cholera}
-                            onChange={handleVaccineChange}
-                        />
-                    </div>
-                </div>
-
-                <div className="disease-question">
-                    Which of these diseases have you had? Please check.
-                </div>
-
-                <div className="disease-grid">
-                    <CheckBox
-                        name="measles"
-                        label="Measles"
-                        checked={diseases.measles}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="typhoid"
-                        label="Typhoid Fever"
-                        checked={diseases.typhoid}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="asthma"
-                        label="Asthma"
-                        checked={diseases.asthma}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="mumps"
-                        label="Mumps"
-                        checked={diseases.mumps}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="chickenPox"
-                        label="Chicken Pox"
-                        checked={diseases.chickenPox}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="others"
-                        label="Others"
-                        checked={diseases.others}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="hepA"
-                        label="Hep A"
-                        checked={diseases.hepA}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="bronchitis"
-                        label="Bronchitis"
-                        checked={diseases.bronchitis}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <div></div>
-
-                    <CheckBox
-                        name="hepB"
-                        label="Hep B"
-                        checked={diseases.hepB}
-                        onChange={handleDiseaseChange}
-                    />
-
-                    <CheckBox
-                        name="pneumonia"
-                        label="Pneumonia"
-                        checked={diseases.pneumonia}
-                        onChange={handleDiseaseChange}
-                    />
-                </div>
-
-                {/* ======================================
-                    III. HOSPITALIZATION
-                ====================================== */}
-                <SectionTitle number="III." title="HOSPITALIZATION" />
-
-                <Question>
-                    <span>Have you been hospitalized?</span>
-
-                    <Radio
-                        name="hospitalization"
-                        value="Yes"
-                        label="Yes"
-                        checked={formData.hospitalization === "Yes"}
-                        onChange={handleChange}
-                    />
-
-                    <Radio
-                        name="hospitalization"
-                        value="No"
-                        label="No"
-                        checked={formData.hospitalization === "No"}
-                        onChange={handleChange}
-                    />
-                </Question>
-
-                <div className="hospitalization-fields">
-                    <FormInput
-                        label="When was the last time you were hospitalized?"
-                        name="lastHospitalized"
-                        value={formData.lastHospitalized}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Please Specify"
-                        name="hospitalizationCause"
-                        value={formData.hospitalizationCause}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="What is the cause?"
-                        name="hospitalizationCause"
-                        value={formData.hospitalizationCause}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Medication taken"
-                        name="medicationTaken"
-                        value={formData.medicationTaken}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Hospital where you were confined"
-                        name="hospitalConfined"
-                        value={formData.hospitalConfined}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Have you undergone any operation?"
-                        name="operation"
-                        value={formData.operation}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="At what age?"
-                        name="operationAge"
-                        value={formData.operationAge}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="What cause?"
-                        name="operationCause"
-                        value={formData.operationCause}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Hospital where you confined?"
-                        name="operationHospital"
-                        value={formData.operationHospital}
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="None at all"
-                        name="none"
-                        value=""
-                        onChange={() => {}}
-                    />
-                </div>
-
-                {/* ======================================
-                    IV. FAMILY HISTORY
-                ====================================== */}
-                <SectionTitle number="IV." title="FAMILY HISTORY OF DISEASE" />
-
-                <div className="family-history-grid">
-
-                    <FormInput
-                        label="Cardiac Disease"
-                        name="cardiacDisease"
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Tuberculosis"
-                        name="tuberculosis"
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Hypertension"
-                        name="hypertension"
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Asthma"
-                        name="familyAsthma"
-                        onChange={handleChange}
-                    />
-
-                    <FormInput
-                        label="Diabetes"
-                        name="diabetes"
-                        onChange={handleChange}
-                    />
-                </div>
-
-                {/* SIGNATURE */}
-                <div className="signature-section">
                     <input
                         type="text"
-                        name="parentSignature"
-                        value={formData.parentSignature}
-                        onChange={handleChange}
+                        placeholder="Search student name, ID or section..."
+                        value={search}
+                        onChange={(e) =>
+                            setSearch(e.target.value)
+                        }
                     />
 
-                    <span>
-                        Parent's Signature Over Printed Name
-                    </span>
                 </div>
 
-                {/* BUTTONS */}
-                <div className="form-actions">
-                    <button
-                        type="button"
-                        className="cancel-btn"
-                        onClick={() => window.history.back()}
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        className="save-btn"
-                    >
-                        Save Medical Profile
-                    </button>
+                <div className="student-count">
+                    {filteredStudents.length} Students
                 </div>
 
-            </form>
+            </div>
+
+            {/* STUDENT LIST */}
+
+            <div className="student-list-card">
+
+                <div className="student-list-title">
+                    <div>
+                        <h2>Students</h2>
+                        <p>
+                            Click a student's name to view their
+                            medical profile.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="student-table-wrapper">
+
+                    <table className="student-table">
+
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Student ID</th>
+                                <th>Year & Section</th>
+                                <th>Sex</th>
+                                <th>Age</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {filteredStudents.map((student) => (
+
+                                <tr key={student.id}>
+
+                                    <td>
+
+                                        <button
+                                            className="student-name-button"
+                                            onClick={() =>
+                                                handleOpenProfile(
+                                                    student
+                                                )
+                                            }
+                                        >
+                                            <span className="student-avatar">
+                                                <User size={17} />
+                                            </span>
+
+                                            <span>
+                                                {student.name}
+                                            </span>
+                                        </button>
+
+                                    </td>
+
+                                    <td>
+                                        {student.id}
+                                    </td>
+
+                                    <td>
+                                        {student.yearSection}
+                                    </td>
+
+                                    <td>
+                                        {student.sex}
+                                    </td>
+
+                                    <td>
+                                        {student.age}
+                                    </td>
+
+                                    <td>
+
+                                        <span
+                                            className={`status-badge ${
+                                                student.status ===
+                                                "Completed"
+                                                    ? "completed"
+                                                    : "pending"
+                                            }`}
+                                        >
+                                            {student.status}
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <button
+                                            className="view-profile-button"
+                                            onClick={() =>
+                                                handleOpenProfile(
+                                                    student
+                                                )
+                                            }
+                                        >
+                                            <Eye size={16} />
+                                            View Profile
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            ))}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {filteredStudents.length === 0 && (
+                    <div className="no-student">
+                        <Users size={35} />
+
+                        <h3>No students found</h3>
+
+                        <p>
+                            Try searching using a different
+                            student name or ID.
+                        </p>
+                    </div>
+                )}
+
+            </div>
+
         </div>
     );
 }
 
-
-/* ======================================
-   REUSABLE COMPONENTS
-====================================== */
-
-function SectionTitle({ number, title }) {
-    return (
-        <div className="section-title">
-            <span className="section-number">{number}</span>
-            <span>{title}</span>
-        </div>
-    );
-}
+// ==========================================
+// REUSABLE INPUT
+// ==========================================
 
 function FormInput({
     label,
@@ -699,10 +1301,11 @@ function FormInput({
     value,
     onChange,
     type = "text",
-    placeholder = ""
+    placeholder = "",
+    full = false,
 }) {
     return (
-        <div className="line-field">
+        <div className={`medical-form-group ${full ? "full" : ""}`}>
             <label>{label}</label>
 
             <input
@@ -716,99 +1319,42 @@ function FormInput({
     );
 }
 
+// ==========================================
+// REUSABLE SELECT
+// ==========================================
+
 function FormSelect({
     label,
     name,
     value,
     onChange,
-    options
+    options,
 }) {
     return (
-        <div className="line-field">
+        <div className="medical-form-group">
+
             <label>{label}</label>
 
             <select
                 name={name}
-                value={value}
+                value={value || ""}
                 onChange={onChange}
             >
-                <option value="">Select</option>
+                <option value="">
+                    Select
+                </option>
 
                 {options.map((option) => (
-                    <option key={option} value={option}>
+                    <option
+                        value={option}
+                        key={option}
+                    >
                         {option}
                     </option>
                 ))}
             </select>
+
         </div>
-    );
-}
-
-function Radio({
-    name,
-    value,
-    label,
-    checked,
-    onChange
-}) {
-    return (
-        <label className="radio-option">
-            <input
-                type="radio"
-                name={name}
-                value={value}
-                checked={checked}
-                onChange={onChange}
-            />
-            <span>{label}</span>
-        </label>
-    );
-}
-
-function Question({ children }) {
-    return (
-        <div className="question-row">
-            {children}
-        </div>
-    );
-}
-
-function VaccineInput({
-    label,
-    name,
-    value,
-    onChange
-}) {
-    return (
-        <div className="vaccine-input">
-            <label>{label}</label>
-
-            <input
-                type="text"
-                name={name}
-                value={value}
-                onChange={onChange}
-            />
-        </div>
-    );
-}
-
-function CheckBox({
-    name,
-    label,
-    checked,
-    onChange
-}) {
-    return (
-        <label className="checkbox-option">
-            <input
-                type="checkbox"
-                name={name}
-                checked={checked}
-                onChange={onChange}
-            />
-            <span>{label}</span>
-        </label>
     );
 }
 

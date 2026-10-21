@@ -143,6 +143,21 @@ function StudentLayout() {
 
                         <span className="nav-text">Medical Profile</span>
                     </NavLink>
+
+                    <NavLink
+                        to="/student/history"
+                        onClick={closeSidebarOnMobile}
+                        className={({ isActive }) =>
+                            `nav-link ${isActive ? "active" : ""}`
+                        }
+                    >
+                        <span className="nav-icon">
+                            <UserRound size={18} />
+                        </span>
+
+                        <span className="nav-text">Visit History</span>
+                    </NavLink>
+
                 </div>
 
                     <div className="sidebar-section">

@@ -44,6 +44,7 @@ import StudentLayout from "../layouts/StudentLayout";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import MedicalProfile from "../pages/Student/MedicalProfile";
 import StudentNotifications from "../pages/Student/StudentNotification";
+import History from "../pages/Student/History";
 
 function AppRoutes() {
     return (
@@ -108,6 +109,7 @@ function AppRoutes() {
                     <Route path="dashboard" element={<StudentDashboard />} />
                     <Route path="notifications" element={<StudentNotifications />} />/
                     <Route path="medical-profile" element={<MedicalProfile />} />
+                    <Route path="history" element={<History />} />
                 </Route>
             </Routes>
         </BrowserRouter>
