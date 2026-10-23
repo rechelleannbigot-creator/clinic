@@ -259,7 +259,7 @@ function AdminLayout() {
                             </span>
 
                             <span className="nav-text">
-                                User Management
+                                Staff
                             </span>
 
                         </NavLink>
@@ -277,7 +277,7 @@ function AdminLayout() {
                             </span>
 
                             <span className="nav-text">
-                                Patients Management
+                                Patients
                             </span>
 
                         </NavLink>
