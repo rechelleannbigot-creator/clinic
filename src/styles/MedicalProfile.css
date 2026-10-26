@@ -1,374 +1,604 @@
 /* =========================================
-   PAGE
+   STUDENT MEDICAL PROFILE
+   Clinic Management System
 ========================================= */
 
-.medical-profile-page {
-    min-height: 100vh;
-    background: #eef3f8;
-    padding: 35px 20px;
-    font-family: "Segoe UI", Arial, sans-serif;
-    color: #173b63;
+.student-medical-profile-page {
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 28px;
+  color: #1e293b;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.student-medical-profile-page *,
+.student-medical-profile-page *::before,
+.student-medical-profile-page *::after {
+  box-sizing: border-box;
 }
 
 /* =========================================
-   PAPER / FORM
+   STUDENT LIST HEADER
 ========================================= */
 
-.medical-form {
-    width: 100%;
-    max-width: 1050px;
-    margin: auto;
-    background: #ffffff;
-    padding: 45px 55px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    border-radius: 4px;
+.student-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.student-list-header h1,
+.profile-student-info h1 {
+  margin: 0 0 8px;
+  color: #173b63;
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+}
+
+.student-list-header p,
+.profile-student-info p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.student-list-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  color: #1677c8;
+  background: #eaf3ff;
+  border-radius: 16px;
 }
 
 /* =========================================
-   HEADER
+   SEARCH CARD
 ========================================= */
 
-.form-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 25px;
+.student-search-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.035);
 }
 
-.clinic-logo {
-    flex-shrink: 0;
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 580px;
+  min-height: 48px;
+  padding: 0 15px;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #dbe4ee;
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.logo-circle {
-    width: 95px;
-    height: 95px;
-    border: 3px solid #075aa8;
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 48px;
-    font-weight: bold;
-    color: #075aa8;
+.search-box:focus-within {
+  border-color: #1677c8;
+  box-shadow: 0 0 0 3px rgba(22, 119, 200, 0.1);
 }
 
-.clinic-title {
-    text-align: center;
+.search-box input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  color: #1e293b;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
 }
 
-.clinic-title h1 {
-    margin: 0;
-    color: #075aa8;
-    font-size: 27px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
+.search-box input::placeholder {
+  color: #94a3b8;
 }
 
-.clinic-title h2 {
-    margin: 4px 0;
-    color: #075aa8;
-    font-size: 19px;
-    font-weight: 700;
-}
-
-.clinic-title h3 {
-    margin: 5px 0 0;
-    color: #075aa8;
-    font-size: 25px;
-    font-weight: 800;
-}
-
-.header-line {
-    width: 100%;
-    height: 3px;
-    background: #0875c9;
-    margin: 18px 0 20px;
+.student-count {
+  padding: 9px 14px;
+  color: #1763a6;
+  background: #eaf3ff;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 /* =========================================
-   INSTRUCTION
+   STUDENT TABLE CARD
 ========================================= */
 
-.instruction {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    color: #173b63;
+.student-list-card {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
 }
 
-.instruction strong {
-    font-size: 17px;
-    min-width: 95px;
+.student-list-title {
+  padding: 22px 24px;
+  border-bottom: 1px solid #e8edf3;
 }
 
-.instruction p {
-    margin: 0;
-    line-height: 1.5;
-    font-size: 15px;
+.student-list-title h2 {
+  margin: 0 0 6px;
+  color: #173b63;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.student-list-title p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.student-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.student-table thead {
+  background: #f5f8fc;
+}
+
+.student-table th {
+  padding: 15px 18px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.student-table td {
+  padding: 16px 18px;
+  color: #475569;
+  font-size: 13px;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.student-table tbody tr {
+  transition: background 0.2s;
+}
+
+.student-table tbody tr:hover {
+  background: #f8fbff;
+}
+
+.student-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Student name and avatar */
+
+.student-name-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0;
+  color: #173b63;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+  text-align: left;
+}
+
+.student-name-button:hover {
+  color: #1677c8;
+}
+
+.student-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: #1677c8;
+  background: #eaf3ff;
+  border-radius: 50%;
+}
+
+/* Status badges */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge.completed {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.status-badge.pending {
+  color: #b45309;
+  background: #fef3c7;
+}
+
+/* View profile button */
+
+.view-profile-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 13px;
+  color: #ffffff;
+  background: #1677c8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.view-profile-button:hover {
+  background: #125fa3;
+  transform: translateY(-1px);
+}
+
+/* Empty search result */
+
+.no-student {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 55px 20px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.no-student h3 {
+  margin: 14px 0 7px;
+  color: #173b63;
+  font-size: 18px;
+}
+
+.no-student p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
 }
 
 /* =========================================
-   SECTION TITLE
+   PROFILE HEADER
 ========================================= */
 
-.section-title {
-    display: flex;
-    align-items: center;
+.profile-top-header {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
 
-    width: fit-content;
-    min-width: 330px;
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  padding: 10px 15px;
+  color: #173b63;
+  background: #ffffff;
+  border: 1px solid #dbe4ee;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  transition: background 0.2s, border-color 0.2s;
+}
 
-    margin: 25px 0 14px;
+.back-button:hover {
+  background: #f1f7ff;
+  border-color: #1677c8;
+}
 
-    padding: 6px 20px 6px 0;
+.profile-student-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 23px;
+  background: linear-gradient(135deg, #ffffff, #f1f7ff);
+  border: 1px solid #dce9f8;
+  border-radius: 15px;
+}
 
-    background: #0875c9;
-    color: white;
+.profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 66px;
+  height: 66px;
+  flex-shrink: 0;
+  color: #ffffff;
+  background: #1677c8;
+  border-radius: 16px;
+}
 
-    border-radius: 20px;
-    overflow: hidden;
+.profile-student-info h1 {
+  font-size: 24px;
+}
 
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
+/* =========================================
+   SUCCESS MESSAGE
+========================================= */
+
+.profile-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 11px;
+}
+
+.profile-success > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.profile-success strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.profile-success p {
+  margin: 0;
+  color: #15803d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   MEDICAL INFORMATION CARDS
+========================================= */
+
+.medical-card {
+  margin-bottom: 24px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e0e7ef;
+  border-radius: 15px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.035);
+}
+
+.medical-card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 21px 24px;
+  background: #f5f9ff;
+  border-bottom: 1px solid #e0eaf5;
 }
 
 .section-number {
-    padding: 0 16px;
-    margin-right: 8px;
-    font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  color: #ffffff;
+  background: #173b63;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.medical-card-header > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.medical-card-header h2 {
+  margin: 0 0 5px;
+  color: #173b63;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.medical-card-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.medical-card-header > svg {
+  flex-shrink: 0;
+  color: #1677c8;
 }
 
 /* =========================================
-   INPUTS
+   FORM GRID AND INPUTS
 ========================================= */
 
-.form-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    margin-bottom: 13px;
+.medical-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 24px;
 }
 
-.name-row .form-group {
-    padding-top: 7px;
+.medical-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
 
-.form-group label,
-.line-field label {
-    color: #173b63;
-    font-weight: 700;
-    font-size: 14px;
+.medical-form-group.full {
+  grid-column: 1 / -1;
 }
 
-.input-with-label {
-    flex: 1;
-    text-align: center;
+.medical-form-group label,
+.family-history-item label {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 650;
 }
 
-.input-with-label input {
-    width: 100%;
-    border: none;
-    border-bottom: 1.5px solid #4885b8;
-    outline: none;
-    padding: 5px 5px;
-    font-size: 14px;
-    color: #173b63;
+.medical-form-group input,
+.medical-form-group select,
+.family-history-item select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 12px;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #cfd9e5;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.input-with-label small {
-    display: block;
-    margin-top: 3px;
-    color: #27689d;
-    font-size: 11px;
-    font-weight: 600;
+.medical-form-group input:focus,
+.medical-form-group select:focus,
+.family-history-item select:focus {
+  border-color: #1677c8;
+  box-shadow: 0 0 0 3px rgba(22, 119, 200, 0.1);
 }
 
-.form-grid {
-    display: grid;
-    gap: 12px;
-    margin-bottom: 12px;
+.medical-form-group input::placeholder {
+  color: #94a3b8;
 }
 
-.two-column {
-    grid-template-columns: 1fr 2fr;
-}
-
-.three-column {
-    grid-template-columns: 1.5fr 0.7fr 1fr;
-}
-
-.four-column {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.line-field {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-}
-
-.line-field label {
-    white-space: nowrap;
-}
-
-.line-field input,
-.line-field select {
-    flex: 1;
-    min-width: 0;
-
-    border: none;
-    border-bottom: 1.5px solid #4885b8;
-
-    background: transparent;
-
-    outline: none;
-
-    padding: 5px 4px;
-
-    font-size: 14px;
-    color: #173b63;
-}
-
-.line-field input:focus,
-.line-field select:focus {
-    border-bottom: 2px solid #0875c9;
-}
-
-.line-field input::placeholder {
-    color: #9aaabd;
+.medical-form-group input:disabled,
+.medical-form-group select:disabled {
+  color: #64748b;
+  background: #f1f5f9;
 }
 
 /* =========================================
-   QUESTIONS
+   MEDICAL SUBSECTIONS
 ========================================= */
 
-.question-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 35px;
-
-    margin: 10px 0;
-
-    color: #173b63;
-    font-weight: 700;
-    font-size: 14px;
+.medical-subsection {
+  padding: 23px 24px;
+  border-bottom: 1px solid #edf1f5;
 }
 
-.radio-option {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-
-    cursor: pointer;
-
-    font-weight: 600;
+.medical-subsection:last-child {
+  border-bottom: none;
 }
 
-.radio-option input {
-    width: 15px;
-    height: 15px;
+.medical-subsection h3 {
+  margin: 0 0 17px;
+  color: #173b63;
+  font-size: 15px;
+  font-weight: 750;
 }
 
-/* =========================================
-   SUB SECTION
-========================================= */
+/* Radio controls */
 
-.sub-section {
-    padding-left: 55px;
-    margin: 10px 0 15px;
+.radio-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 17px;
+  margin-bottom: 20px;
 }
 
-.sub-section h4 {
-    margin: 0 0 8px;
-    font-size: 13px;
-    color: #173b63;
+.radio-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #475569;
+  cursor: pointer;
+  font-size: 13px;
 }
 
-/* =========================================
-   VACCINES
-========================================= */
-
-.vaccine-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    column-gap: 45px;
-    row-gap: 8px;
+.question-label {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 650;
 }
 
-.vaccine-input {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.radio-group input[type="radio"],
+.check-box input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #1677c8;
+  cursor: pointer;
 }
 
-.vaccine-input label {
-    min-width: 80px;
+/* Checkboxes */
 
-    color: #173b63;
-    font-size: 13px;
-    font-weight: 600;
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+  margin: 18px 0;
 }
 
-.vaccine-input input {
-    width: 100%;
-    border: none;
-    border-bottom: 1px solid #4885b8;
-    outline: none;
-    padding: 4px;
-    font-size: 13px;
+.check-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 12px;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s, border-color 0.2s;
 }
 
-/* =========================================
-   DISEASES
-========================================= */
-
-.disease-question {
-    margin: 15px 0 8px;
-
-    color: #173b63;
-    font-size: 14px;
-    font-weight: 700;
+.check-box:hover {
+  background: #f1f7ff;
+  border-color: #b7d7f5;
 }
 
-.disease-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 7px 45px;
-
-    padding-left: 55px;
-}
-
-.checkbox-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    font-size: 13px;
-    color: #173b63;
-    cursor: pointer;
-}
-
-.checkbox-option input {
-    width: 15px;
-    height: 15px;
-    accent-color: #0875c9;
-}
-
-/* =========================================
-   HOSPITALIZATION
-========================================= */
-
-.hospitalization-fields {
-    padding-left: 55px;
-}
-
-.hospitalization-fields .line-field {
-    margin-bottom: 8px;
+.check-box input[type="checkbox"] {
+  flex-shrink: 0;
 }
 
 /* =========================================
@@ -376,226 +606,257 @@
 ========================================= */
 
 .family-history-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 70px;
-
-    padding: 0 55px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  padding: 24px;
 }
 
-.family-history-grid .line-field {
-    width: 100%;
-}
-
-/* =========================================
-   SIGNATURE
-========================================= */
-
-.signature-section {
-    width: 45%;
-    margin-left: auto;
-    margin-top: 40px;
-
-    text-align: center;
-}
-
-.signature-section input {
-    width: 100%;
-
-    border: none;
-    border-bottom: 1.5px solid #173b63;
-
-    outline: none;
-
-    padding: 8px;
-
-    text-align: center;
-    font-family: cursive;
-    font-size: 17px;
-}
-
-.signature-section span {
-    display: block;
-    margin-top: 7px;
-
-    color: #173b63;
-
-    font-size: 12px;
-    font-weight: 700;
+.family-history-item {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
 }
 
 /* =========================================
-   BUTTONS
+   FORM ACTION BUTTONS
 ========================================= */
 
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
+.profile-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 21px;
+  margin-bottom: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+}
+
+.cancel-profile-button,
+.save-profile-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 45px;
+  padding: 12px 18px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.cancel-profile-button {
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+.cancel-profile-button:hover {
+  background: #f1f5f9;
+}
+
+.save-profile-button {
+  color: #ffffff;
+  background: #1677c8;
+  border: 1px solid #1677c8;
+}
+
+.save-profile-button:hover {
+  background: #125fa3;
+  transform: translateY(-1px);
+}
+
+.back-button:focus-visible,
+.student-name-button:focus-visible,
+.view-profile-button:focus-visible,
+.cancel-profile-button:focus-visible,
+.save-profile-button:focus-visible {
+  outline: 3px solid rgba(22, 119, 200, 0.3);
+  outline-offset: 3px;
+}
+
+/* =========================================
+   TABLET RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) {
+  .student-medical-profile-page {
+    padding: 22px;
+  }
+
+  .student-table {
+    min-width: 850px;
+  }
+
+  .checkbox-grid,
+  .family-history-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .medical-form-grid {
+    gap: 17px;
+    padding: 20px;
+  }
+}
+
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+  .student-medical-profile-page {
+    padding: 14px;
+  }
+
+  .student-list-header {
+    align-items: flex-start;
     gap: 12px;
+  }
 
-    margin-top: 35px;
-    padding-top: 20px;
+  .student-list-header h1 {
+    font-size: 22px;
+    line-height: 1.35;
+  }
 
-    border-top: 1px solid #dce6ef;
-}
+  .student-list-header p {
+    font-size: 13px;
+  }
 
-.form-actions button {
-    border: none;
-    border-radius: 7px;
+  .student-list-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+  }
 
-    padding: 11px 24px;
+  .student-search-card {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 14px;
+  }
 
-    font-size: 14px;
-    font-weight: 700;
+  .search-box {
+    max-width: none;
+  }
 
-    cursor: pointer;
-    transition: 0.2s;
-}
+  .student-count {
+    align-self: flex-start;
+  }
 
-.cancel-btn {
-    background: #e8eef4;
-    color: #173b63;
-}
+  .student-list-title {
+    padding: 17px;
+  }
 
-.cancel-btn:hover {
-    background: #d9e2eb;
-}
+  .student-table th,
+  .student-table td {
+    padding: 13px;
+  }
 
-.save-btn {
-    background: #0875c9;
-    color: white;
-}
+  .profile-top-header {
+    gap: 17px;
+  }
 
-.save-btn:hover {
-    background: #075da0;
-    transform: translateY(-1px);
+  .profile-student-info {
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  .profile-student-info h1 {
+    font-size: 19px;
+    overflow-wrap: anywhere;
+  }
+
+  .profile-student-info p {
+    font-size: 12px;
+  }
+
+  .medical-card-header {
+    gap: 11px;
+    padding: 17px;
+  }
+
+  .section-number {
+    width: 34px;
+    height: 34px;
+  }
+
+  .medical-card-header h2 {
+    font-size: 16px;
+  }
+
+  .medical-card-header p {
+    font-size: 11px;
+  }
+
+  .medical-form-grid,
+  .checkbox-grid,
+  .family-history-grid {
+    grid-template-columns: 1fr;
+    padding: 17px;
+    gap: 16px;
+  }
+
+  .medical-subsection {
+    padding: 19px 17px;
+  }
+
+  .radio-group {
+    gap: 13px;
+  }
+
+  .question-label {
+    width: 100%;
+  }
+
+  .profile-actions {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .cancel-profile-button,
+  .save-profile-button {
+    width: 100%;
+  }
 }
 
 /* =========================================
-   RESPONSIVE
+   SMALL MOBILE
 ========================================= */
 
-@media (max-width: 850px) {
+@media (max-width: 360px) {
+  .student-medical-profile-page {
+    padding: 10px;
+  }
 
-    .medical-profile-page {
-        padding: 15px;
-    }
+  .student-list-header h1 {
+    font-size: 20px;
+  }
 
-    .medical-form {
-        padding: 30px 25px;
-    }
+  .medical-card-header {
+    padding: 13px;
+  }
 
-    .form-header {
-        flex-direction: column;
-        gap: 10px;
-    }
+  .medical-card-header > svg {
+    width: 19px;
+    height: 19px;
+  }
 
-    .clinic-title h1 {
-        font-size: 21px;
-    }
-
-    .clinic-title h2 {
-        font-size: 16px;
-    }
-
-    .clinic-title h3 {
-        font-size: 20px;
-    }
-
-    .two-column,
-    .three-column,
-    .four-column {
-        grid-template-columns: 1fr;
-    }
-
-    .name-row {
-        flex-direction: column;
-    }
-
-    .name-row .form-group {
-        width: 100%;
-    }
-
-    .input-with-label {
-        width: 100%;
-    }
-
-    .vaccine-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .disease-grid {
-        grid-template-columns: 1fr 1fr;
-        padding-left: 20px;
-    }
-
-    .sub-section,
-    .hospitalization-fields {
-        padding-left: 20px;
-    }
-
-    .family-history-grid {
-        grid-template-columns: 1fr;
-        padding: 0 20px;
-    }
-
-    .signature-section {
-        width: 70%;
-    }
-}
-
-@media (max-width: 550px) {
-
-    .medical-form {
-        padding: 20px 15px;
-    }
-
-    .logo-circle {
-        width: 75px;
-        height: 75px;
-        font-size: 35px;
-    }
-
-    .clinic-title h1 {
-        font-size: 17px;
-    }
-
-    .clinic-title h2 {
-        font-size: 13px;
-    }
-
-    .clinic-title h3 {
-        font-size: 17px;
-    }
-
-    .instruction {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .section-title {
-        width: 100%;
-        min-width: 0;
-        font-size: 14px;
-    }
-
-    .question-row {
-        gap: 15px;
-    }
-
-    .disease-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .signature-section {
-        width: 100%;
-    }
-
-    .form-actions {
-        flex-direction: column-reverse;
-    }
-
-    .form-actions button {
-        width: 100%;
-    }
+  .medical-form-grid,
+  .family-history-grid {
+    padding: 13px;
+  }
 }

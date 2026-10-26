@@ -264,7 +264,7 @@ function StudentNotification() {
         </div>
       </section>
     </div>
-  );
+  ); 
 }
 
 export default StudentNotification;
