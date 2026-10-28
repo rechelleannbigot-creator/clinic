@@ -5,10 +5,79 @@ import {
   updateEmail,
 } from "firebase/auth";
 
-import { doc, setDoc,updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 import { secondaryAuth } from "./secondaryAuth";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
+
+const PATIENT_API_URL = (
+  import.meta.env.VITE_CLINIC_API_URL || "http://localhost:5000"
+).replace(/\/+$/, "");
+
+const requestPatientApi = async (path, options = {}) => {
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) {
+    throw new Error("Please sign in again.");
+  }
+
+  const idToken = await currentUser.getIdToken();
+  let response;
+
+  try {
+    response = await fetch(`${PATIENT_API_URL}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+        ...options.headers,
+      },
+    });
+  } catch (error) {
+    console.error("Patient service request error:", error);
+    throw new Error("Could not reach the patient service. Make sure the backend is running.");
+  }
+
+  let result;
+  try {
+    result = await response.json();
+  } catch (error) {
+    console.error("Invalid patient service response:", error);
+    throw new Error("The patient service returned an invalid response.");
+  }
+
+  if (!response.ok) {
+    throw new Error(result.message || "Patient service request failed.");
+  }
+
+  return result;
+};
+
+export const getPatients = async () => {
+  const result = await requestPatientApi("/api/patients");
+
+  if (!Array.isArray(result.patients)) {
+    throw new Error("The patient service returned an invalid patient list.");
+  }
+
+  return result.patients;
+};
+
+export const createPatient = async (patient) => {
+  const result = await requestPatientApi("/api/patients", {
+    method: "POST",
+    body: JSON.stringify({
+      ...patient,
+      email: patient.email.trim().toLowerCase(),
+    }),
+  });
+
+  if (!result.patient?.id) {
+    throw new Error("The patient service did not return the created patient.");
+  }
+
+  return result.patient;
+};
 
 // GENERATE TEMPORARY PASSWORD
 export const generateTemporaryPassword = (length = 12) => {
@@ -252,6 +321,5 @@ export const completePasswordChange = async (user, newPassword) => {
     throw new Error(error.message || "Failed to change password.");
   }
 };
-
 
 

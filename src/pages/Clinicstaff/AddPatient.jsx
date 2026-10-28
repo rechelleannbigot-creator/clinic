@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPatient, getPatients } from "../../services/userManagementService";
 import {
   Search,
   UserPlus,
@@ -29,74 +30,6 @@ const gradeSections = {
   "Grade 12": ["Mo.Teresa", "Mo. Evangelista"],
 };
 
-const initialPatients = [
-  {
-    id: "P-001",
-    firstName: "Juan",
-    middleName: "",
-    lastName: "Dela Cruz",
-    age: "20",
-    gender: "Male",
-    contact: "09123456789",
-    email: "juan.delacruz@gmail.com",
-    yearLevel: "2nd Year",
-    course: "BS Information Technology",
-    section: "",
-  },
-  {
-    id: "P-002",
-    firstName: "Maria",
-    middleName: "",
-    lastName: "Santos",
-    age: "21",
-    gender: "Female",
-    contact: "09123456780",
-    email: "maria.santos@gmail.com",
-    yearLevel: "1st Year",
-    course: "BS Business Administration",
-    section: "",
-  },
-  {
-    id: "P-003",
-    firstName: "Robert",
-    middleName: "James",
-    lastName: "Lee",
-    age: "22",
-    gender: "Male",
-    contact: "09123456781",
-    email: "robert.lee@gmail.com",
-    yearLevel: "3rd Year",
-    course: "BS Computer Science",
-    section: "",
-  },
-  {
-    id: "P-004",
-    firstName: "Ana",
-    middleName: "",
-    lastName: "Garcia",
-    age: "19",
-    gender: "Female",
-    contact: "09123456782",
-    email: "ana.garcia@gmail.com",
-    yearLevel: "Grade 12",
-    course: "",
-    section: "Mo. Teresa",
-  },
-  {
-    id: "P-005",
-    firstName: "Michael",
-    middleName: "",
-    lastName: "Reyes",
-    age: "20",
-    gender: "Male",
-    contact: "09123456783",
-    email: "michael.reyes@gmail.com",
-    yearLevel: "2nd Year",
-    course: "BS Information Technology",
-    section: "",
-  },
-];
-
 const emptyForm = {
   firstName: "",
   middleName: "",
@@ -111,7 +44,9 @@ const emptyForm = {
 };
 
 function AddPatient() {
-  const [patients, setPatients] = useState(initialPatients);
+  const [patients, setPatients] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -120,12 +55,34 @@ function AddPatient() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
 
+  const showMessage = (text, type = "success") => {
+    setMessage(text);
+    setMessageType(type);
+    window.setTimeout(() => setMessage(""), 3500);
+  };
+
+  useEffect(() => {
+    let active = true;
+    getPatients()
+      .then((loadedPatients) => {
+        if (active) setPatients(loadedPatients);
+      })
+      .catch((error) => {
+        if (active) showMessage(error.message || "Unable to load patients.", "error");
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const getNextPatientId = () => {
     const highestId = patients.reduce((highest, patient) => {
       const number = Number(patient.id.replace("P-", ""));
       return Math.max(highest, number);
     }, 0);
-
     return `P-${String(highestId + 1).padStart(3, "0")}`;
   };
 
@@ -134,16 +91,8 @@ function AddPatient() {
       .filter(Boolean)
       .join(" ");
 
-  const showMessage = (text, type = "success") => {
-    setMessage(text);
-    setMessageType(type);
-
-    window.setTimeout(() => setMessage(""), 3500);
-  };
-
   const filteredPatients = patients.filter((patient) => {
     const search = searchTerm.toLowerCase();
-
     return [
       patient.id,
       patient.firstName,
@@ -156,31 +105,24 @@ function AddPatient() {
       patient.section,
     ]
       .filter(Boolean)
-      .some((value) => value.toLowerCase().includes(search));
+      .some((value) => String(value).toLowerCase().includes(search));
   });
 
   const totalYearLevels = new Set(
     patients.map((patient) => patient.yearLevel).filter(Boolean)
   ).size;
-
   const totalCourses = new Set(
     patients.map((patient) => patient.course).filter(Boolean)
   ).size;
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormData((previous) => {
       const updated = { ...previous, [name]: value };
-
       if (name === "yearLevel") {
-        if (value.startsWith("Grade ")) {
-          updated.course = "";
-        } else {
-          updated.section = "";
-        }
+        if (value.startsWith("Grade ")) updated.course = "";
+        else updated.section = "";
       }
-
       return updated;
     });
   };
@@ -193,7 +135,6 @@ function AddPatient() {
 
   const openEditModal = (patient) => {
     setEditingPatientId(patient.id);
-
     setFormData({
       firstName: patient.firstName || "",
       middleName: patient.middleName || "",
@@ -206,7 +147,6 @@ function AddPatient() {
       course: patient.course || "",
       section: patient.section || "",
     });
-
     setSelectedPatient(null);
     setShowAddModal(true);
   };
@@ -217,7 +157,16 @@ function AddPatient() {
     setFormData(emptyForm);
   };
 
-  const handleSubmit = (event) => {
+  const createPatientAccount = async () => {
+    const patient = await createPatient(formData);
+    setPatients((previous) => [...previous, patient]);
+    showMessage(
+      `Patient ${patient.id} added successfully. Login credentials were emailed.`
+    );
+    closeFormModal();
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const requiredFields = [
@@ -299,19 +248,17 @@ function AddPatient() {
       );
 
       showMessage("Patient information updated successfully.");
+      closeFormModal();
     } else {
-      const newPatient = {
-        ...formData,
-        id: getNextPatientId(),
-        email,
-        age: String(formData.age),
-      };
-
-      setPatients((previous) => [...previous, newPatient]);
-      showMessage(`Patient ${newPatient.id} added successfully.`);
+      setIsSubmitting(true);
+      try {
+        await createPatientAccount();
+      } catch (error) {
+        showMessage(error.message || "Failed to create patient account.", "error");
+      } finally {
+        setIsSubmitting(false);
+      }
     }
-
-    closeFormModal();
   };
 
   const handleDownloadQR = (patient) => {
@@ -458,7 +405,13 @@ function AddPatient() {
             </thead>
 
             <tbody>
-              {filteredPatients.length > 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan="8" className="patient-empty-state">
+                    <p>Loading patient records...</p>
+                  </td>
+                </tr>
+              ) : filteredPatients.length > 0 ? (
                 filteredPatients.map((patient) => (
                   <tr key={patient.id}>
                     <td>
@@ -814,16 +767,20 @@ function AddPatient() {
                   Cancel
                 </button>
 
-                <button type="submit" className="patient-submit-btn">
+                <button
+                  type="submit"
+                  className="patient-submit-btn"
+                  disabled={isSubmitting}
+                >
                   {editingPatientId ? (
                     <>
                       <CheckCircle size={19} />
-                      Save Changes
+                      {isSubmitting ? "Saving..." : "Save Changes"}
                     </>
                   ) : (
                     <>
                       <UserPlus size={19} />
-                      Add Patient
+                      {isSubmitting ? "Creating..." : "Add Patient"}
                     </>
                   )}
                 </button>
