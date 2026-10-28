@@ -31,7 +31,6 @@ import Inventory from "../pages/Clinicstaff/Inventory";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
 import StudentMedicalProfile from "../pages/Clinicstaff/StudentMedicalProfile";
-import AddPatient from "../pages/Clinicstaff/AddPatient";
 import EmployeeProfiles from "../pages/Clinicstaff/EmployeeProfiles";
 import NewConsultation from "../pages/Clinicstaff/NewConsultation";
 import VisitHistory from "../pages/Clinicstaff/VisitHestory";
@@ -85,7 +84,6 @@ function AppRoutes() {
                     }
                 >
                     <Route index element={<StaffDashboard />} />
-                    <Route path="add-patient" element={<AddPatient />} />
                     <Route path="inventory" element={<Inventory />} />
                     <Route path="staff-reports" element={<StaffReports />} />
                     <Route path="notifications" element={<Notifications />} />

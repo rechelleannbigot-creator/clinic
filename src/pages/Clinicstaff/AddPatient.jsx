@@ -1,6 +1,10 @@
 
 import { useEffect, useState } from "react";
-import { createPatient, getPatients } from "../../services/userManagementService";
+import {
+  createPatient,
+  getPatients,
+  updatePatient,
+} from "../../services/userManagementService";
 import {
   Search,
   UserPlus,
@@ -234,21 +238,24 @@ function AddPatient() {
     }
 
     if (editingPatientId) {
-      setPatients((previous) =>
-        previous.map((patient) =>
-          patient.id === editingPatientId
-            ? {
-                ...patient,
-                ...formData,
-                email,
-                age: String(formData.age),
-              }
-            : patient
-        )
-      );
-
-      showMessage("Patient information updated successfully.");
-      closeFormModal();
+      setIsSubmitting(true);
+      try {
+        const updatedPatient = await updatePatient(editingPatientId, {
+          ...formData,
+          email,
+        });
+        setPatients((previous) =>
+          previous.map((patient) =>
+            patient.id === editingPatientId ? updatedPatient : patient
+          )
+        );
+        showMessage("Patient information updated successfully.");
+        closeFormModal();
+      } catch (error) {
+        showMessage(error.message || "Failed to update patient information.", "error");
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       setIsSubmitting(true);
       try {

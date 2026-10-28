@@ -79,6 +79,25 @@ export const createPatient = async (patient) => {
   return result.patient;
 };
 
+export const updatePatient = async (patientId, patient) => {
+  const result = await requestPatientApi(
+    `/api/patients/${encodeURIComponent(patientId)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        ...patient,
+        email: patient.email.trim().toLowerCase(),
+      }),
+    },
+  );
+
+  if (!result.patient?.id) {
+    throw new Error("The patient service did not return the updated patient.");
+  }
+
+  return result.patient;
+};
+
 // GENERATE TEMPORARY PASSWORD
 export const generateTemporaryPassword = (length = 12) => {
   const characters =
@@ -321,5 +340,4 @@ export const completePasswordChange = async (user, newPassword) => {
     throw new Error(error.message || "Failed to change password.");
   }
 };
-
 

@@ -60,9 +60,16 @@ function getSetupIssues() {
 
 initializeApp({
   credential: applicationDefault(),
-  ...(process.env.FIREBASE_STORAGE_BUCKET
-    ? { storageBucket: process.env.FIREBASE_STORAGE_BUCKET }
-    : {}),
+  projectId:
+    (isConfigured(process.env.FIREBASE_PROJECT_ID)
+      ? process.env.FIREBASE_PROJECT_ID
+      : process.env.GOOGLE_CLOUD_PROJECT) ||
+    "clinic-management-system-c98ba",
+  storageBucket:
+    (isConfigured(process.env.FIREBASE_STORAGE_BUCKET)
+      ? process.env.FIREBASE_STORAGE_BUCKET
+      : null) ||
+    "clinic-management-system-c98ba.firebasestorage.app",
 });
 
 const auth = getAuth();
@@ -71,7 +78,7 @@ const app = express();
 
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "PUT"],
 }));
 app.use(express.json({ limit: "1mb" }));
 
@@ -100,6 +107,47 @@ function emailTransporter() {
 
 function cleanString(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizePatient(data = {}) {
+  return {
+    firstName: cleanString(data.firstName),
+    middleName: cleanString(data.middleName),
+    lastName: cleanString(data.lastName),
+    age: Number(data.age),
+    gender: cleanString(data.gender),
+    contact: cleanString(data.contact),
+    email: cleanString(data.email).toLowerCase(),
+    yearLevel: cleanString(data.yearLevel),
+    course: cleanString(data.course),
+    section: cleanString(data.section),
+  };
+}
+
+function validatePatient(patient) {
+  if (!patient.firstName || !patient.lastName || !patient.gender ||
+      !patient.contact || !patient.email || !patient.yearLevel ||
+      !Number.isInteger(patient.age) || patient.age < 1 || patient.age > 120) {
+    return "Please provide all required patient fields with a valid age.";
+  }
+
+  if (!/^[0-9+\-()\s]+$/.test(patient.contact)) {
+    return "Please provide a valid contact number.";
+  }
+
+  if (!/^[^\s@]+@gmail\.com$/i.test(patient.email)) {
+    return "Please use a valid Gmail address ending in @gmail.com.";
+  }
+
+  const highSchool = patient.yearLevel.startsWith("Grade ");
+  if (highSchool && !patient.section) {
+    return "Please select a section.";
+  }
+  if (!highSchool && !patient.course) {
+    return "Please select a course.";
+  }
+
+  return null;
 }
 
 app.get("/api/health", (_req, res) => {
@@ -136,8 +184,12 @@ async function requireClinicStaff(req, res, next) {
 
     req.authUser = decoded;
     next();
-  } catch {
-    return res.status(401).json({ message: "Your session is invalid or expired. Please sign in again." });
+  } catch (error) {
+    console.error("Verify clinic staff error:", error.message);
+    if (error.code?.startsWith("auth/")) {
+      return res.status(401).json({ message: "Your session is invalid or expired. Please sign in again." });
+    }
+    return res.status(503).json({ message: "Unable to verify clinic staff access. Please try again." });
   }
 }
 
@@ -160,40 +212,10 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
   let createdPatientId = null;
 
   try {
-    const {
-      firstName, middleName, lastName, age, gender, contact,
-      email, yearLevel, course, section,
-    } = req.body || {};
-
-    const patient = {
-      firstName: cleanString(firstName),
-      middleName: cleanString(middleName),
-      lastName: cleanString(lastName),
-      age: Number(age),
-      gender: cleanString(gender),
-      contact: cleanString(contact),
-      email: cleanString(email).toLowerCase(),
-      yearLevel: cleanString(yearLevel),
-      course: cleanString(course),
-      section: cleanString(section),
-    };
-
-    if (!patient.firstName || !patient.lastName || !patient.gender ||
-        !patient.contact || !patient.email || !patient.yearLevel ||
-        !Number.isInteger(patient.age) || patient.age < 1 || patient.age > 120) {
-      return res.status(400).json({ message: "Please provide all required patient fields with a valid age." });
-    }
-
-    if (!/^[^\s@]+@gmail\.com$/i.test(patient.email)) {
-      return res.status(400).json({ message: "Please use a valid Gmail address ending in @gmail.com." });
-    }
-
-    const highSchool = patient.yearLevel.startsWith("Grade ");
-    if (highSchool && !patient.section) {
-      return res.status(400).json({ message: "Please select a section." });
-    }
-    if (!highSchool && !patient.course) {
-      return res.status(400).json({ message: "Please select a course." });
+    const patient = normalizePatient(req.body);
+    const validationMessage = validatePatient(patient);
+    if (validationMessage) {
+      return res.status(400).json({ message: validationMessage });
     }
 
     // Ensure mail delivery is configured before creating an account.
@@ -274,7 +296,9 @@ If you did not expect this account, please contact your school clinic.`,
       await auth.deleteUser(userRecord.uid).catch(() => {});
       createdUid = null;
       createdPatientId = null;
-      throw new Error("The account could not be emailed. Check SMTP settings and try again.");
+      throw new Error("The account could not be emailed. Check SMTP settings and try again.", {
+        cause: mailError,
+      });
     }
 
     return res.status(201).json({
@@ -309,6 +333,94 @@ If you did not expect this account, please contact your school clinic.`,
     return res.status(500).json({
       message: error.message || "Unable to create the patient account. Please try again.",
     });
+  }
+});
+
+app.put("/api/patients/:patientId", requireClinicStaff, async (req, res) => {
+  let patientUid = null;
+  let previousAuthUser = null;
+  let authUpdated = false;
+
+  try {
+    const patientId = cleanString(req.params.patientId);
+    if (!/^P-\d{3,}$/.test(patientId)) {
+      return res.status(400).json({ message: "Invalid patient ID." });
+    }
+
+    const patient = normalizePatient(req.body);
+    const validationMessage = validatePatient(patient);
+    if (validationMessage) {
+      return res.status(400).json({ message: validationMessage });
+    }
+
+    const patientRef = db.collection("patients").doc(patientId);
+    const patientSnapshot = await patientRef.get();
+    if (!patientSnapshot.exists) {
+      return res.status(404).json({ message: "Patient record could not be found." });
+    }
+
+    patientUid = cleanString(patientSnapshot.data()?.uid);
+    if (!patientUid) {
+      return res.status(409).json({ message: "This patient has no linked login account." });
+    }
+
+    const userRef = db.collection("users").doc(patientUid);
+    const userSnapshot = await userRef.get();
+    if (!userSnapshot.exists) {
+      return res.status(409).json({ message: "This patient has no linked user profile." });
+    }
+
+    previousAuthUser = await auth.getUser(patientUid);
+    await auth.updateUser(patientUid, {
+      email: patient.email,
+      displayName: [patient.firstName, patient.middleName, patient.lastName]
+        .filter(Boolean)
+        .join(" "),
+    });
+    authUpdated = true;
+
+    await db.runTransaction(async (transaction) => {
+      transaction.update(patientRef, {
+        ...patient,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      transaction.update(userRef, {
+        ...patient,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    });
+
+    const profile = patientSnapshot.data();
+    return res.json({
+      message: "Patient information updated successfully.",
+      patient: {
+        ...patient,
+        id: patientId,
+        uid: patientUid,
+        role: profile.role || "student",
+        status: profile.status || "Active",
+      },
+    });
+  } catch (error) {
+    if (authUpdated && previousAuthUser && patientUid) {
+      try {
+        await auth.updateUser(patientUid, {
+          email: previousAuthUser.email,
+          displayName: previousAuthUser.displayName || null,
+        });
+      } catch (rollbackError) {
+        console.error("Restore patient auth profile error:", rollbackError.message);
+      }
+    }
+
+    console.error("Update patient error:", error.message);
+    if (error.code === "auth/email-already-exists") {
+      return res.status(409).json({ message: "This Gmail address already has an account." });
+    }
+    if (error.code === "auth/user-not-found") {
+      return res.status(409).json({ message: "This patient has no linked login account." });
+    }
+    return res.status(500).json({ message: "Unable to update the patient record." });
   }
 });
 

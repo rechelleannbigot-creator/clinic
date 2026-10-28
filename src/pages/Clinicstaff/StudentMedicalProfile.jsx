@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getPatients } from "../../services/userManagementService";
 import {
     Search,
     Users,
@@ -14,303 +15,64 @@ import {
 import "../../styles/StudentMedicalProfile.css";
 
 function StudentMedicalProfile() {
-    // ==========================================
-    // STUDENT LIST
-    // ==========================================
+    const [students, setStudents] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState("");
 
-    const students = [
-        {
-            id: "STU-001",
-            name: "Christian Joseph Castillo",
-            yearSection: "BSIT 4",
-            sex: "Male",
-            age: 22,
-            status: "Completed",
+    useEffect(() => {
+        let active = true;
 
-            profile: {
-                lastName: "Castillo",
-                firstName: "Christian Joseph",
-                middleInitial: "",
-                yearSection: "BSIT 4",
-                sex: "Male",
-                address: "Isabela Negros Occidental",
-                contactPerson: "Maria Castillo",
-                telephone: "",
-                cellphone: "09XXXXXXXXX",
-                dateOfBirth: "2004-11-04",
-                age: "22",
-                nationality: "Filipino",
-                religion: "Catholic",
-                height: "",
-                weight: "",
-                bloodType: "",
+        getPatients()
+            .then((patients) => {
+                if (!active) return;
 
-                hasAllergy: "No",
-                allergyFood: "",
-                allergyMedicine: "",
-                allergyOther: "",
+                setStudents(patients.map((patient) => {
+                    const yearSection = [
+                        patient.yearLevel,
+                        patient.yearLevel?.startsWith("Grade ")
+                            ? patient.section
+                            : patient.course,
+                    ].filter(Boolean).join(" - ");
+                    const name = [
+                        patient.firstName,
+                        patient.middleName,
+                        patient.lastName,
+                    ].filter(Boolean).join(" ");
 
-                immunized: "Yes",
-                hepatitisA: "Yes",
-                hepatitisB: "Yes",
-                typhoid: "Yes",
-                rabies: "",
-                influenza: "Yes",
-                chickenpoxVaccine: "",
-                measlesVaccine: "Yes",
-                cholera: "",
-                dpt: "Yes",
-                opv: "Yes",
+                    return {
+                        id: patient.id,
+                        name,
+                        yearSection,
+                        sex: patient.gender || "",
+                        age: patient.age || "",
+                        status: patient.medicalProfile?.status || "Pending",
+                        profile: {
+                            ...patient.medicalProfile,
+                            lastName: patient.lastName || "",
+                            firstName: patient.firstName || "",
+                            middleInitial: patient.middleName?.charAt(0) || "",
+                            yearSection,
+                            sex: patient.gender || "",
+                            age: String(patient.age || ""),
+                            cellphone: patient.contact || "",
+                        },
+                    };
+                }));
+                setLoadError("");
+            })
+            .catch((error) => {
+                if (active) {
+                    setLoadError(error.message || "Unable to load student records.");
+                }
+            })
+            .finally(() => {
+                if (active) setIsLoading(false);
+            });
 
-                measles: "",
-                mumps: "",
-                hepatitisAHistory: "",
-                hepatitisBHistory: "",
-                typhoidFever: "",
-                chickenPox: "",
-                bronchitis: "",
-                pneumonia: "",
-                asthma: "",
-                otherDisease: "",
-
-                hospitalized: "No",
-                lastHospitalized: "",
-                hospitalizationCause: "",
-                medicationTaken: "",
-                hospitalConfined: "",
-
-                operation: "No",
-                operationAge: "",
-                operationCause: "",
-                operationHospital: "",
-
-                cardiacDisease: "No",
-                hypertension: "No",
-                diabetes: "No",
-                tuberculosis: "No",
-                familyAsthma: "No",
-            },
-        },
-
-        {
-            id: "STU-002",
-            name: "Maria Santos",
-            yearSection: "BSN 3",
-            sex: "Female",
-            age: 21,
-            status: "Completed",
-
-            profile: {
-                lastName: "Santos",
-                firstName: "Maria",
-                middleInitial: "A",
-                yearSection: "BSN 3",
-                sex: "Female",
-                address: "Isabela Negros Occidental",
-                contactPerson: "Juan Santos",
-                telephone: "",
-                cellphone: "09XXXXXXXXX",
-                dateOfBirth: "2005-02-15",
-                age: "21",
-                nationality: "Filipino",
-                religion: "Catholic",
-                height: "160 cm",
-                weight: "55 kg",
-                bloodType: "O+",
-
-                hasAllergy: "Yes",
-                allergyFood: "Shrimp",
-                allergyMedicine: "None",
-                allergyOther: "",
-
-                immunized: "Yes",
-                hepatitisA: "Yes",
-                hepatitisB: "Yes",
-                typhoid: "Yes",
-                rabies: "",
-                influenza: "Yes",
-                chickenpoxVaccine: "Yes",
-                measlesVaccine: "Yes",
-                cholera: "",
-                dpt: "Yes",
-                opv: "Yes",
-
-                measles: "",
-                mumps: "",
-                hepatitisAHistory: "",
-                hepatitisBHistory: "",
-                typhoidFever: "",
-                chickenPox: "",
-                bronchitis: "",
-                pneumonia: "",
-                asthma: "",
-                otherDisease: "",
-
-                hospitalized: "No",
-                lastHospitalized: "",
-                hospitalizationCause: "",
-                medicationTaken: "",
-                hospitalConfined: "",
-
-                operation: "No",
-                operationAge: "",
-                operationCause: "",
-                operationHospital: "",
-
-                cardiacDisease: "No",
-                hypertension: "No",
-                diabetes: "No",
-                tuberculosis: "No",
-                familyAsthma: "No",
-            },
-        },
-
-        {
-            id: "STU-003",
-            name: "Robert Lee",
-            yearSection: "BSIT 3",
-            sex: "Male",
-            age: 20,
-            status: "Pending",
-
-            profile: {
-                lastName: "Lee",
-                firstName: "Robert",
-                middleInitial: "",
-                yearSection: "BSIT 3",
-                sex: "Male",
-                address: "",
-                contactPerson: "",
-                telephone: "",
-                cellphone: "",
-                dateOfBirth: "",
-                age: "20",
-                nationality: "Filipino",
-                religion: "",
-                height: "",
-                weight: "",
-                bloodType: "",
-
-                hasAllergy: "",
-                allergyFood: "",
-                allergyMedicine: "",
-                allergyOther: "",
-
-                immunized: "",
-                hepatitisA: "",
-                hepatitisB: "",
-                typhoid: "",
-                rabies: "",
-                influenza: "",
-                chickenpoxVaccine: "",
-                measlesVaccine: "",
-                cholera: "",
-                dpt: "",
-                opv: "",
-
-                measles: "",
-                mumps: "",
-                hepatitisAHistory: "",
-                hepatitisBHistory: "",
-                typhoidFever: "",
-                chickenPox: "",
-                bronchitis: "",
-                pneumonia: "",
-                asthma: "",
-                otherDisease: "",
-
-                hospitalized: "",
-                lastHospitalized: "",
-                hospitalizationCause: "",
-                medicationTaken: "",
-                hospitalConfined: "",
-
-                operation: "",
-                operationAge: "",
-                operationCause: "",
-                operationHospital: "",
-
-                cardiacDisease: "",
-                hypertension: "",
-                diabetes: "",
-                tuberculosis: "",
-                familyAsthma: "",
-            },
-        },
-
-        {
-            id: "STU-004",
-            name: "Angela Cruz",
-            yearSection: "BSBA 2",
-            sex: "Female",
-            age: 19,
-            status: "Completed",
-
-            profile: {
-                lastName: "Cruz",
-                firstName: "Angela",
-                middleInitial: "M",
-                yearSection: "BSBA 2",
-                sex: "Female",
-                address: "Baguio City",
-                contactPerson: "Pedro Cruz",
-                telephone: "",
-                cellphone: "09XXXXXXXXX",
-                dateOfBirth: "2007-01-20",
-                age: "19",
-                nationality: "Filipino",
-                religion: "Catholic",
-                height: "158 cm",
-                weight: "52 kg",
-                bloodType: "A+",
-
-                hasAllergy: "No",
-                allergyFood: "",
-                allergyMedicine: "",
-                allergyOther: "",
-
-                immunized: "Yes",
-                hepatitisA: "Yes",
-                hepatitisB: "Yes",
-                typhoid: "Yes",
-                rabies: "",
-                influenza: "Yes",
-                chickenpoxVaccine: "Yes",
-                measlesVaccine: "Yes",
-                cholera: "",
-                dpt: "Yes",
-                opv: "Yes",
-
-                measles: "",
-                mumps: "",
-                hepatitisAHistory: "",
-                hepatitisBHistory: "",
-                typhoidFever: "",
-                chickenPox: "",
-                bronchitis: "",
-                pneumonia: "",
-                asthma: "",
-                otherDisease: "",
-
-                hospitalized: "No",
-                lastHospitalized: "",
-                hospitalizationCause: "",
-                medicationTaken: "",
-                hospitalConfined: "",
-
-                operation: "No",
-                operationAge: "",
-                operationCause: "",
-                operationHospital: "",
-
-                cardiacDisease: "No",
-                hypertension: "No",
-                diabetes: "No",
-                tuberculosis: "No",
-                familyAsthma: "No",
-            },
-        },
-    ];
+        return () => {
+            active = false;
+        };
+    }, []);
 
     // ==========================================
     // STATES
@@ -1190,7 +952,11 @@ function StudentMedicalProfile() {
 
                         <tbody>
 
-                            {filteredStudents.map((student) => (
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan="7">Loading student records...</td>
+                                </tr>
+                            ) : filteredStudents.map((student) => (
 
                                 <tr key={student.id}>
 
@@ -1272,15 +1038,14 @@ function StudentMedicalProfile() {
 
                 </div>
 
-                {filteredStudents.length === 0 && (
+                {!isLoading && filteredStudents.length === 0 && (
                     <div className="no-student">
                         <Users size={35} />
 
-                        <h3>No students found</h3>
+                        <h3>{loadError ? "Unable to load students" : "No students found"}</h3>
 
                         <p>
-                            Try searching using a different
-                            student name or ID.
+                            {loadError || "Add a patient from Patient Management to see them here."}
                         </p>
                     </div>
                 )}
