@@ -4,6 +4,7 @@ import {
   createPatient,
   getPatients,
   updatePatient,
+  resendPatientSetupEmail,
 } from "../../services/userManagementService";
 import {
   Search,
@@ -51,6 +52,7 @@ function AddPatient() {
   const [patients, setPatients] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -162,12 +164,38 @@ function AddPatient() {
   };
 
   const createPatientAccount = async () => {
-    const patient = await createPatient(formData);
+    const { emailWarning, ...patient } = await createPatient(formData);
     setPatients((previous) => [...previous, patient]);
-    showMessage(
-      `Patient ${patient.id} added successfully. Login credentials were emailed.`
-    );
+    if (emailWarning) {
+      showMessage(
+        `Patient ${patient.id} was added, but the setup email was not sent. ${emailWarning} Open the patient and use "Resend Setup Email".`,
+        "error"
+      );
+    } else {
+      showMessage(
+        `Patient ${patient.id} added successfully. A password setup link was emailed.`
+      );
+    }
     closeFormModal();
+  };
+
+  const handleResendSetupEmail = async () => {
+    if (!selectedPatient || isResending) return;
+    setIsResending(true);
+    try {
+      await resendPatientSetupEmail(selectedPatient.id);
+      setPatients((previous) =>
+        previous.map((item) =>
+          item.id === selectedPatient.id ? { ...item, setupEmailSent: true } : item
+        )
+      );
+      setSelectedPatient((current) => ({ ...current, setupEmailSent: true }));
+      showMessage("Password setup email sent.");
+    } catch (error) {
+      showMessage(error.message || "Unable to resend the setup email.", "error");
+    } finally {
+      setIsResending(false);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -667,7 +695,6 @@ function AddPatient() {
                       <option value="2nd Year">2nd Year</option>
                       <option value="3rd Year">3rd Year</option>
                       <option value="4th Year">4th Year</option>
-                      <option value="5th Year">5th Year</option>
                     </select>
                   </div>
 
@@ -710,18 +737,14 @@ function AddPatient() {
                         <option value="BS Information Technology">
                           BS Information Technology
                         </option>
-                        <option value="BS Computer Science">
-                          BS Computer Science
-                        </option>
-                        <option value="BS Information Systems">
-                          BS Information Systems
-                        </option>
                         <option value="BS Business Administration">
                           BS Business Administration
                         </option>
-                        <option value="BS Accountancy">BS Accountancy</option>
-                        <option value="BS Hospitality Management">
-                          BS Hospitality Management
+                        <option value="BS Financial Management">
+                          BS Financial Management
+                        </option>
+                        <option value="BS Marketing Management">
+                          BS Marketing Management
                         </option>
                         <option value="Bachelor of Elementary Education">
                           Bachelor of Elementary Education
@@ -968,6 +991,17 @@ function AddPatient() {
                 <Pencil size={17} />
                 Edit Patient
               </button>
+
+              {selectedPatient.setupEmailSent === false && (
+                <button
+                  type="button"
+                  className="patient-submit-btn"
+                  onClick={handleResendSetupEmail}
+                  disabled={isResending}
+                >
+                  {isResending ? "Sending..." : "Resend Setup Email"}
+                </button>
+              )}
             </div>
           </div>
         </div>

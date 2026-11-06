@@ -76,8 +76,14 @@ export const createPatient = async (patient) => {
     throw new Error("The patient service did not return the created patient.");
   }
 
-  return result.patient;
+  return { ...result.patient, emailWarning: result.warning || null };
 };
+
+export const resendPatientSetupEmail = async (patientId) =>
+  requestPatientApi(
+    `/api/patients/${encodeURIComponent(patientId)}/resend-setup-email`,
+    { method: "POST" },
+  );
 
 export const updatePatient = async (patientId, patient) => {
   const result = await requestPatientApi(

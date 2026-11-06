@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
+import { auth, db } from "../../services/firebase";
+import { useAuth } from "../../context/AuthContext";
 import {
     User,
     Mail,
@@ -12,22 +16,90 @@ import {
 } from "lucide-react";
 import "../../styles/Profile.css";
 
+const emptyProfile = {
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthDate: "",
+    role: "",
+    employeeId: "",
+    status: "",
+    photoURL: "",
+    memberSince: "",
+};
+
+const formatRole = (role) =>
+    String(role || "")
+        .replace(/[_-]+/g, " ")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+const formatMemberSince = (createdAt) => {
+    const date = createdAt?.toDate ? createdAt.toDate() : null;
+    return date
+        ? date.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+        : "";
+};
+
+const toProfile = (data, authUser) => {
+    const [firstFromName = "", ...restName] = (data.name || authUser?.displayName || "").split(" ");
+    return {
+        firstName: data.firstName ?? firstFromName,
+        middleName: data.middleName ?? "",
+        lastName: data.lastName ?? restName.join(" "),
+        email: authUser?.email || data.email || "",
+        phone: data.phone || data.contact || "",
+        address: data.address || "",
+        birthDate: data.birthDate || "",
+        role: data.role || "",
+        employeeId:
+            data.employeeId || data.patientId || data.studentId || data.idNumber || "",
+        status: data.status || "",
+        photoURL: data.photoURL || authUser?.photoURL || "",
+        memberSince: formatMemberSince(data.createdAt),
+    };
+};
+
 function Profile() {
+    const { user } = useAuth() || {};
+    const uid = user?.uid;
+
     const [showEditModal, setShowEditModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [loadError, setLoadError] = useState("");
+    const [notice, setNotice] = useState(null);
+    const [profile, setProfile] = useState(emptyProfile);
+    const [formData, setFormData] = useState(emptyProfile);
 
-    const [profile, setProfile] = useState({
-        firstName: "Juan",
-        middleName: "Santos",
-        lastName: "Dela Cruz",
-        email: "juan.delacruz@email.com",
-        phone: "09123456789",
-        address: "Isabela, Philippines",
-        birthDate: "2001-05-15",
-        role: "Clinic Staff",
-        employeeId: "STAFF-001",
-    });
+    useEffect(() => {
+        if (!uid) return;
 
-    const [formData, setFormData] = useState(profile);
+        let active = true;
+        getDoc(doc(db, "users", uid))
+            .then((snapshot) => {
+                if (!active) return;
+                if (!snapshot.exists()) {
+                    setLoadError("No profile record was found for your account.");
+                    return;
+                }
+                setProfile(toProfile(snapshot.data(), auth.currentUser));
+            })
+            .catch((error) => {
+                console.error("Load profile error:", error);
+                if (active) setLoadError("Unable to load your profile. Please try again.");
+            })
+            .finally(() => {
+                if (active) setIsLoading(false);
+            });
+
+        return () => {
+            active = false;
+        };
+    }, [uid]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -47,17 +119,89 @@ function Profile() {
         setShowEditModal(false);
     };
 
-    const handleSaveProfile = (e) => {
+    const handleSaveProfile = async (e) => {
         e.preventDefault();
+        if (isSaving || !uid) return;
 
-        setProfile(formData);
-        setShowEditModal(false);
+        setIsSaving(true);
+        setNotice(null);
 
-        alert("Profile updated successfully.");
+        // Only personal fields are written; role, status and IDs are never sent.
+        const updates = {
+            firstName: formData.firstName.trim(),
+            middleName: formData.middleName.trim(),
+            lastName: formData.lastName.trim(),
+            birthDate: formData.birthDate,
+            phone: formData.phone.trim(),
+            contact: formData.phone.trim(),
+            address: formData.address.trim(),
+        };
+
+        try {
+            await updateDoc(doc(db, "users", uid), {
+                ...updates,
+                updatedAt: serverTimestamp(),
+            });
+
+            if (auth.currentUser) {
+                await updateProfile(auth.currentUser, {
+                    displayName: [updates.firstName, updates.middleName, updates.lastName]
+                        .filter(Boolean)
+                        .join(" "),
+                });
+            }
+
+            setProfile((previous) => ({ ...previous, ...updates }));
+            setShowEditModal(false);
+            setNotice({ type: "success", text: "Profile updated successfully." });
+        } catch (error) {
+            console.error("Save profile error:", error);
+            setNotice({
+                type: "error",
+                text:
+                    error.code === "permission-denied"
+                        ? "You do not have permission to update this profile."
+                        : "Unable to save your profile. Please try again.",
+            });
+        } finally {
+            setIsSaving(false);
+        }
     };
+
+    if (!uid) {
+        return (
+            <div className="profile-page">
+                <p role="alert">You must be signed in to view your profile.</p>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="profile-page">
+                <p>Loading profile...</p>
+            </div>
+        );
+    }
+
+    if (loadError) {
+        return (
+            <div className="profile-page">
+                <p role="alert">{loadError}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="profile-page">
+            {notice && (
+                <p
+                    role={notice.type === "error" ? "alert" : "status"}
+                    style={{ color: notice.type === "error" ? "#b91c1c" : "#15803d" }}
+                >
+                    {notice.text}
+                </p>
+            )}
 
             {/* =================================================
                 PAGE HEADER
@@ -88,26 +232,36 @@ function Profile() {
             <div className="profile-hero-card">
 
                 <div className="profile-avatar">
-                    <User size={45} />
+                    {profile.photoURL ? (
+                        <img
+                            src={profile.photoURL}
+                            alt="Profile"
+                            style={{ width: "100%", height: "100%", borderRadius: "inherit", objectFit: "cover" }}
+                        />
+                    ) : (
+                        <User size={45} />
+                    )}
                 </div>
 
                 <div className="profile-hero-info">
                     <h2>
-                        {profile.firstName}{" "}
-                        {profile.middleName}{" "}
-                        {profile.lastName}
+                        {[profile.firstName, profile.middleName, profile.lastName]
+                            .filter(Boolean)
+                            .join(" ")}
                     </h2>
 
-                    <p>{profile.role}</p>
+                    <p>{formatRole(profile.role)}</p>
 
                     <span className="profile-id">
-                        ID: {profile.employeeId}
+                        ID: {profile.employeeId || "N/A"}
                     </span>
                 </div>
 
                 <div className="profile-status">
                     <span className="status-dot"></span>
-                    Active Account
+                    {profile.status
+                        ? `${formatRole(profile.status)} Account`
+                        : "Account"}
                 </div>
 
             </div>
@@ -241,19 +395,19 @@ function Profile() {
 
                         <div className="account-row">
                             <span>Employee ID</span>
-                            <strong>{profile.employeeId}</strong>
+                            <strong>{profile.employeeId || "N/A"}</strong>
                         </div>
 
                         <div className="account-row">
                             <span>Role</span>
-                            <strong>{profile.role}</strong>
+                            <strong>{formatRole(profile.role)}</strong>
                         </div>
 
                         <div className="account-row">
                             <span>Account Status</span>
 
                             <span className="account-active">
-                                Active
+                                {formatRole(profile.status) || "N/A"}
                             </span>
                         </div>
 
@@ -283,12 +437,12 @@ function Profile() {
 
                         <div>
                             <span>Member Since</span>
-                            <strong>September 2026</strong>
+                            <strong>{profile.memberSince || "N/A"}</strong>
                         </div>
 
                         <div>
                             <span>Account Type</span>
-                            <strong>Clinic Staff</strong>
+                            <strong>{formatRole(profile.role)}</strong>
                         </div>
 
                     </div>
@@ -390,8 +544,9 @@ function Profile() {
                                         type="email"
                                         name="email"
                                         value={formData.email}
-                                        onChange={handleInputChange}
-                                        required
+                                        readOnly
+                                        disabled
+                                        title="Email changes require re-verification and are not available here"
                                     />
                                 </div>
 
@@ -433,9 +588,10 @@ function Profile() {
                                 <button
                                     type="submit"
                                     className="profile-save-btn"
+                                    disabled={isSaving}
                                 >
                                     <Save size={17} />
-                                    Save Changes
+                                    {isSaving ? "Saving..." : "Save Changes"}
                                 </button>
 
                             </div>

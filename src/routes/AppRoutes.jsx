@@ -27,6 +27,7 @@ import Logout from "../pages/Admin/Logout";
 // ==============================
 import StaffLayout from "../layouts/StaffLayout";
 import StaffDashboard from "../pages/Clinicstaff/StaffDashboard";
+import AddPatient from "../pages/Clinicstaff/AddPatient";
 import Inventory from "../pages/Clinicstaff/Inventory";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
@@ -44,7 +45,7 @@ import StudentDashboard from "../pages/Student/StudentDashboard";
 import MedicalProfile from "../pages/Student/MedicalProfile";
 import StudentNotifications from "../pages/Student/StudentNotification";
 import History from "../pages/Student/History";
-
+import StudentProfile from "../pages/Student/StudentProfile";
 function AppRoutes() {
     return (
         <BrowserRouter>
@@ -84,6 +85,7 @@ function AppRoutes() {
                     }
                 >
                     <Route index element={<StaffDashboard />} />
+                    <Route path="add-patient" element={<AddPatient />} />
                     <Route path="inventory" element={<Inventory />} />
                     <Route path="staff-reports" element={<StaffReports />} />
                     <Route path="notifications" element={<Notifications />} />
@@ -108,6 +110,7 @@ function AppRoutes() {
                     <Route path="notifications" element={<StudentNotifications />} />/
                     <Route path="medical-profile" element={<MedicalProfile />} />
                     <Route path="history" element={<History />} />
+                    <Route path="studentprofile" element={<StudentProfile />} />
                 </Route>
             </Routes>
         </BrowserRouter>

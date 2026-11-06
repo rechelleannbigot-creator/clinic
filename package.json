@@ -7,6 +7,7 @@
     "dev": "vite",
     "server:dev": "npm --prefix src/services/server run dev",
     "server:start": "npm --prefix src/services/server start",
+    "server:check": "node src/services/server/diagnose.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -1,79 +1,21 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import nodemailer from "nodemailer";
 import crypto from "node:crypto";
-import { existsSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { initializeApp, applicationDefault } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "firebase-admin/firestore";
+import {
+  auth,
+  db,
+  emailTransporter,
+  getSetupIssues,
+  credentialFileMissing,
+} from "./config.js";
 
-const serverDirectory = path.dirname(fileURLToPath(import.meta.url));
-const envFile = [".env", "env"]
-  .map((file) => path.join(serverDirectory, file))
-  .find((file) => existsSync(file));
-
-if (envFile) {
-  const { error } = dotenv.config({ path: envFile });
-  if (error) {
-    throw new Error(`Unable to load backend environment file: ${error.message}`);
-  }
-}
-
-if (process.env.GOOGLE_APPLICATION_CREDENTIALS &&
-    !path.isAbsolute(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
-    serverDirectory,
-    process.env.GOOGLE_APPLICATION_CREDENTIALS,
-  );
-}
-
-if (process.env.GOOGLE_APPLICATION_CREDENTIALS &&
-    !existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
+if (credentialFileMissing()) {
   console.warn(
     "Firebase service-account file was not found. Set GOOGLE_APPLICATION_CREDENTIALS to a valid file or configure Google Application Default Credentials.",
   );
 }
 
-function isConfigured(value) {
-  return Boolean(value?.trim()) && !/your[-_ ]|placeholder|example/i.test(value);
-}
-
-function getSetupIssues() {
-  const issues = [];
-
-  if (process.env.GOOGLE_APPLICATION_CREDENTIALS &&
-      !existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
-    issues.push("Firebase Admin service-account file is missing");
-  }
-
-  const missingEmailSettings = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS"]
-    .filter((key) => !isConfigured(process.env[key]));
-  if (missingEmailSettings.length) {
-    issues.push(`SMTP settings need configuration (${missingEmailSettings.join(", ")})`);
-  }
-
-  return issues;
-}
-
-initializeApp({
-  credential: applicationDefault(),
-  projectId:
-    (isConfigured(process.env.FIREBASE_PROJECT_ID)
-      ? process.env.FIREBASE_PROJECT_ID
-      : process.env.GOOGLE_CLOUD_PROJECT) ||
-    "clinic-management-system-c98ba",
-  storageBucket:
-    (isConfigured(process.env.FIREBASE_STORAGE_BUCKET)
-      ? process.env.FIREBASE_STORAGE_BUCKET
-      : null) ||
-    "clinic-management-system-c98ba.firebasestorage.app",
-});
-
-const auth = getAuth();
-const db = getFirestore();
 const app = express();
 
 app.use(cors({
@@ -87,22 +29,60 @@ function makeTemporaryPassword() {
   return crypto.randomBytes(20).toString("hex");
 }
 
-function emailTransporter() {
-  const required = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS"];
-  const missing = required.filter((key) => !isConfigured(process.env[key]));
-  if (missing.length) {
-    throw new Error(`Email is not configured. Missing: ${missing.join(", ")}`);
+// Builds the Firebase password-setup link and emails it. No password is ever
+// generated for email, stored, or logged.
+async function sendSetupEmail(transporter, patient, patientId) {
+  const loginUrl = process.env.LOGIN_URL || "http://localhost:5173/";
+  let link;
+  try {
+    link = await auth.generatePasswordResetLink(patient.email, { url: loginUrl });
+  } catch (error) {
+    if (error.code !== "auth/unauthorized-continue-uri") throw error;
+    // LOGIN_URL's domain is not in Firebase Auth > Authorized domains yet.
+    link = await auth.generatePasswordResetLink(patient.email);
   }
 
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: String(process.env.SMTP_SECURE).toLowerCase() === "true",
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
+  await transporter.sendMail({
+    from: process.env.MAIL_FROM || process.env.SMTP_USER,
+    to: patient.email,
+    subject: "Set up your Clinic Management System account",
+    text:
+`Hello ${patient.firstName},
+
+A Clinic Management System account has been created for you.
+
+Patient ID: ${patientId}
+Login email: ${patient.email}
+
+Set your password using this secure link:
+${link}
+
+After setting your password, sign in here: ${loginUrl}
+
+If you did not expect this email, please contact your school clinic and ignore this message.`,
   });
+}
+
+async function recordSetupEmailResult(patientId, sent, errorCode) {
+  try {
+    await db.collection("patients").doc(patientId).update(
+      sent
+        ? { setupEmailSent: true, setupEmailSentAt: FieldValue.serverTimestamp(), setupEmailError: FieldValue.delete() }
+        : { setupEmailSent: false, setupEmailError: errorCode || "send-failed" },
+    );
+  } catch (error) {
+    console.error("Record setup email status error:", error.message);
+  }
+}
+
+function emailFailureMessage(error) {
+  if (error?.code === "email/not-configured") {
+    return "Email is not configured on the server. Add the SMTP settings and restart the backend.";
+  }
+  if (error?.code === "EAUTH") {
+    return "The email server rejected the SMTP username or password.";
+  }
+  return "The setup email could not be sent. Check the SMTP settings and try again.";
 }
 
 function cleanString(value) {
@@ -158,8 +138,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 async function requireClinicStaff(req, res, next) {
-  if (process.env.GOOGLE_APPLICATION_CREDENTIALS &&
-      !existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
+  if (credentialFileMissing()) {
     return res.status(503).json({
       message: "Firebase Admin credentials are missing. Add the configured service-account file and restart the backend.",
     });
@@ -218,15 +197,11 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
       return res.status(400).json({ message: validationMessage });
     }
 
-    // Ensure mail delivery is configured before creating an account.
-    const transporter = emailTransporter();
-    await transporter.verify();
-
-    // Firebase Auth enforces email uniqueness. The password is never saved to Firestore.
-    const temporaryPassword = makeTemporaryPassword();
+    // Firebase Auth enforces email uniqueness. The random password is never
+    // saved or emailed; the patient sets their own through a reset link.
     const userRecord = await auth.createUser({
       email: patient.email,
-      password: temporaryPassword,
+      password: makeTemporaryPassword(),
       displayName: [patient.firstName, patient.middleName, patient.lastName].filter(Boolean).join(" "),
       disabled: false,
       emailVerified: false,
@@ -253,7 +228,7 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
         role: "student",
         status: "Active",
         createdAt: FieldValue.serverTimestamp(),
-        mustChangePassword: true,
+        setupEmailSent: false,
       });
       transaction.set(db.collection("users").doc(userRecord.uid), {
         ...patient,
@@ -262,55 +237,41 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
         role: "student",
         status: "ACTIVE",
         createdAt: FieldValue.serverTimestamp(),
-        mustChangePassword: true,
       });
       return ref;
     });
     createdPatientId = patientRef.id;
+    // Records are committed; from here on nothing is rolled back.
+    createdUid = null;
+    createdPatientId = null;
 
-    const loginUrl = process.env.LOGIN_URL || "http://localhost:5173/";
+    const patientId = patientRef.id;
+    let emailSent = true;
+    let emailWarning = null;
     try {
-      await transporter.sendMail({
-        from: process.env.MAIL_FROM || process.env.SMTP_USER,
-        to: patient.email,
-        subject: "Your Clinic Management System account",
-        text:
-`Hello ${patient.firstName},
-
-Your Clinic Management System account has been created.
-
-Patient ID: ${createdPatientId}
-Login email: ${patient.email}
-Temporary password: ${temporaryPassword}
-
-Sign in here: ${loginUrl}
-
-For your security, sign in and change this temporary password immediately. Do not share your password with anyone.
-
-If you did not expect this account, please contact your school clinic.`,
-      });
+      await sendSetupEmail(emailTransporter(), patient, patientId);
+      await recordSetupEmailResult(patientId, true);
     } catch (mailError) {
-      // Avoid leaving an active account whose credentials were not delivered.
-      await db.collection("patients").doc(createdPatientId).delete().catch(() => {});
-      await db.collection("users").doc(userRecord.uid).delete().catch(() => {});
-      await auth.deleteUser(userRecord.uid).catch(() => {});
-      createdUid = null;
-      createdPatientId = null;
-      throw new Error("The account could not be emailed. Check SMTP settings and try again.", {
-        cause: mailError,
-      });
+      emailSent = false;
+      emailWarning = emailFailureMessage(mailError);
+      console.error("Setup email error:", mailError.code || mailError.message);
+      await recordSetupEmailResult(patientId, false, mailError.code);
     }
 
     return res.status(201).json({
-      message: "Patient and login account created. Temporary login details were emailed to the patient.",
+      message: emailSent
+        ? "Patient account created. A password setup link was emailed to the patient."
+        : "Patient account created, but the setup email was not sent.",
+      warning: emailWarning,
       patient: {
         ...patient,
-        id: createdPatientId,
+        id: patientId,
         uid: userRecord.uid,
         role: "student",
         status: "Active",
+        setupEmailSent: emailSent,
       },
-      emailSent: true,
+      emailSent,
     });
   } catch (error) {
     console.error("Create patient error:", error.message);
@@ -333,6 +294,34 @@ If you did not expect this account, please contact your school clinic.`,
     return res.status(500).json({
       message: error.message || "Unable to create the patient account. Please try again.",
     });
+  }
+});
+
+app.post("/api/patients/:patientId/resend-setup-email", requireClinicStaff, async (req, res) => {
+  try {
+    const patientId = cleanString(req.params.patientId);
+    const snapshot = await db.collection("patients").doc(patientId).get();
+    if (!snapshot.exists) {
+      return res.status(404).json({ message: "Patient record was not found." });
+    }
+
+    const patient = snapshot.data();
+    try {
+      await sendSetupEmail(emailTransporter(), patient, patientId);
+    } catch (mailError) {
+      console.error("Resend setup email error:", mailError.code || mailError.message);
+      await recordSetupEmailResult(patientId, false, mailError.code);
+      if (mailError.code === "auth/user-not-found") {
+        return res.status(404).json({ message: "No login account exists for this patient email." });
+      }
+      return res.status(502).json({ message: emailFailureMessage(mailError) });
+    }
+
+    await recordSetupEmailResult(patientId, true);
+    return res.json({ message: "Password setup email sent.", emailSent: true });
+  } catch (error) {
+    console.error("Resend setup email error:", error.message);
+    return res.status(500).json({ message: "Unable to resend the setup email." });
   }
 });
 

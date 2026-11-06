@@ -17,6 +17,7 @@ import {
   Package,
   Bell,
   UserCircle,
+  UserPlus,
 } from "lucide-react";
 
 function StaffLayout() {
@@ -161,6 +162,27 @@ function StaffLayout() {
             <div className="sidebar-section-title">
               PATIENT RECORDS
             </div>
+
+            {/* Add Patient */}
+            <NavLink
+              to="add-patient"
+              end
+              onClick={closeSidebarOnMobile}
+              className={({ isActive }) =>
+                isActive
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+              title="Add Patient"
+            >
+              <span className="nav-icon">
+                <UserPlus size={18} />
+              </span>
+
+              <span className="nav-text">
+                Add Patient
+              </span>
+            </NavLink>
 
             {/* Student Medical Profile */}
             <NavLink
