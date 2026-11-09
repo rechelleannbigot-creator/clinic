@@ -104,6 +104,15 @@ export const updatePatient = async (patientId, patient) => {
   return result.patient;
 };
 
+export const deletePatient = async (patientId) => {
+  const result = await requestPatientApi(
+    `/api/patients/${encodeURIComponent(patientId)}`,
+    { method: "DELETE" },
+  );
+
+  return result;
+};
+
 // GENERATE TEMPORARY PASSWORD
 export const generateTemporaryPassword = (length = 12) => {
   const characters =

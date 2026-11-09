@@ -5,6 +5,7 @@ import {
   getPatients,
   updatePatient,
   resendPatientSetupEmail,
+  deletePatient,
 } from "../../services/userManagementService";
 import {
   Search,
@@ -22,6 +23,7 @@ import {
   CheckCircle,
   AlertCircle,
   Mail,
+  Trash2,
 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import "../../styles/AddPatient.css";
@@ -53,6 +55,8 @@ function AddPatient() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -308,6 +312,25 @@ function AddPatient() {
     link.href = canvas.toDataURL("image/png");
     link.download = `${patient.id}-QR-Code.png`;
     link.click();
+  };
+
+  const handleDeletePatient = async () => {
+    if (!deleteConfirmation || isDeleting) return;
+    
+    setIsDeleting(true);
+    try {
+      await deletePatient(deleteConfirmation.id);
+      setPatients((previous) =>
+        previous.filter((patient) => patient.id !== deleteConfirmation.id)
+      );
+      setDeleteConfirmation(null);
+      setSelectedPatient(null);
+      showMessage("Patient account deleted successfully.");
+    } catch (error) {
+      showMessage(error.message || "Unable to delete patient account.", "error");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const getAcademicInfo = (patient) =>
@@ -1002,6 +1025,95 @@ function AddPatient() {
                   {isResending ? "Sending..." : "Resend Setup Email"}
                 </button>
               )}
+
+              <button
+                type="button"
+                className="patient-delete-btn"
+                onClick={() => setDeleteConfirmation(selectedPatient)}
+                style={{ backgroundColor: "#ef4444" }}
+              >
+                <Trash2 size={17} />
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmation && (
+        <div
+          className="patient-modal-overlay"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setDeleteConfirmation(null);
+            }
+          }}
+        >
+          <div
+            className="patient-details-modal"
+            style={{ maxWidth: "400px" }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-confirmation-title"
+          >
+            <div className="patient-details-header">
+              <div
+                className="patient-details-header-icon"
+                style={{ backgroundColor: "#fee2e2" }}
+              >
+                <AlertCircle size={26} style={{ color: "#ef4444" }} />
+              </div>
+
+              <div>
+                <h2 id="delete-confirmation-title">Delete Patient Account?</h2>
+                <p>This action cannot be undone</p>
+              </div>
+
+              <button
+                type="button"
+                className="patient-modal-close"
+                onClick={() => setDeleteConfirmation(null)}
+                aria-label="Close delete confirmation"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="patient-details-body">
+              <p style={{ marginBottom: "1.5rem", lineHeight: 1.5 }}>
+                You are about to permanently delete the account for{" "}
+                <strong>{getFullName(deleteConfirmation)}</strong> ({deleteConfirmation.id}). This will:
+              </p>
+              <ul style={{ marginLeft: "1.25rem", marginBottom: "1.5rem", lineHeight: 1.8 }}>
+                <li>Remove all patient information</li>
+                <li>Delete medical records</li>
+                <li>Deactivate the patient's access</li>
+              </ul>
+              <p style={{ color: "#dc2626", fontWeight: 500 }}>
+                Please confirm this action before proceeding.
+              </p>
+            </div>
+
+            <div className="patient-details-footer">
+              <button
+                type="button"
+                className="patient-cancel-btn"
+                onClick={() => setDeleteConfirmation(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="patient-delete-btn"
+                onClick={handleDeletePatient}
+                disabled={isDeleting}
+                style={{ backgroundColor: "#ef4444" }}
+              >
+                <Trash2 size={17} />
+                {isDeleting ? "Deleting..." : "Delete Account"}
+              </button>
             </div>
           </div>
         </div>

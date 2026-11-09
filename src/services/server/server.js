@@ -20,7 +20,7 @@ const app = express();
 
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-  methods: ["GET", "POST", "PUT"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 app.use(express.json({ limit: "1mb" }));
 
@@ -410,6 +410,50 @@ app.put("/api/patients/:patientId", requireClinicStaff, async (req, res) => {
       return res.status(409).json({ message: "This patient has no linked login account." });
     }
     return res.status(500).json({ message: "Unable to update the patient record." });
+  }
+});
+
+app.delete("/api/patients/:patientId", requireClinicStaff, async (req, res) => {
+  try {
+    const patientId = cleanString(req.params.patientId);
+    if (!/^P-\d{3,}$/.test(patientId)) {
+      return res.status(400).json({ message: "Invalid patient ID." });
+    }
+
+    const patientRef = db.collection("patients").doc(patientId);
+    const patientSnapshot = await patientRef.get();
+    if (!patientSnapshot.exists) {
+      return res.status(404).json({ message: "Patient record could not be found." });
+    }
+
+    const patientUid = cleanString(patientSnapshot.data()?.uid);
+    if (!patientUid) {
+      return res.status(409).json({ message: "This patient has no linked login account." });
+    }
+
+    const userRef = db.collection("users").doc(patientUid);
+    const userSnapshot = await userRef.get();
+    if (!userSnapshot.exists) {
+      return res.status(409).json({ message: "This patient has no linked user profile." });
+    }
+
+    await db.runTransaction(async (transaction) => {
+      transaction.delete(patientRef);
+      transaction.delete(userRef);
+    });
+
+    await auth.deleteUser(patientUid);
+
+    return res.json({
+      message: "Patient account deleted successfully.",
+      patientId,
+    });
+  } catch (error) {
+    console.error("Delete patient error:", error.message);
+    if (error.code === "auth/user-not-found") {
+      return res.status(409).json({ message: "Patient auth account could not be found." });
+    }
+    return res.status(500).json({ message: "Unable to delete the patient account." });
   }
 });
 
