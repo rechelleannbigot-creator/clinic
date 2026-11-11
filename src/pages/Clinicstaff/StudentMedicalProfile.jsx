@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getPatients } from "../../services/userManagementService";
+import { getConsultations } from "../../services/clinicService";
 import {
     Search,
     Users,
@@ -82,6 +83,17 @@ function StudentMedicalProfile() {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [formData, setFormData] = useState(null);
     const [saved, setSaved] = useState(false);
+    const [consultations, setConsultations] = useState([]);
+    const [consultationError, setConsultationError] = useState("");
+
+    useEffect(() => {
+        if (!selectedStudent) return undefined;
+        let active = true;
+        getConsultations(selectedStudent.id).then((records) => {
+            if (active) setConsultations(records);
+        }).catch((error) => { if (active) setConsultationError(error.message); });
+        return () => { active = false; };
+    }, [selectedStudent]);
 
     // ==========================================
     // OPEN PROFILE
@@ -89,6 +101,8 @@ function StudentMedicalProfile() {
 
     const handleOpenProfile = (student) => {
         setSelectedStudent(student);
+        setConsultations([]);
+        setConsultationError("");
         setFormData({ ...student.profile });
         setSaved(false);
 
@@ -221,6 +235,22 @@ function StudentMedicalProfile() {
                     </div>
                 )}
 
+                <section className="profile-section">
+                    <h2>Consultation Records</h2>
+                    {consultationError && <p role="alert">{consultationError}</p>}
+                    {!consultationError && consultations.length === 0 && <p>No consultation records found.</p>}
+                    {consultations.map((record) => (
+                        <article key={record.consultationId}>
+                            <h3>{record.consultationId} · {record.consultationDate}</h3>
+                            <p>{record.consultationType} — {record.clinicStaff}</p>
+                            <p><strong>Symptoms:</strong> {record.symptoms}</p>
+                            <p><strong>Diagnosis:</strong> {record.diagnosis}</p>
+                            <p><strong>Treatment:</strong> {record.treatment || "None recorded"}</p>
+                            <p><strong>Medicine:</strong> {record.medicine || "None"} {record.medicine && `(${record.quantity}; ${record.dosage}; ${record.instructions})`}</p>
+                            <p><strong>Notes:</strong> {record.notes || "None recorded"}</p>
+                        </article>
+                    ))}
+                </section>
                 <form onSubmit={handleSave}>
 
                     {/* ==================================

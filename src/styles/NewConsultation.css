@@ -6,9 +6,21 @@
 .new-consultation-page {
     min-height: 100vh;
     padding: 30px;
-    background: #f4f7fb;
+    background: #f5f7fb;
     color: #25364a;
     font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+.consultation-form-fieldset {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.consultation-form-fieldset:disabled button {
+    cursor: not-allowed;
+    opacity: 0.65;
 }
 
 .consultation-page-header {

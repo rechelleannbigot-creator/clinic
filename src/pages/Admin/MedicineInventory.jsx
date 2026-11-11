@@ -1,5 +1,6 @@
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getMedicines, saveMedicine, removeMedicine } from "../../services/clinicService";
 import {
   Search,
   Plus,
@@ -21,41 +22,6 @@ const emptyForm = {
   unit: "",
   expiry: "",
 };
-
-const initialMedicines = [
-  {
-    id: "MED-001",
-    name: "Paracetamol",
-    category: "Pain Relief",
-    quantity: 150,
-    unit: "Tablets",
-    expiry: "2027-05-12",
-  },
-  {
-    id: "MED-002",
-    name: "Amoxicillin",
-    category: "Antibiotic",
-    quantity: 80,
-    unit: "Capsules",
-    expiry: "2027-02-20",
-  },
-  {
-    id: "MED-003",
-    name: "Ibuprofen",
-    category: "Pain Relief",
-    quantity: 25,
-    unit: "Tablets",
-    expiry: "2026-11-15",
-  },
-  {
-    id: "MED-004",
-    name: "Cetirizine",
-    category: "Antihistamine",
-    quantity: 0,
-    unit: "Tablets",
-    expiry: "2027-01-10",
-  },
-];
 
 function getStockStatus(quantity) {
   if (quantity === 0) return "Out of Stock";
@@ -103,7 +69,17 @@ function formatDate(date) {
 
 function MedicineInventory() {
   const [search, setSearch] = useState("");
-  const [medicines, setMedicines] = useState(initialMedicines);
+  const [medicines, setMedicines] = useState([]);
+  const [loadingError, setLoadingError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [originalQuantity, setOriginalQuantity] = useState(null);
+  useEffect(() => {
+    let active = true;
+    getMedicines().then((items) => {
+      if (active) setMedicines(items.map((item) => ({ ...item, expiry: item.expirationDate })));
+    }).catch((loadError) => { if (active) setLoadingError(loadError.message); });
+    return () => { active = false; };
+  }, []);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
@@ -160,6 +136,7 @@ function MedicineInventory() {
 
   const openEditModal = (medicine) => {
     setEditingId(medicine.id);
+    setOriginalQuantity(medicine.quantity);
     setForm({
       name: medicine.name,
       category: medicine.category,
@@ -187,8 +164,9 @@ function MedicineInventory() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (saving) return;
     setError("");
 
     const quantity = Number(form.quantity);
@@ -229,35 +207,29 @@ function MedicineInventory() {
       expiry: form.expiry,
     };
 
-    if (editingId) {
-      setMedicines((previous) =>
-        previous.map((medicine) =>
-          medicine.id === editingId
-            ? { ...medicine, ...normalizedMedicine }
-            : medicine
-        )
-      );
-    } else {
-      const nextNumber =
-        medicines.reduce((maximum, medicine) => {
-          const match = medicine.id.match(/^MED-(\d+)$/);
-          return match
-            ? Math.max(maximum, Number(match[1]))
-            : maximum;
-        }, 0) + 1;
-
-      const newMedicine = {
-        id: `MED-${String(nextNumber).padStart(3, "0")}`,
+    setSaving(true);
+    try {
+      const current = medicines.find((item) => item.id === editingId);
+      const saved = await saveMedicine({
         ...normalizedMedicine,
-      };
-
-      setMedicines((previous) => [...previous, newMedicine]);
+        expirationDate: normalizedMedicine.expiry,
+        reorderLevel: current?.reorderLevel ?? 30,
+        expectedQuantity: originalQuantity,
+      }, editingId);
+      const mapped = { ...saved, expiry: saved.expirationDate };
+      setMedicines((previous) => editingId
+        ? previous.map((item) => item.id === editingId ? mapped : item)
+        : [...previous, mapped]);
+      setLoadingError("");
+      closeModal();
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally {
+      setSaving(false);
     }
-
-    closeModal();
   };
 
-  const deleteMedicine = (id) => {
+  const deleteMedicine = async (id) => {
     const medicine = medicines.find((item) => item.id === id);
 
     if (!medicine) return;
@@ -267,14 +239,19 @@ function MedicineInventory() {
     );
 
     if (confirmed) {
-      setMedicines((previous) =>
-        previous.filter((item) => item.id !== id)
-      );
+      try {
+        await removeMedicine(id);
+        setMedicines((previous) => previous.filter((item) => item.id !== id));
+        setLoadingError("");
+      } catch (deleteError) {
+        setLoadingError(deleteError.message);
+      }
     }
   };
 
   return (
     <div className="medicine-page">
+      {loadingError && <p role="alert">{loadingError}</p>}
       {/* Page Header */}
       <div className="medicine-header">
         <div>
@@ -646,8 +623,8 @@ function MedicineInventory() {
                   Cancel
                 </button>
 
-                <button type="submit" className="save-btn">
-                  {editingId ? (
+                <button type="submit" className="save-btn" disabled={saving}>
+                  {saving ? "Saving..." : editingId ? (
                     <>
                       <CheckCircle size={17} />
                       Save Changes

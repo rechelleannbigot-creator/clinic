@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import crypto from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
+import { registerClinicRoutes } from "./clinicRoutes.js";
 import {
   auth,
   db,
@@ -19,7 +20,7 @@ if (credentialFileMissing()) {
 const app = express();
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  origin: process.env.CLIENT_ORIGIN || ["http://localhost:5173", "http://127.0.0.1:5173"],
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 app.use(express.json({ limit: "1mb" }));
@@ -137,7 +138,7 @@ app.get("/api/health", (_req, res) => {
     .json({ status: setupIssues.length ? "setup-required" : "ok", setupIssues });
 });
 
-async function requireClinicStaff(req, res, next) {
+async function requireSignedIn(req, res, next) {
   if (credentialFileMissing()) {
     return res.status(503).json({
       message: "Firebase Admin credentials are missing. Add the configured service-account file and restart the backend.",
@@ -148,29 +149,40 @@ async function requireClinicStaff(req, res, next) {
     const header = req.headers.authorization || "";
     const match = header.match(/^Bearer (.+)$/i);
     if (!match) {
-      return res.status(401).json({ message: "Please sign in before adding a patient." });
+      return res.status(401).json({ message: "Please sign in to access the clinic service." });
     }
 
     const decoded = await auth.verifyIdToken(match[1]);
-    const userDoc = await db.collection("users").doc(decoded.uid).get();
-    const role = String(userDoc.data()?.role || "").toLowerCase().replace(/[\s_-]/g, "");
-
-    // Ensure your admin/staff accounts have a users/{uid} document with an
-    // authorized role. Adjust these role labels to match your AuthContext data.
-    if (!userDoc.exists || !["admin", "administrator", "staff", "clinicstaff"].includes(role)) {
-      return res.status(403).json({ message: "You are not authorized to add patients." });
-    }
-
     req.authUser = decoded;
     next();
   } catch (error) {
-    console.error("Verify clinic staff error:", error.message);
+    console.error("Verify user error:", error.message);
     if (error.code?.startsWith("auth/")) {
       return res.status(401).json({ message: "Your session is invalid or expired. Please sign in again." });
     }
-    return res.status(503).json({ message: "Unable to verify clinic staff access. Please try again." });
+    return res.status(503).json({ message: "Unable to verify your session. Please try again." });
   }
 }
+
+async function requireClinicStaff(req, res, next) {
+  return requireSignedIn(req, res, async () => {
+    try {
+      const userDoc = await db.collection("users").doc(req.authUser.uid).get();
+      const role = String(userDoc.data()?.role || "").toLowerCase().replace(/[\s_-]/g, "");
+      if (!userDoc.exists || !["admin", "administrator", "staff", "clinicstaff"].includes(role)) {
+        return res.status(403).json({ message: "You are not authorized to access clinic records." });
+      }
+
+      req.staffProfile = userDoc.data();
+      next();
+    } catch (error) {
+      console.error("Verify clinic staff error:", error.message);
+      return res.status(503).json({ message: "Unable to verify clinic staff access. Please try again." });
+    }
+  });
+}
+
+registerClinicRoutes(app, { db, requireClinicStaff, requireSignedIn });
 
 app.get("/api/patients", requireClinicStaff, async (_req, res) => {
   try {

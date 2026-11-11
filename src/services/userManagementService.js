@@ -14,7 +14,7 @@ const PATIENT_API_URL = (
   import.meta.env.VITE_CLINIC_API_URL || "http://localhost:5000"
 ).replace(/\/+$/, "");
 
-const requestPatientApi = async (path, options = {}) => {
+export const requestPatientApi = async (path, options = {}) => {
   const currentUser = auth.currentUser;
 
   if (!currentUser) {
@@ -34,16 +34,16 @@ const requestPatientApi = async (path, options = {}) => {
       },
     });
   } catch (error) {
-    console.error("Patient service request error:", error);
-    throw new Error("Could not reach the patient service. Make sure the backend is running.");
+    console.error("Clinic service request error:", error);
+    throw new Error("Could not reach the clinic service. Make sure the backend is running and the API URL is correct.");
   }
 
   let result;
   try {
     result = await response.json();
   } catch (error) {
-    console.error("Invalid patient service response:", error);
-    throw new Error("The patient service returned an invalid response.");
+    console.error("Invalid clinic service response:", error);
+    throw new Error("The clinic service returned an invalid response.");
   }
 
   if (!response.ok) {
@@ -355,4 +355,3 @@ export const completePasswordChange = async (user, newPassword) => {
     throw new Error(error.message || "Failed to change password.");
   }
 };
-

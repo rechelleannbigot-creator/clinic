@@ -343,35 +343,6 @@ function EmployeeProfiles() {
             </div>
           </section>
 
-          <section className="employee-information-card">
-            <div className="employee-section-heading">
-              <span className="employee-section-number">III</span>
-              <div>
-                <h3>Contact Information</h3>
-                <p>Contact details for official communication</p>
-              </div>
-            </div>
-
-            <div className="employee-form-grid">
-              <FormField label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} />
-
-              <FormField label="Contact Number" name="contact" value={formData.contact} onChange={handleChange} />
-
-              <FormField label="Educational Attainment" name="education" value={formData.education} onChange={handleChange} />
-
-              <FormField
-                label={
-                  formData.personnelType === "Teaching"
-                    ? "Subject / Teaching Specialization"
-                    : "Area of Expertise"
-                }
-                name="specialization"
-                value={formData.specialization}
-                onChange={handleChange}
-              />
-            </div>
-          </section>
-
           <div className="employee-form-actions">
             <button
               type="button"

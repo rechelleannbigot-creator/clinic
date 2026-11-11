@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getConsultations, deleteConsultation } from "../../services/clinicService";
 import {
     Search,
     CalendarDays,
@@ -12,97 +13,28 @@ import {
     Stethoscope,
     QrCode,
     FileText,
+    Trash2,
 } from "lucide-react";
 
 import "../../styles/VisitHistory.css";
 
 function VisitHistory() {
-    // =====================================================
-    // SAMPLE SCHOOL CLINIC VISIT RECORDS
-    // =====================================================
-
-    const [visits] = useState([
-        {
-            id: "VIS-001",
-            patientId: "P-001",
-            patientName: "Juan Dela Cruz",
-            role: "Student",
-            courseYear: "BSIT - 2nd Year",
-            date: "2026-10-02",
-            time: "08:30 AM",
-            consultation: "General Checkup",
-            complaint: "Headache and dizziness",
-            diagnosis: "Headache",
-            treatment: "Rest, hydration, and monitoring",
-            medicine: "Paracetamol 500mg",
-            staff: "Clinic Nurse",
-            status: "Completed",
-        },
-        {
-            id: "VIS-002",
-            patientId: "P-002",
-            patientName: "Maria Santos",
-            role: "Student",
-            courseYear: "BSHM - 1st Year",
-            date: "2026-10-01",
-            time: "10:15 AM",
-            consultation: "Follow-up",
-            complaint: "Follow-up for cough",
-            diagnosis: "Cough / Upper Respiratory Symptoms",
-            treatment: "Rest, fluids, and symptom monitoring",
-            medicine: "None",
-            staff: "Clinic Nurse",
-            status: "Completed",
-        },
-        {
-            id: "VIS-003",
-            patientId: "P-003",
-            patientName: "Robert Lee",
-            role: "Employee",
-            courseYear: "Teaching Personnel",
-            date: "2026-09-30",
-            time: "01:20 PM",
-            consultation: "Medical Consultation",
-            complaint: "Stomach discomfort",
-            diagnosis: "Stomach Discomfort",
-            treatment: "Rest and observation",
-            medicine: "None",
-            staff: "Clinic Nurse",
-            status: "Completed",
-        },
-        {
-            id: "VIS-004",
-            patientId: "P-004",
-            patientName: "Ana Garcia",
-            role: "Student",
-            courseYear: "BSBA - 3rd Year",
-            date: "2026-09-25",
-            time: "09:45 AM",
-            consultation: "General Checkup",
-            complaint: "Minor wound",
-            diagnosis: "Minor Superficial Wound",
-            treatment: "Wound cleaning and dressing",
-            medicine: "None",
-            staff: "Clinic Nurse",
-            status: "Completed",
-        },
-        {
-            id: "VIS-005",
-            patientId: "P-005",
-            patientName: "Michael Reyes",
-            role: "Student",
-            courseYear: "BSED - 4th Year",
-            date: "2026-09-15",
-            time: "02:10 PM",
-            consultation: "Emergency Consultation",
-            complaint: "Feeling faint",
-            diagnosis: "Dizziness / Near Fainting",
-            treatment: "Seated rest, hydration, and observation",
-            medicine: "None",
-            staff: "Clinic Nurse",
-            status: "In Progress",
-        },
-    ]);
+    const [visits, setVisits] = useState([]);
+    const [loadError, setLoadError] = useState("");
+    useEffect(() => {
+        let active = true;
+        getConsultations().then((records) => {
+            if (active) setVisits(records.map((record) => ({
+                id: record.consultationId, patientId: record.patientId, patientName: record.patientName,
+                role: "Student", courseYear: record.courseYear || "", date: record.consultationDate,
+                time: new Date(record.createdAt).toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" }),
+                consultation: record.consultationType, complaint: record.symptoms, diagnosis: record.diagnosis,
+                treatment: record.treatment, medicine: record.medicine || "None", staff: record.clinicStaff,
+                status: "Completed",
+            })));
+        }).catch((error) => { if (active) setLoadError(error.message); });
+        return () => { active = false; };
+    }, []);
 
     // =====================================================
     // STATES
@@ -120,6 +52,11 @@ function VisitHistory() {
 
     // SELECTED VISIT FOR MODAL
     const [selectedVisit, setSelectedVisit] = useState(null);
+
+    // DELETE CONFIRMATION
+    const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
 
     // =====================================================
     // LOCAL DATE HELPERS
@@ -312,7 +249,7 @@ function VisitHistory() {
             // DATE FILTER
             // -------------------------------------------------
 
-            let matchesDate = true;
+            let matchesDate;
 
             switch (filterDate) {
                 case "Today":
@@ -451,11 +388,44 @@ function VisitHistory() {
     };
 
     // =====================================================
+    // DELETE CONSULTATION
+    // =====================================================
+
+    const handleDeleteClick = () => {
+        setDeleteConfirmation(true);
+        setDeleteError("");
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!selectedVisit?.id) return;
+
+        setIsDeleting(true);
+        setDeleteError("");
+
+        try {
+            await deleteConsultation(selectedVisit.id);
+            setVisits(visits.filter(v => v.id !== selectedVisit.id));
+            setSelectedVisit(null);
+            setDeleteConfirmation(false);
+        } catch (error) {
+            setDeleteError(error.message || "Failed to delete the visit record.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteConfirmation(false);
+        setDeleteError("");
+    };
+
+    // =====================================================
     // JSX
     // =====================================================
 
     return (
         <div className="visit-history-page">
+            {loadError && <p role="alert">{loadError}</p>}
 
             {/* =================================================
                 PAGE HEADER
@@ -1512,16 +1482,62 @@ function VisitHistory() {
 
                         <div className="visit-modal-footer">
 
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setSelectedVisit(
-                                        null
-                                    )
-                                }
-                            >
-                                Close
-                            </button>
+                            {deleteError && (
+                                <div className="delete-error-message">
+                                    {deleteError}
+                                </div>
+                            )}
+
+                            {!deleteConfirmation ? (
+                                <>
+                                    <button
+                                        type="button"
+                                        className="visit-modal-delete-btn"
+                                        onClick={handleDeleteClick}
+                                        aria-label="Delete visit record"
+                                    >
+                                        <Trash2 size={17} />
+                                        Delete
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setSelectedVisit(
+                                                null
+                                            )
+                                        }
+                                    >
+                                        Close
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="delete-confirmation-message">
+                                        Are you sure you want to delete this visit record? This action cannot be undone.
+                                    </div>
+
+                                    <div className="delete-confirmation-buttons">
+                                        <button
+                                            type="button"
+                                            className="delete-confirm-btn"
+                                            onClick={handleConfirmDelete}
+                                            disabled={isDeleting}
+                                        >
+                                            {isDeleting ? "Deleting..." : "Yes, Delete"}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            className="delete-cancel-btn"
+                                            onClick={handleCancelDelete}
+                                            disabled={isDeleting}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </>
+                            )}
 
                         </div>
 

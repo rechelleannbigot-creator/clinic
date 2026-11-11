@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getMyConsultations } from "../../services/clinicService";
 import {
   Search,
   History as HistoryIcon,
@@ -19,51 +20,21 @@ function History() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVisit, setSelectedVisit] = useState(null);
 
-  // Sample visit history for UI demonstration
-  const [visits] = useState([
-    {
-      id: "CON-001",
-      date: "2026-10-15",
-      time: "09:30 AM",
-      type: "General Consultation",
-      symptoms: "Headache and mild fever",
-      diagnosis: "Tension Headache",
-      treatment: "Rest and adequate hydration",
-      medicine: "Paracetamol 500 mg",
-      dosage: "1 tablet as prescribed",
-      staff: "Clinic Staff",
-      status: "Completed",
-      notes: "Monitor symptoms and return if they persist.",
-    },
-    {
-      id: "CON-002",
-      date: "2026-10-08",
-      time: "10:15 AM",
-      type: "Follow-up Check",
-      symptoms: "Cough and sore throat",
-      diagnosis: "Common Cold",
-      treatment: "Rest and increased fluid intake",
-      medicine: "Cetirizine 10 mg",
-      dosage: "As prescribed",
-      staff: "Clinic Staff",
-      status: "Completed",
-      notes: "Follow the instructions provided by the clinic staff.",
-    },
-    {
-      id: "CON-003",
-      date: "2026-09-25",
-      time: "01:00 PM",
-      type: "Medical Consultation",
-      symptoms: "Stomach discomfort",
-      diagnosis: "For clinical assessment",
-      treatment: "Assessment and monitoring",
-      medicine: "None recorded",
-      dosage: "N/A",
-      staff: "Clinic Staff",
-      status: "Completed",
-      notes: "Consultation record for demonstration purposes.",
-    },
-  ]);
+  const [visits, setVisits] = useState([]);
+  const [loadError, setLoadError] = useState("");
+  useEffect(() => {
+    let active = true;
+    getMyConsultations().then((records) => {
+      if (active) setVisits(records.map((record) => ({
+        id: record.consultationId, date: record.consultationDate,
+        time: new Date(record.createdAt).toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" }),
+        type: record.consultationType, symptoms: record.symptoms, diagnosis: record.diagnosis,
+        treatment: record.treatment, medicine: record.medicine || "None recorded",
+        dosage: record.dosage || "N/A", staff: record.clinicStaff, status: "Completed", notes: record.notes,
+      })));
+    }).catch((error) => { if (active) setLoadError(error.message); });
+    return () => { active = false; };
+  }, []);
 
   const filteredVisits = visits.filter((visit) =>
     [
@@ -88,6 +59,7 @@ function History() {
 
   return (
     <div className="history-page">
+      {loadError && <p role="alert">{loadError}</p>}
       {/* Page Header */}
       <div className="history-header">
         <div>

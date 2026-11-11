@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getMedicines, saveMedicine, removeMedicine } from "../../services/clinicService";
 import {
     Search,
     Package,
@@ -16,80 +17,16 @@ function Inventory() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showAddModal, setShowAddModal] = useState(false);
 
-    const [inventory, setInventory] = useState([
-        {
-            id: "MED-001",
-            name: "Paracetamol 500mg",
-            category: "Tablet",
-            quantity: 120,
-            unit: "Tablets",
-            reorderLevel: 20,
-            expirationDate: "2027-06-30",
-            status: "Available",
-        },
-        {
-            id: "MED-002",
-            name: "Amoxicillin 500mg",
-            category: "Capsule",
-            quantity: 45,
-            unit: "Capsules",
-            reorderLevel: 20,
-            expirationDate: "2027-04-15",
-            status: "Available",
-        },
-        {
-            id: "MED-003",
-            name: "Ibuprofen 400mg",
-            category: "Tablet",
-            quantity: 18,
-            unit: "Tablets",
-            reorderLevel: 20,
-            expirationDate: "2027-08-20",
-            status: "Low Stock",
-        },
-        {
-            id: "MED-004",
-            name: "Cetirizine 10mg",
-            category: "Tablet",
-            quantity: 75,
-            unit: "Tablets",
-            reorderLevel: 20,
-            expirationDate: "2027-09-10",
-            status: "Available",
-        },
-        {
-            id: "MED-005",
-            name: "Cough Syrup",
-            category: "Syrup",
-            quantity: 8,
-            unit: "Bottles",
-            reorderLevel: 10,
-            expirationDate: "2027-02-28",
-            status: "Low Stock",
-        },
-        {
-            id: "MED-006",
-            name: "Vitamin C 500mg",
-            category: "Tablet",
-            quantity: 0,
-            unit: "Tablets",
-            reorderLevel: 20,
-            expirationDate: "2027-11-30",
-            status: "Out of Stock",
-        },
+    const [inventory, setInventory] = useState([]);
+    const [inventoryError, setInventoryError] = useState("");
+    const [saving, setSaving] = useState(false);
 
-        // Sample expired medicine
-        {
-            id: "MED-007",
-            name: "Expired Medicine",
-            category: "Tablet",
-            quantity: 12,
-            unit: "Tablets",
-            reorderLevel: 10,
-            expirationDate: "2026-08-15",
-            status: "Available",
-        },
-    ]);
+    useEffect(() => {
+        let active = true;
+        getMedicines().then((items) => { if (active) setInventory(items); })
+            .catch((error) => { if (active) setInventoryError(error.message); });
+        return () => { active = false; };
+    }, []);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -250,20 +187,16 @@ function Inventory() {
     // ADD MEDICINE
     // =========================================================
 
-    const handleAddMedicine = (e) => {
+    const handleAddMedicine = async (e) => {
         e.preventDefault();
+        if (saving) return;
 
         const quantity = Number(formData.quantity);
         const reorderLevel = Number(
             formData.reorderLevel
         );
 
-        const newId = `MED-${String(
-            inventory.length + 1
-        ).padStart(3, "0")}`;
-
         const newMedicine = {
-            id: newId,
             name: formData.name.trim(),
             category: formData.category,
             quantity,
@@ -274,18 +207,19 @@ function Inventory() {
             status: "Available",
         };
 
-        setInventory((previous) => [
-            ...previous,
-            newMedicine,
-        ]);
-
-        setShowAddModal(false);
-
-        alert(
-            `${formData.name} has been successfully added.`
-        );
-
-        resetForm();
+        setSaving(true);
+        try {
+            const saved = await saveMedicine(newMedicine);
+            setInventory((previous) => [...previous, saved]);
+            setShowAddModal(false);
+            setInventoryError("");
+            alert(`${formData.name} has been successfully added.`);
+            resetForm();
+        } catch (error) {
+            setInventoryError(error.message);
+        } finally {
+            setSaving(false);
+        }
     };
 
     // =========================================================
@@ -319,7 +253,7 @@ function Inventory() {
     // REMOVE EXPIRED MEDICINE
     // =========================================================
 
-    const handleRemoveExpired = (item) => {
+    const handleRemoveExpired = async (item) => {
         const confirmed = window.confirm(
             `Are you sure you want to remove "${item.name}" from the expired medicines list?\n\n` +
                 `Medicine ID: ${item.id}\n` +
@@ -330,16 +264,14 @@ function Inventory() {
             return;
         }
 
-        setInventory((previous) =>
-            previous.filter(
-                (medicine) =>
-                    medicine.id !== item.id
-            )
-        );
-
-        alert(
-            `${item.name} has been removed from the inventory.`
-        );
+        try {
+            await removeMedicine(item.id);
+            setInventory((previous) => previous.filter((medicine) => medicine.id !== item.id));
+            setInventoryError("");
+            alert(`${item.name} has been removed from the inventory.`);
+        } catch (error) {
+            setInventoryError(error.message);
+        }
     };
 
     // =========================================================
@@ -348,6 +280,7 @@ function Inventory() {
 
     return (
         <div className="inventory-page">
+            {inventoryError && <p role="alert">{inventoryError}</p>}
 
             {/* =================================================
                 HEADER
@@ -1104,6 +1037,7 @@ function Inventory() {
                                 handleAddMedicine
                             }
                         >
+                            {inventoryError && <p role="alert">{inventoryError}</p>}
 
                             <div className="medicine-form-grid">
 
@@ -1321,13 +1255,14 @@ function Inventory() {
                                 <button
                                     type="submit"
                                     className="medicine-save-btn"
+                                    disabled={saving}
                                 >
 
                                     <Plus
                                         size={18}
                                     />
 
-                                    Add Medicine
+                                    {saving ? "Saving..." : "Add Medicine"}
 
                                 </button>
 

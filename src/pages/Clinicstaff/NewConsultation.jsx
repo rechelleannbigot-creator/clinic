@@ -1,6 +1,9 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+import { useAuth } from "../../context/AuthContext";
+import { getPatients } from "../../services/userManagementService";
+import { getMedicines, getConsultations, saveConsultation } from "../../services/clinicService";
 import {
     Activity,
     UserRound,
@@ -23,105 +26,38 @@ import {
 import "../../styles/NewConsultation.css";
 
 function NewConsultation() {
-    // =========================================
-    // SAMPLE PATIENT DATA
-    // Replace with Firebase data when connected.
-    // =========================================
+    const { user } = useAuth();
+    const staffName = [user?.firstName, user?.middleName, user?.lastName].filter(Boolean).join(" ") || user?.name || user?.email || "";
+    const [patients, setPatients] = useState([]);
+    const [medicines, setMedicines] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [loadFailed, setLoadFailed] = useState(false);
+    const [consultations, setConsultations] = useState([]);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
+    const savingRef = useRef(false);
+    const requestId = useRef(crypto.randomUUID());
 
-    const patients = [
-        {
-            id: "P-001",
-            firstName: "Juan",
-            middleName: "Santos",
-            lastName: "Dela Cruz",
-            age: 25,
-            gender: "Male",
-            contact: "09123456789",
-        },
-        {
-            id: "P-002",
-            firstName: "Maria",
-            middleName: "Reyes",
-            lastName: "Santos",
-            age: 31,
-            gender: "Female",
-            contact: "09987654321",
-        },
-        {
-            id: "P-003",
-            firstName: "Robert",
-            middleName: "",
-            lastName: "Lee",
-            age: 22,
-            gender: "Male",
-            contact: "09112223334",
-        },
-        {
-            id: "P-004",
-            firstName: "Ana",
-            middleName: "Garcia",
-            lastName: "Garcia",
-            age: 28,
-            gender: "Female",
-            contact: "09223334455",
-        },
-    ];
-
-    // =========================================
-    // SAMPLE MEDICINE DATA
-    // =========================================
-
-    const medicines = [
-        {
-            id: "MED-001",
-            name: "Paracetamol",
-            strength: "500 mg",
-            stock: 50,
-            unit: "tablet",
-        },
-        {
-            id: "MED-002",
-            name: "Ibuprofen",
-            strength: "200 mg",
-            stock: 35,
-            unit: "tablet",
-        },
-        {
-            id: "MED-003",
-            name: "Amoxicillin",
-            strength: "500 mg",
-            stock: 40,
-            unit: "capsule",
-        },
-        {
-            id: "MED-004",
-            name: "Cetirizine",
-            strength: "10 mg",
-            stock: 30,
-            unit: "tablet",
-        },
-        {
-            id: "MED-005",
-            name: "Loratadine",
-            strength: "10 mg",
-            stock: 25,
-            unit: "tablet",
-        },
-        {
-            id: "MED-006",
-            name: "Omeprazole",
-            strength: "20 mg",
-            stock: 20,
-            unit: "capsule",
-        },
-        {
-            id: "MED-007",
-            name: "Oral Rehydration Salts",
-            strength: "Standard",
-            stock: 15,
-            unit: "sachet",
-        },
-    ];
+    useEffect(() => {
+        let active = true;
+        Promise.all([getPatients(), getMedicines(), getConsultations()])
+            .then(([loadedPatients, loadedMedicines, records]) => {
+                if (!active) return;
+                setPatients(loadedPatients);
+                setMedicines(loadedMedicines);
+                setConsultations(records);
+            })
+            .catch((error) => {
+                if (active) {
+                    setMessage(error.message);
+                    setMessageType("error");
+                    setLoadFailed(true);
+                }
+            })
+            .finally(() => { if (active) setLoading(false); });
+        return () => { active = false; };
+    }, []);
 
     // =========================================
     // INITIAL FORM DATA
@@ -129,15 +65,14 @@ function NewConsultation() {
 
     const createInitialFormData = () => ({
         patientId: "",
-        consultationDate: new Date()
-            .toISOString()
-            .split("T")[0],
+        consultationDate: new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Manila", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()),
         consultationType: "",
         clinicStaff: "",
         symptoms: "",
         diagnosis: "",
         treatment: "",
         medicine: "",
+        medicineId: "",
         dosage: "",
         quantity: "",
         instructions: "",
@@ -157,10 +92,6 @@ function NewConsultation() {
     const [showPatientList, setShowPatientList] = useState(false);
     const [showMedicineList, setShowMedicineList] = useState(false);
     const [showQrScanner, setShowQrScanner] = useState(false);
-
-    const [consultations, setConsultations] = useState([]);
-    const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
 
     // =========================================
     // PATIENT NAME HELPER
@@ -207,7 +138,7 @@ function NewConsultation() {
     // Used by both search and QR scanner.
     // =========================================
 
-    const handlePatientSelect = (patient) => {
+    const handlePatientSelect = useCallback((patient) => {
         setSelectedPatient(patient);
 
         setFormData((previous) => ({
@@ -219,7 +150,7 @@ function NewConsultation() {
         setShowPatientList(false);
         setMessage("");
         setMessageType("");
-    };
+    }, []);
 
     // =========================================
     // QR CODE SCANNER
@@ -355,7 +286,7 @@ function NewConsultation() {
                 }
             }
         };
-    }, [showQrScanner]);
+    }, [showQrScanner, patients, handlePatientSelect]);
 
     // =========================================
     // SELECT MEDICINE
@@ -365,7 +296,7 @@ function NewConsultation() {
         setFormData((previous) => ({
             ...previous,
             medicine: medicine.name,
-            dosage: medicine.strength,
+            medicineId: medicine.id,
         }));
 
         setShowMedicineList(false);
@@ -376,6 +307,8 @@ function NewConsultation() {
     // =========================================
 
     const handleReset = () => {
+        if (savingRef.current) return;
+        requestId.current = crypto.randomUUID();
         setFormData(createInitialFormData());
         setSelectedPatient(null);
         setSearchTerm("");
@@ -390,8 +323,9 @@ function NewConsultation() {
     // SAVE CONSULTATION
     // =========================================
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        if (savingRef.current || loading || loadFailed) return;
 
         if (!selectedPatient) {
             setMessage(
@@ -403,7 +337,7 @@ function NewConsultation() {
 
         if (
             !formData.consultationType ||
-            !formData.clinicStaff.trim() ||
+            !staffName ||
             !formData.symptoms.trim() ||
             !formData.diagnosis.trim()
         ) {
@@ -412,25 +346,45 @@ function NewConsultation() {
             return;
         }
 
-        const newConsultation = {
-            ...formData,
-            consultationId: `CON-${String(
-                consultations.length + 1
-            ).padStart(3, "0")}`,
-            patientName: getPatientName(selectedPatient),
-            createdAt: new Date().toISOString(),
-        };
+        const selectedMedicine = medicines.find((item) => item.id === formData.medicineId);
+        if (formData.medicineId && (!selectedMedicine || !Number.isSafeInteger(Number(formData.quantity)) ||
+            Number(formData.quantity) < 1 || Number(formData.quantity) > selectedMedicine.quantity ||
+            !formData.dosage.trim() || !formData.instructions.trim())) {
+            setMessage("Enter a dosage, instructions, and a valid quantity within the available stock.");
+            setMessageType("error");
+            return;
+        }
+        savingRef.current = true;
+        setSaving(true);
+        try {
+            const record = await saveConsultation({ ...formData, clinicStaff: staffName, patientId: selectedPatient.id, requestId: requestId.current });
+            setConsultations((previous) => [record, ...previous.filter((item) => item.consultationId !== record.consultationId)]);
+            let refreshFailed = false;
+            if (record.medicineId) {
+                try {
+                    setMedicines(await getMedicines());
+                } catch (error) {
+                    console.error("Refresh inventory error:", error);
+                    setMedicines([]);
+                    refreshFailed = true;
+                }
+            }
+            handleResetAfterSave();
+            setMessage(refreshFailed
+                ? `Consultation ${record.consultationId} was saved, but inventory could not be refreshed. Reload the page before issuing more medicine.`
+                : `Consultation ${record.consultationId} saved successfully!`);
+            setMessageType(refreshFailed ? "error" : "success");
+        } catch (error) {
+            setMessage(`${error.message} If the result is uncertain, retry without changing or clearing the form to avoid duplicates.`);
+            setMessageType("error");
+        } finally {
+            savingRef.current = false;
+            setSaving(false);
+        }
+    };
 
-        setConsultations((previous) => [
-            newConsultation,
-            ...previous,
-        ]);
-
-        setMessage(
-            `Consultation ${newConsultation.consultationId} saved successfully!`
-        );
-        setMessageType("success");
-
+    const handleResetAfterSave = () => {
+        requestId.current = crypto.randomUUID();
         setFormData(createInitialFormData());
         setSelectedPatient(null);
         setSearchTerm("");
@@ -491,6 +445,7 @@ function NewConsultation() {
             )}
 
             <form onSubmit={handleSubmit}>
+                <fieldset className="consultation-form-fieldset" disabled={saving || loading || loadFailed}>
                 {/* =====================================
                     PATIENT INFORMATION
                 ===================================== */}
@@ -708,6 +663,10 @@ function NewConsultation() {
                                     selectedPatient.gender
                                 )}
 
+                                {renderReadOnlyField("Course", selectedPatient.course || "—")}
+                                {renderReadOnlyField("Year Level", selectedPatient.yearLevel || "—")}
+                                {renderReadOnlyField("Section", selectedPatient.section || "—")}
+
                                 {renderReadOnlyField(
                                     "Contact Number",
                                     selectedPatient.contact
@@ -772,8 +731,8 @@ function NewConsultation() {
                                 <option value="Medical Consultation">
                                     Medical Consultation
                                 </option>
-                                <option value="Follow-up">
-                                    Follow-up
+                                <option value="Follow-up Check">
+                                    Follow-up Check
                                 </option>
                                 <option value="Emergency Consultation">
                                     Emergency Consultation
@@ -790,9 +749,8 @@ function NewConsultation() {
                                 id="clinicStaff"
                                 type="text"
                                 name="clinicStaff"
-                                placeholder="Enter clinic staff name"
-                                value={formData.clinicStaff}
-                                onChange={handleChange}
+                                value={staffName}
+                                readOnly
                                 required
                             />
                         </div>
@@ -931,7 +889,11 @@ function NewConsultation() {
                                         </div>
 
                                         <div className="medicine-options">
-                                            {medicines.map((medicine) => (
+                                            <button type="button" className="medicine-option" onClick={() => {
+                                                setFormData((previous) => ({ ...previous, medicine: "", medicineId: "", dosage: "", quantity: "", instructions: "" }));
+                                                setShowMedicineList(false);
+                                            }}>No medicine</button>
+                                            {medicines.filter((medicine) => medicine.quantity > 0 && medicine.expirationDate >= createInitialFormData().consultationDate).map((medicine) => (
                                                 <button
                                                     type="button"
                                                     key={medicine.id}
@@ -951,7 +913,7 @@ function NewConsultation() {
                                                             {medicine.name}
                                                         </strong>
                                                         <span>
-                                                            {medicine.strength}
+                                                            {medicine.category}
                                                             {" · "}
                                                             {medicine.unit}
                                                         </span>
@@ -960,7 +922,7 @@ function NewConsultation() {
                                                     <div className="medicine-stock">
                                                         <small>Stock</small>
                                                         <strong>
-                                                            {medicine.stock}
+                                                            {medicine.quantity}
                                                         </strong>
                                                     </div>
                                                 </button>
@@ -990,6 +952,8 @@ function NewConsultation() {
                                 type="number"
                                 name="quantity"
                                 min="1"
+                                step="1"
+                                max={medicines.find((item) => item.id === formData.medicineId)?.quantity}
                                 placeholder="Enter quantity"
                                 value={formData.quantity}
                                 onChange={handleChange}
@@ -1060,9 +1024,10 @@ function NewConsultation() {
                         className="consultation-save-btn"
                     >
                         <Save size={18} />
-                        Save Consultation
+                        {loading ? "Loading..." : saving ? "Saving..." : "Save Consultation"}
                     </button>
                 </div>
+                </fieldset>
             </form>
 
             {/* =====================================
@@ -1078,8 +1043,7 @@ function NewConsultation() {
                         <div>
                             <h2>Recently Saved Consultations</h2>
                             <p>
-                                Consultations saved during this
-                                page session.
+                                Consultations saved in the clinic database.
                             </p>
                         </div>
                     </div>
