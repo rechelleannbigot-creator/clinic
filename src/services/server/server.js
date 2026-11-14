@@ -3,6 +3,8 @@ import cors from "cors";
 import crypto from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { registerClinicRoutes } from "./clinicRoutes.js";
+import { registerEmployeeRoutes } from "./employeeRoutes.js";
+import { registerStaffProfileRoutes } from "./staffProfileRoutes.js";
 import {
   auth,
   db,
@@ -183,6 +185,8 @@ async function requireClinicStaff(req, res, next) {
 }
 
 registerClinicRoutes(app, { db, requireClinicStaff, requireSignedIn });
+registerEmployeeRoutes(app, { db, requireSignedIn });
+registerStaffProfileRoutes(app, { db, requireClinicStaff });
 
 app.get("/api/patients", requireClinicStaff, async (_req, res) => {
   try {

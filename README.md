@@ -1,5 +1,30 @@
 # Clinic Management System — patient account backend
 
+## 🆕 Employee Profile Management
+
+The Employee Profile feature allows managing clinic staff and employees. **See [EMPLOYEE_PROFILE_FEATURES.md](./EMPLOYEE_PROFILE_FEATURES.md) for complete documentation.**
+
+### Quick Start Employee Profile
+```bash
+npm run dev                    # Terminal 1: Frontend
+npm run server:dev            # Terminal 2: Backend
+# Then populate test data:
+cd src/services/server && node populateTestData.js
+```
+
+Visit `http://localhost:5173` → Login → Navigate to Employee Profiles
+
+**Documentation**:
+- 📖 [Features & Quick Start](./EMPLOYEE_PROFILE_FEATURES.md)
+- 🧪 [Testing Guide](./EMPLOYEE_PROFILE_TEST_GUIDE.md)
+- 🐛 [Debugging Guide](./EMPLOYEE_PROFILE_DEBUG_GUIDE.md)
+- 📋 [Technical Report](./EMPLOYEE_PROFILE_IMPLEMENTATION_REPORT.md)
+- 🔌 [API Reference](./EMPLOYEE_API.md)
+
+---
+
+## Patient Management
+
 The Add Patient screen uses the Express backend to create a Firebase Authentication account, save the patient and student profiles in Firestore, and email the patient a Firebase password-setup link.
 
 ## Configure Firebase
@@ -49,6 +74,12 @@ Run the API route tests with `node --test src/services/server/clinicRoutes.test.
 ## Email failure recovery
 
 If SMTP fails after the account is created, the account and records are kept (no duplicates) and `setupEmailSent: false` is saved. The UI shows a warning, and the patient details modal offers **Resend Setup Email** (`POST /api/patients/:patientId/resend-setup-email`), which sends a fresh link.
+
+## Clinic staff My Profile
+
+The staff profile uses the signed-in Firebase account and its `users/{uid}` Firestore document through the authenticated backend. Staff can edit personal details and upload a JPEG, PNG, or WebP profile picture up to 200 KB, stored in that document. Employee ID, employment details, role and login email are read-only; unavailable fields display as not provided. Password changes use Firebase Authentication and require the current password. Email/password sign-in must be enabled for password changes.
+
+The backend must be running and deployed Firestore rules must protect user roles and identity fields as described above; ensure profile pictures and other personal fields are not publicly readable. Run profile API tests with `node --test src/services/server/staffProfileRoutes.test.js`.
 
 ## Verify each stage
 

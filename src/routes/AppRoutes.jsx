@@ -35,7 +35,7 @@ import StudentMedicalProfile from "../pages/Clinicstaff/StudentMedicalProfile";
 import EmployeeProfiles from "../pages/Clinicstaff/EmployeeProfiles";
 import NewConsultation from "../pages/Clinicstaff/NewConsultation";
 import VisitHistory from "../pages/Clinicstaff/VisitHestory";
-import Profile from "../pages/Clinicstaff/Profile";
+import Profile from "../pages/Clinicstaff/MyProfile";
 
 // ==============================
 // Student

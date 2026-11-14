@@ -1,5 +1,4 @@
-
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Users,
@@ -7,247 +6,202 @@ import {
   Eye,
   ArrowLeft,
   Save,
-  Mail,
-  Phone,
-  MapPin,
-  BriefcaseBusiness,
-  GraduationCap,
-  Building2,
-  CalendarDays,
+  Trash2,
+  AlertCircle,
+  Loader,
   IdCard,
   Filter,
 } from "lucide-react";
 
+import {
+  getEmployees,
+  createEmployee,
+  updateEmployee,
+  deleteEmployee,
+} from "../../services/employeeProfileService";
 import "../../styles/EmployeeProfiles.css";
-
-const initialEmployees = [
-  {
-    id: "EMP-001",
-    firstName: "Maria",
-    middleName: "Cruz",
-    lastName: "Santos",
-    personnelType: "Teaching",
-    position: "College Instructor",
-    department: "College Department",
-    employmentType: "Full-Time",
-    dateHired: "2021-06-15",
-    dateOfBirth: "1990-04-12",
-    sex: "Female",
-    email: "maria.santos@example.com",
-    contact: "09123456789",
-    address: "Isabela, Philippines",
-    education: "Master of Arts in Education",
-    specialization: "Education",
-    status: "Active",
-  },
-  {
-    id: "EMP-002",
-    firstName: "Juan",
-    middleName: "Reyes",
-    lastName: "Dela Cruz",
-    personnelType: "Teaching",
-    position: "High School Teacher",
-    department: "Junior High School",
-    employmentType: "Full-Time",
-    dateHired: "2022-06-01",
-    dateOfBirth: "1988-09-20",
-    sex: "Male",
-    email: "juan.delacruz@example.com",
-    contact: "09123456780",
-    address: "Isabela, Philippines",
-    education: "Bachelor of Secondary Education",
-    specialization: "Mathematics",
-    status: "Active",
-  },
-  {
-    id: "EMP-003",
-    firstName: "Angela",
-    middleName: "Lopez",
-    lastName: "Reyes",
-    personnelType: "Non-Teaching",
-    position: "Registrar Personnel",
-    department: "Registrar's Office",
-    employmentType: "Full-Time",
-    dateHired: "2020-08-10",
-    dateOfBirth: "1992-02-08",
-    sex: "Female",
-    email: "angela.reyes@example.com",
-    contact: "09123456781",
-    address: "Isabela, Philippines",
-    education: "Bachelor of Science in Office Administration",
-    specialization: "Records Management",
-    status: "Active",
-  },
-  {
-    id: "EMP-004",
-    firstName: "Robert",
-    middleName: "Garcia",
-    lastName: "Mendoza",
-    personnelType: "Non-Teaching",
-    position: "IT Support Personnel",
-    department: "Information Technology",
-    employmentType: "Full-Time",
-    dateHired: "2023-01-05",
-    dateOfBirth: "1995-07-17",
-    sex: "Male",
-    email: "robert.mendoza@example.com",
-    contact: "09123456782",
-    address: "Isabela, Philippines",
-    education: "Bachelor of Science in Information Technology",
-    specialization: "Technical Support",
-    status: "Active",
-  },
-];
 
 const emptyEmployee = {
   id: "",
-  firstName: "",
-  middleName: "",
-  lastName: "",
-  personnelType: "Teaching",
-  position: "",
-  department: "",
-  employmentType: "Full-Time",
-  dateHired: "",
-  dateOfBirth: "",
-  sex: "",
+  name: "",
   email: "",
-  contact: "",
-  address: "",
-  education: "",
-  specialization: "",
-  status: "Active",
+  phone: "",
+  department: "",
+  role: "",
+  hireDate: "",
 };
 
 function EmployeeProfiles() {
-  const [employees, setEmployees] = useState(initialEmployees);
+  const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
+  const [departmentFilter, setDepartmentFilter] = useState("All");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [formData, setFormData] = useState(emptyEmployee);
   const [isAdding, setIsAdding] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState(null);
+  const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    loadEmployees();
+  }, []);
+
+  const loadEmployees = async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      const data = await getEmployees();
+      setEmployees(data);
+
+      const uniqueDepts = [...new Set(data.map((emp) => emp.department).filter(Boolean))];
+      setDepartments(uniqueDepts.sort());
+    } catch (err) {
+      console.error("Load employees error:", err);
+      setError(err.message || "Failed to load employees. Please try again.");
+      setEmployees([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredEmployees = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
     return employees.filter((employee) => {
-      const fullName = [
-        employee.firstName,
-        employee.middleName,
-        employee.lastName,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+      const fullName = employee.name?.toLowerCase() || "";
+      const dept = (employee.department || "").toLowerCase();
+      const role = (employee.role || "").toLowerCase();
 
-      const matchesSearch = [
+      const matchesSearch = term === "" || [
         fullName,
         employee.id,
-        employee.position,
-        employee.department,
-        employee.personnelType,
-      ].some((value) => value?.toLowerCase().includes(term));
+        role,
+        dept,
+      ].some((value) => value?.includes(term));
 
-      const matchesType =
-        typeFilter === "All" || employee.personnelType === typeFilter;
+      const matchesFilter =
+        departmentFilter === "All" || employee.department === departmentFilter;
 
-      return matchesSearch && matchesType;
+      return matchesSearch && matchesFilter;
     });
-  }, [employees, searchTerm, typeFilter]);
+  }, [employees, searchTerm, departmentFilter]);
 
-  const teachingCount = employees.filter(
-    (employee) => employee.personnelType === "Teaching"
-  ).length;
-
-  const nonTeachingCount = employees.filter(
-    (employee) => employee.personnelType === "Non-Teaching"
-  ).length;
-
-  const getFullName = (employee) =>
-    [
-      employee.firstName,
-      employee.middleName,
-      employee.lastName,
-    ]
-      .filter(Boolean)
-      .join(" ");
+  const getFullName = (employee) => employee.name || "Unknown Employee";
 
   const openProfile = (employee) => {
     setSelectedEmployee(employee);
     setFormData({ ...employee });
     setIsAdding(false);
+    setNotice(null);
   };
 
   const openAddForm = () => {
     setSelectedEmployee(null);
     setFormData({ ...emptyEmployee });
     setIsAdding(true);
+    setNotice(null);
   };
 
   const goBack = () => {
     setSelectedEmployee(null);
     setIsAdding(false);
+    setNotice(null);
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormData((previous) => ({
       ...previous,
       [name]: value,
     }));
   };
 
-  const handleSave = (event) => {
+  const handleSave = async (event) => {
     event.preventDefault();
 
-    if (
-      !formData.firstName.trim() ||
-      !formData.lastName.trim() ||
-      !formData.position.trim() ||
-      !formData.department.trim()
-    ) {
-      window.alert(
-        "Please complete the first name, last name, position, and department."
-      );
+    if (!formData.name || !formData.name.trim() || !formData.email || !formData.phone || !formData.department || !formData.role || !formData.hireDate) {
+      setNotice({ type: "error", text: "Please complete all required fields." });
       return;
     }
 
-    if (isAdding) {
-      const nextNumber =
-        employees.reduce((max, employee) => {
-          const number = Number(employee.id.replace("EMP-", ""));
-          return Math.max(max, Number.isFinite(number) ? number : 0);
-        }, 0) + 1;
+    setIsSaving(true);
+    setNotice(null);
 
-      const newEmployee = {
-        ...formData,
-        id: `EMP-${String(nextNumber).padStart(3, "0")}`,
-      };
+    try {
+      if (isAdding) {
+        const newEmployee = {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          department: formData.department.trim(),
+          role: formData.role.trim(),
+          hireDate: formData.hireDate,
+        };
 
-      setEmployees((previous) => [...previous, newEmployee]);
-      setSelectedEmployee(newEmployee);
-      setFormData(newEmployee);
-      setIsAdding(false);
-    } else {
-      const updatedEmployee = { ...formData };
+        const created = await createEmployee(newEmployee);
+        setEmployees((previous) => [...previous, created]);
+        
+        const uniqueDepts = [...new Set([...departments, formData.department])];
+        setDepartments(uniqueDepts.sort());
+        
+        setNotice({ type: "success", text: "Employee created successfully." });
+        goBack();
+      } else {
+        const updated = {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          department: formData.department.trim(),
+          role: formData.role.trim(),
+          hireDate: formData.hireDate,
+        };
 
+        const result = await updateEmployee(selectedEmployee.id, updated);
+        setEmployees((previous) =>
+          previous.map((emp) =>
+            emp.id === selectedEmployee.id ? result : emp
+          )
+        );
+        setSelectedEmployee(result);
+        setNotice({ type: "success", text: "Employee updated successfully." });
+      }
+    } catch (err) {
+      console.error("Save employee error:", err);
+      setNotice({ type: "error", text: err.message || "Failed to save employee. Please try again." });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedEmployee) return;
+
+    if (!window.confirm(`Are you sure you want to delete ${getFullName(selectedEmployee)}?`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setNotice(null);
+
+    try {
+      await deleteEmployee(selectedEmployee.id);
       setEmployees((previous) =>
-        previous.map((employee) =>
-          employee.id === selectedEmployee.id
-            ? updatedEmployee
-            : employee
-        )
+        previous.filter((emp) => emp.id !== selectedEmployee.id)
       );
-
-      setSelectedEmployee(updatedEmployee);
-      window.alert("Employee profile updated successfully.");
+      setNotice({ type: "success", text: "Employee deleted successfully." });
+      goBack();
+    } catch (err) {
+      console.error("Delete employee error:", err);
+      setNotice({ type: "error", text: err.message || "Failed to delete employee. Please try again." });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   if (selectedEmployee || isAdding) {
-    const editingExisting = Boolean(selectedEmployee);
-
     return (
       <div className="employee-profiles-page">
         <div className="employee-profile-page-header">
@@ -255,6 +209,7 @@ function EmployeeProfiles() {
             type="button"
             className="employee-back-button"
             onClick={goBack}
+            disabled={isSaving || isDeleting}
           >
             <ArrowLeft size={18} />
             Back to Employee Directory
@@ -265,11 +220,27 @@ function EmployeeProfiles() {
               {isAdding ? "Add Employee" : "Employee Profile"}
             </h1>
             <p>
-              La Consolacion College of Isabela — Teaching and
-              Non-Teaching Personnel
+              La Consolacion College of Isabela — Employee Management
             </p>
           </div>
         </div>
+
+        {notice && (
+          <div style={{
+            padding: "12px 16px",
+            marginBottom: "16px",
+            borderRadius: "6px",
+            backgroundColor: notice.type === "error" ? "#fee2e2" : "#dcfce7",
+            color: notice.type === "error" ? "#b91c1c" : "#166534",
+            border: `1px solid ${notice.type === "error" ? "#fecaca" : "#bbf7d0"}`,
+            display: "flex",
+            gap: "8px",
+            alignItems: "center",
+          }}>
+            <AlertCircle size={18} />
+            {notice.text}
+          </div>
+        )}
 
         <div className="employee-profile-banner">
           <div className="employee-avatar large">
@@ -278,16 +249,14 @@ function EmployeeProfiles() {
 
           <div className="employee-banner-details">
             <h2>
-              {editingExisting
-                ? getFullName(selectedEmployee)
-                : "New Employee"}
+              {isAdding ? "New Employee" : getFullName(selectedEmployee)}
             </h2>
             <p>
-              {editingExisting
-                ? selectedEmployee.position
-                : "Enter the employee's information below"}
+              {isAdding
+                ? "Enter the employee's information below"
+                : selectedEmployee.role}
             </p>
-            {editingExisting && (
+            {!isAdding && (
               <span className="employee-id-badge">
                 <IdCard size={15} />
                 {selectedEmployee.id}
@@ -301,45 +270,61 @@ function EmployeeProfiles() {
             <div className="employee-section-heading">
               <span className="employee-section-number">I</span>
               <div>
-                <h3>Personal Information</h3>
+                <h3>Employee Information</h3>
                 <p>Basic information about the employee</p>
               </div>
             </div>
 
             <div className="employee-form-grid">
-              <FormField label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} required />
-              <FormField label="Middle Name" name="middleName" value={formData.middleName} onChange={handleChange} />
-              <FormField label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} required />
+              <FormField
+                label="Full Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
 
-              <FormField label="Date of Birth" name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} />
+              <FormField
+                label="Email Address"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
 
-              <FormField label="Sex" name="sex" value={formData.sex} onChange={handleChange} options={["Male", "Female", "Prefer not to say"]} />
+              <FormField
+                label="Contact Number"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
 
-              <FormField label="Home Address" name="address" value={formData.address} onChange={handleChange} />
-            </div>
-          </section>
+              <FormField
+                label="Job Title / Role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                required
+              />
 
-          <section className="employee-information-card">
-            <div className="employee-section-heading">
-              <span className="employee-section-number">II</span>
-              <div>
-                <h3>Employment Information</h3>
-                <p>School assignment and employment details</p>
-              </div>
-            </div>
+              <FormField
+                label="Department"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                required
+              />
 
-            <div className="employee-form-grid">
-              <FormField label="Personnel Type" name="personnelType" value={formData.personnelType} onChange={handleChange} options={["Teaching", "Non-Teaching"]} required />
-
-              <FormField label="Position / Job Title" name="position" value={formData.position} onChange={handleChange} required />
-
-              <FormField label="Department / Office" name="department" value={formData.department} onChange={handleChange} required />
-
-              <FormField label="Employment Type" name="employmentType" value={formData.employmentType} onChange={handleChange} options={["Full-Time", "Part-Time", "Contractual", "Probationary"]} />
-
-              <FormField label="Date Hired" name="dateHired" type="date" value={formData.dateHired} onChange={handleChange} />
-
-              <FormField label="Employment Status" name="status" value={formData.status} onChange={handleChange} options={["Active", "Inactive", "On Leave"]} />
+              <FormField
+                label="Hire Date"
+                name="hireDate"
+                type="date"
+                value={formData.hireDate}
+                onChange={handleChange}
+                required
+              />
             </div>
           </section>
 
@@ -348,16 +333,82 @@ function EmployeeProfiles() {
               type="button"
               className="employee-cancel-button"
               onClick={goBack}
+              disabled={isSaving || isDeleting}
             >
               Cancel
             </button>
 
-            <button type="submit" className="employee-save-button">
+            {!isAdding && (
+              <button
+                type="button"
+                className="employee-delete-button"
+                onClick={handleDelete}
+                disabled={isSaving || isDeleting}
+              >
+                <Trash2 size={17} />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            )}
+
+            <button
+              type="submit"
+              className="employee-save-button"
+              disabled={isSaving || isDeleting}
+            >
               <Save size={17} />
-              {isAdding ? "Add Employee" : "Save Changes"}
+              {isSaving ? "Saving..." : isAdding ? "Add Employee" : "Save Changes"}
             </button>
           </div>
         </form>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="employee-profiles-page">
+        <div style={{ textAlign: "center", padding: "40px" }}>
+          <Loader size={32} style={{ animation: "spin 1s linear infinite", marginBottom: "16px" }} />
+          <p>Loading employees...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="employee-profiles-page">
+        <div style={{
+          padding: "16px",
+          backgroundColor: "#fee2e2",
+          color: "#b91c1c",
+          borderRadius: "6px",
+          border: "1px solid #fecaca",
+          display: "flex",
+          gap: "8px",
+          alignItems: "center",
+        }}>
+          <AlertCircle size={20} />
+          <div>
+            <strong>Error Loading Employees</strong>
+            <p>{error}</p>
+            <button
+              type="button"
+              onClick={loadEmployees}
+              style={{
+                marginTop: "8px",
+                padding: "8px 16px",
+                backgroundColor: "#b91c1c",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -369,10 +420,9 @@ function EmployeeProfiles() {
           <span className="employee-eyebrow">
             LCCI PERSONNEL MANAGEMENT
           </span>
-          <h1>Employee Profiles</h1>
+          <h1>Employee Directory</h1>
           <p>
-            Manage the profiles of all teaching and non-teaching
-            personnel of La Consolacion College of Isabela.
+            Manage the profiles of all employees of La Consolacion College of Isabela.
           </p>
         </div>
 
@@ -389,26 +439,21 @@ function EmployeeProfiles() {
       <div className="employee-summary-grid">
         <SummaryCard
           icon={<Users size={23} />}
-          label="Total Personnel"
+          label="Total Employees"
           value={employees.length}
         />
         <SummaryCard
-          icon={<GraduationCap size={23} />}
-          label="Teaching Personnel"
-          value={teachingCount}
-        />
-        <SummaryCard
-          icon={<Building2 size={23} />}
-          label="Non-Teaching Personnel"
-          value={nonTeachingCount}
+          icon={<Users size={23} />}
+          label="Departments"
+          value={departments.length}
         />
       </div>
 
       <div className="employee-directory-card">
         <div className="employee-directory-card-heading">
           <div>
-            <h2>Personnel Directory</h2>
-            <p>Search and view employee information</p>
+            <h2>Employee Directory</h2>
+            <p>Search and manage employee information</p>
           </div>
           <span className="employee-result-count">
             {filteredEmployees.length} result(s)
@@ -420,7 +465,7 @@ function EmployeeProfiles() {
             <Search size={19} />
             <input
               type="text"
-              placeholder="Search name, ID, position, or department..."
+              placeholder="Search name, ID, role, or department..."
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
@@ -429,13 +474,16 @@ function EmployeeProfiles() {
           <div className="employee-filter-box">
             <Filter size={17} />
             <select
-              value={typeFilter}
-              onChange={(event) => setTypeFilter(event.target.value)}
-              aria-label="Filter personnel type"
+              value={departmentFilter}
+              onChange={(event) => setDepartmentFilter(event.target.value)}
+              aria-label="Filter by department"
             >
-              <option value="All">All Personnel</option>
-              <option value="Teaching">Teaching</option>
-              <option value="Non-Teaching">Non-Teaching</option>
+              <option value="All">All Departments</option>
+              {departments.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -446,9 +494,9 @@ function EmployeeProfiles() {
               <tr>
                 <th>Employee</th>
                 <th>Employee ID</th>
-                <th>Personnel Type</th>
+                <th>Role</th>
                 <th>Department</th>
-                <th>Status</th>
+                <th>Email</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -463,35 +511,16 @@ function EmployeeProfiles() {
                       </div>
                       <div>
                         <strong>{getFullName(employee)}</strong>
-                        <span>{employee.position}</span>
+                        <span>{employee.phone}</span>
                       </div>
                     </div>
                   </td>
 
                   <td>{employee.id}</td>
-
-                  <td>
-                    <span
-                      className={`employee-type-badge ${
-                        employee.personnelType === "Teaching"
-                          ? "teaching"
-                          : "non-teaching"
-                      }`}
-                    >
-                      {employee.personnelType}
-                    </span>
-                  </td>
-
+                  <td>{employee.role}</td>
                   <td>{employee.department}</td>
-
-                  <td>
-                    <span
-                      className={`employee-status-badge ${employee.status
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`}
-                    >
-                      {employee.status}
-                    </span>
+                  <td style={{ fontSize: "0.9em", color: "#666" }}>
+                    {employee.email}
                   </td>
 
                   <td>
@@ -501,7 +530,7 @@ function EmployeeProfiles() {
                       onClick={() => openProfile(employee)}
                     >
                       <Eye size={16} />
-                      View Profile
+                      View
                     </button>
                   </td>
                 </tr>
@@ -511,9 +540,9 @@ function EmployeeProfiles() {
                 <tr>
                   <td colSpan="6" className="employee-empty-state">
                     <Users size={32} />
-                    <strong>No personnel found</strong>
+                    <strong>No employees found</strong>
                     <span>
-                      Try another search term or personnel category.
+                      Try another search term or department filter.
                     </span>
                   </td>
                 </tr>
