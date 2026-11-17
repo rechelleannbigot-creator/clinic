@@ -25,7 +25,8 @@ import {
   sendStaffPasswordSetupEmail,
   updateManagedStaff,
 } from "../../services/adminStaffService";
-import "./ManageUser.css";
+import StaffCredentialsPopup from "./StaffCredentialsPopup";
+import "../../styles/ManageUser.css";
 
 const emptyStaff = {
   firstName: "",
@@ -61,6 +62,7 @@ function ManageUser() {
   const [modal, setModal] = useState(null);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [form, setForm] = useState(emptyStaff);
+  const [credentialsPopup, setCredentialsPopup] = useState(null);
 
   const loadStaff = async () => {
     setLoading(true);
@@ -172,20 +174,24 @@ function ManageUser() {
       } else {
         const created = await createManagedStaff(payload);
         setStaff((previous) => [...previous, created]);
-        let invitationSent = true;
-        try {
-          await sendStaffPasswordSetupEmail(created.email);
-        } catch (error) {
-          console.error("Send staff setup email error:", error);
-          invitationSent = false;
-        }
         setModal(null);
-        setNotice({
-          type: invitationSent ? "success" : "warning",
-          text: invitationSent
-            ? `${staffName(created)} was added. A password setup email was sent.`
-            : `${staffName(created)} was added, but the setup email could not be sent. Ask them to use Forgot Password on the login page.`,
-        });
+        if (created.temporaryPassword) {
+          setCredentialsPopup(created);
+        } else {
+          let invitationSent = true;
+          try {
+            await sendStaffPasswordSetupEmail(created.email);
+          } catch (error) {
+            console.error("Send staff setup email error:", error);
+            invitationSent = false;
+          }
+          setNotice({
+            type: invitationSent ? "success" : "warning",
+            text: invitationSent
+              ? `${staffName(created)} was added. A password setup email was sent.`
+              : `${staffName(created)} was added, but the setup email could not be sent. Ask them to use Forgot Password on the login page.`,
+          });
+        }
       }
     } catch (error) {
       setNotice({ type: "error", text: error.message || "Unable to save the staff account." });
@@ -363,6 +369,13 @@ function ManageUser() {
             <footer><button type="button" className="staff-secondary-button" disabled={Boolean(busyUid)} onClick={resendSetup}>{busyUid ? "Sending..." : "Resend Password Setup"}</button><button type="button" className="staff-management-add" onClick={() => openEdit(selectedStaff)}><Pencil size={16} /> Edit Staff</button></footer>
           </section>
         </div>
+      )}
+
+      {credentialsPopup && (
+        <StaffCredentialsPopup
+          staff={credentialsPopup}
+          onClose={() => setCredentialsPopup(null)}
+        />
       )}
     </div>
   );

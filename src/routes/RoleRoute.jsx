@@ -9,7 +9,14 @@ function RoleRoute({ allowedRole, children }) {
         return <Navigate to="/" replace />;
     }
 
-    if (user.role !== allowedRole) {
+    const normalize = (value) => {
+        const role = String(value || "").toLowerCase().replace(/[\s_-]/g, "");
+        if (role === "clinicstaff") return "staff";
+        if (role === "administrator") return "admin";
+        return role;
+    };
+
+    if (normalize(user.role) !== normalize(allowedRole)) {
         return <Navigate to="/" replace />;
     }
 

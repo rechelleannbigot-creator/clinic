@@ -57,11 +57,11 @@ function dateValue(value) {
   return String(value);
 }
 
-function staffForResponse(uid, data, authUser = null) {
+function staffForResponse(uid, data, authUser = null, temporaryPassword = null) {
   const createdAt = dateValue(data.createdAt);
   const createdAtMs = createdAt ? new Date(createdAt).getTime() : NaN;
   const now = Date.now();
-  return {
+  const response = {
     uid,
     staffId: data.staffId || data.employeeId || "",
     firstName: data.firstName || "",
@@ -78,10 +78,14 @@ function staffForResponse(uid, data, authUser = null) {
     recentlyAdded: Number.isFinite(createdAtMs) && createdAtMs <= now && now - createdAtMs <= 30 * 24 * 60 * 60 * 1000,
     lastLogin: authUser?.metadata?.lastSignInTime || "",
   };
+  if (temporaryPassword) {
+    response.temporaryPassword = temporaryPassword;
+  }
+  return response;
 }
 
 function makeTemporaryPassword() {
-  return crypto.randomBytes(32).toString("base64url");
+  return String(crypto.randomInt(0, 100000000)).padStart(8, "0");
 }
 
 async function getStaffRecord(db, uid) {
@@ -129,11 +133,13 @@ export function registerAdminStaffRoutes(app, { db, auth, requireAdmin }) {
 
   app.post("/api/admin/staff", requireAdmin, async (req, res) => {
     let createdUid = null;
+    let temporaryPassword = null;
     try {
       const staff = normalizeStaff(req.body);
+      temporaryPassword = makeTemporaryPassword();
       const authUser = await auth.createUser({
         email: staff.email,
-        password: makeTemporaryPassword(),
+        password: temporaryPassword,
         displayName: [staff.firstName, staff.middleName, staff.lastName].filter(Boolean).join(" "),
         disabled: staff.status === "INACTIVE",
         emailVerified: false,
@@ -175,7 +181,7 @@ export function registerAdminStaffRoutes(app, { db, auth, requireAdmin }) {
           role: "clinicstaff",
           department: "School Clinic",
           createdAt,
-        }, authUser),
+        }, authUser, temporaryPassword),
       });
     } catch (error) {
       if (createdUid) {

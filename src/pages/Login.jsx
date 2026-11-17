@@ -7,6 +7,14 @@ import { auth } from "../services/firebase";
 import { getUserData } from "../services/userService";
 import logo from "../assets/lcc-logo.jpg";
 
+const normalizeRole = (value) => String(value || "").toLowerCase().replace(/[\s_-]/g, "");
+const isRole = (userData, target) => {
+    const role = normalizeRole(userData?.role);
+    return target === "staff" ? role === "staff" || role === "clinicstaff"
+        : target === "admin" ? role === "admin" || role === "administrator"
+        : role === target;
+};
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,19 +34,17 @@ function Login() {
             const userData = await getUserData(userCredential.user.uid);    // Get the user's Firestore document
             console.log(userData); // Display the data in the console
 
-            await login(email, password);
-
             alert("Login Successful!");
 
       if (!userData) {
                 alert("User profile not found.");
         return;
       }
-            if (userData.role === "admin") {
+            if (isRole(userData,"admin")) {
                 navigate("/admin");
-            } else if (userData.role === "clinicstaff") {
+            } else if (isRole(userData,"staff")) {
                 navigate("/staff");
-            } else if (userData.role === "student") {
+            } else if (isRole(userData,"student")) {
                 navigate("/student");
             } else {
                 alert("Invalid user role.");
@@ -60,12 +66,12 @@ function Login() {
 
                 if (!userData) return;
 
-                if (userData.role === "admin") {
+                if (isRole(userData,"admin")) {
                     navigate("/admin", { replace: true });
-                } else if (userData.role === "staff") {
+                } else if (isRole(userData,"staff")) {
                     navigate("/staff", { replace: true });
 
-                } else if (userData.role === "student") {
+                } else if (isRole(userData,"student")) {
                     navigate("/student", { replace: true });
                 }
     } catch (error) {
