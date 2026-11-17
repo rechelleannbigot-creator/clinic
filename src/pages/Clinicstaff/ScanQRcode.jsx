@@ -1,174 +1,92 @@
-import { useState } from "react";
-import { QrCode, Camera, User, CheckCircle, RefreshCw } from "lucide-react";
-import "../../styles/ScanQRCode.css";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Html5Qrcode } from "html5-qrcode";
+import { Camera, QrCode } from "lucide-react";
+import { getDashboardPatient } from "../../services/clinicService";
+import "../../styles/Staffdashboard.css";
+
+function patientIdFromQr(value) {
+    const text = value.trim();
+    try {
+        const parsed = JSON.parse(text);
+        if (typeof parsed === "string") return parsed.trim();
+        if (parsed && typeof parsed === "object") return String(parsed.patientId ?? parsed.studentId ?? parsed.id ?? "").trim();
+    } catch {
+        return text;
+    }
+    return "";
+}
 
 function ScanQRCode() {
     const [scanning, setScanning] = useState(false);
-    const [scanned, setScanned] = useState(false);
+    const [patient, setPatient] = useState(null);
+    const [error, setError] = useState("");
+    const [lookingUp, setLookingUp] = useState(false);
 
-    const handleStartScan = () => {
-        setScanning(true);
-        setScanned(false);
-
-        // Demo scanning simulation
-        setTimeout(() => {
-            setScanning(false);
-            setScanned(true);
-        }, 2000);
-    };
-
-    const handleReset = () => {
-        setScanning(false);
-        setScanned(false);
-    };
+    useEffect(() => {
+        if (!scanning) return undefined;
+        const scanner = new Html5Qrcode("staff-dashboard-qr-reader");
+        let cancelled = false;
+        let handled = false;
+        const start = async () => {
+            try {
+                await scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 230, height: 230 } }, async (value) => {
+                    if (cancelled || handled) return;
+                    handled = true;
+                    setLookingUp(true);
+                    try {
+                        const result = await getDashboardPatient(patientIdFromQr(value));
+                        if (!cancelled) setPatient(result);
+                    } catch (lookupError) {
+                        if (!cancelled) setError(lookupError.message);
+                    } finally {
+                        if (!cancelled) {
+                            setLookingUp(false);
+                            setScanning(false);
+                        }
+                    }
+                }, () => {});
+                if (cancelled && scanner.isScanning) {
+                    await scanner.stop();
+                    scanner.clear();
+                }
+            } catch (scanError) {
+                console.error("QR scanner error:", scanError);
+                if (!cancelled) {
+                    setError("Unable to open the camera. Allow camera access and use a secure connection, then try again.");
+                    setScanning(false);
+                }
+            }
+        };
+        start();
+        return () => {
+            cancelled = true;
+            if (scanner.isScanning) {
+                scanner.stop().then(() => scanner.clear()).catch((stopError) => console.error("Unable to stop QR scanner:", stopError));
+            }
+        };
+    }, [scanning]);
 
     return (
-        <div className="scan-page">
-            {/* Header */}
-            <div className="scan-header">
-                <div>
-                    <h1>Scan QR Code</h1>
-                    <p>
-                        Scan a patient's QR code to quickly access their
-                        information.
-                    </p>
-                </div>
-
-                <div className="header-icon">
-                    <QrCode size={26} />
-                </div>
-            </div>
-
-            {/* Scanner Card */}
-            <div className="scanner-container">
-                {!scanned ? (
-                    <>
-                        <div className="scanner-title">
-                            <h2>Patient QR Scanner</h2>
-                            <p>
-                                Place the patient's QR code inside the frame
-                            </p>
-                        </div>
-
-                        {/* Scanner */}
-                        <div className={`qr-scanner ${scanning ? "scanning" : ""}`}>
-                            <div className="scanner-frame">
-                                <span className="corner top-left"></span>
-                                <span className="corner top-right"></span>
-                                <span className="corner bottom-left"></span>
-                                <span className="corner bottom-right"></span>
-
-                                {scanning && (
-                                    <div className="scan-line"></div>
-                                )}
-
-                                <QrCode size={90} strokeWidth={1.2} />
-                            </div>
-
-                            {!scanning && (
-                                <p className="scanner-message">
-                                    <Camera size={18} />
-                                    Ready to scan
-                                </p>
-                            )}
-
-                            {scanning && (
-                                <p className="scanner-message scanning-text">
-                                    Scanning QR code...
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Button */}
-                        <button
-                            className="scan-button"
-                            onClick={handleStartScan}
-                            disabled={scanning}
-                        >
-                            {scanning ? (
-                                <>
-                                    <RefreshCw className="spin" size={19} />
-                                    Scanning...
-                                </>
-                            ) : (
-                                <>
-                                    <Camera size={19} />
-                                    Start Scanner
-                                </>
-                            )}
-                        </button>
-
-                        {/* Instructions */}
-                        <div className="scan-instructions">
-                            <div className="instruction">
-                                <span>1</span>
-                                <p>Ask the patient to show their QR code.</p>
-                            </div>
-
-                            <div className="instruction">
-                                <span>2</span>
-                                <p>Place the QR code inside the scanner frame.</p>
-                            </div>
-
-                            <div className="instruction">
-                                <span>3</span>
-                                <p>Patient information will appear automatically.</p>
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    /* Scanned Result */
-                    <div className="scan-result">
-                        <div className="success-icon">
-                            <CheckCircle size={45} />
-                        </div>
-
-                        <h2>QR Code Scanned Successfully</h2>
-                        <p>Patient information has been found.</p>
-
-                        <div className="patient-result">
-                            <div className="patient-result-icon">
-                                <User size={25} />
-                            </div>
-
-                            <div>
-                                <span>Patient</span>
-                                <h3>Juan Dela Cruz</h3>
-                                <p>Patient ID: P-001</p>
-                            </div>
-                        </div>
-
-                        <div className="result-actions">
-                            <button className="continue-button">
-                                View Patient
-                            </button>
-
-                            <button
-                                className="again-button"
-                                onClick={handleReset}
-                            >
-                                <RefreshCw size={17} />
-                                Scan Again
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Security Notice */}
-            <div className="security-notice">
-                <CheckCircle size={18} />
-                <div>
-                    <strong>Secure Patient Access</strong>
-                    <p>
-                        Patient information is protected and can only be
-                        accessed by authorized clinic staff.
-                    </p>
-                </div>
-            </div>
+        <div className="staff-dashboard">
+            <header className="sd-heading"><div><p className="sd-eyebrow">PATIENT ACCESS</p><h1>Scan patient QR code</h1><p>Identify a registered patient using their clinic QR code.</p></div></header>
+            <section className="sd-panel sd-scanner">
+                <QrCode size={32} />
+                <h2>Patient QR scanner</h2>
+                <p>Ask the patient to show their QR code. Camera access requires HTTPS or localhost.</p>
+                {error && <p className="sd-error" role="alert">{error}</p>}
+                {scanning && <><div id="staff-dashboard-qr-reader" /><p role="status">{lookingUp ? "Finding patient..." : "Position the QR code in the camera frame."}</p><button type="button" className="sd-secondary" onClick={() => { setLookingUp(false); setScanning(false); }}>Cancel</button></>}
+                {!scanning && <button type="button" className="sd-primary" onClick={() => { setPatient(null); setError(""); setScanning(true); }}><Camera size={18} /> {patient ? "Scan another" : "Start scanner"}</button>}
+                {patient && <div className="sd-result">
+                    <h3>{patient.name || "Unnamed patient"}</h3>
+                    <p>Patient ID: {patient.id}</p>
+                    <p>Student ID: {patient.studentId || "Not provided"}</p>
+                    <p>Course / section: {patient.course || "Not provided"} · Year level: {patient.yearLevel || "Not provided"}</p>
+                    <Link className="sd-primary" to={`/staff/student-medical-profile?patientId=${encodeURIComponent(patient.id)}`}>View medical records</Link>
+                </div>}
+            </section>
         </div>
     );
 }
 
 export default ScanQRCode;
-

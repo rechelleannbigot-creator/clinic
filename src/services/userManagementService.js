@@ -76,7 +76,11 @@ export const createPatient = async (patient) => {
     throw new Error("The patient service did not return the created patient.");
   }
 
-  return { ...result.patient, emailWarning: result.warning || null };
+  return { 
+    ...result.patient, 
+    emailWarning: result.warning || null,
+    temporaryPassword: result.temporaryPassword || null,
+  };
 };
 
 export const resendPatientSetupEmail = async (patientId) =>

@@ -10,16 +10,19 @@ import {
     Eye,
     X,
     Trash2,
+    Pencil,
 } from "lucide-react";
 import "../../styles/Inventory.css";
 
 function Inventory() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showAddModal, setShowAddModal] = useState(false);
+    const [editingId, setEditingId] = useState(null);
 
     const [inventory, setInventory] = useState([]);
     const [inventoryError, setInventoryError] = useState("");
     const [saving, setSaving] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
         let active = true;
@@ -180,45 +183,106 @@ function Inventory() {
 
     const handleCloseModal = () => {
         setShowAddModal(false);
+        setEditingId(null);
+        setInventoryError("");
         resetForm();
     };
 
+    const handleOpenAddModal = () => {
+        setEditingId(null);
+        setInventoryError("");
+        resetForm();
+        setShowAddModal(true);
+    };
+
+    const handleOpenEditModal = (item) => {
+        setEditingId(item.id);
+        setInventoryError("");
+        setFormData({
+            name: item.name || "",
+            category: item.category || "",
+            quantity: String(item.quantity),
+            unit: item.unit || "",
+            reorderLevel: String(item.reorderLevel ?? 30),
+            expirationDate: item.expirationDate || item.expiry || "",
+        });
+        setShowAddModal(true);
+    };
+
     // =========================================================
-    // ADD MEDICINE
+    // ADD OR EDIT MEDICINE
     // =========================================================
 
-    const handleAddMedicine = async (e) => {
+    const handleSaveMedicine = async (e) => {
         e.preventDefault();
         if (saving) return;
 
         const quantity = Number(formData.quantity);
-        const reorderLevel = Number(
-            formData.reorderLevel
-        );
+        const reorderLevel = Number(formData.reorderLevel);
 
+        if (
+            !formData.name.trim() ||
+            !formData.category ||
+            !formData.unit ||
+            !formData.expirationDate ||
+            formData.quantity === "" ||
+            !Number.isSafeInteger(quantity) ||
+            quantity < 0 ||
+            formData.reorderLevel === "" ||
+            !Number.isSafeInteger(reorderLevel) ||
+            reorderLevel < 0
+        ) {
+            setInventoryError("Enter medicine details and valid non-negative whole-number stock values.");
+            return;
+        }
+
+        const current = inventory.find((item) => item.id === editingId);
+        if (editingId && !current) {
+            setInventoryError("This medicine is no longer in the inventory. Reload and try again.");
+            return;
+        }
         const newMedicine = {
             name: formData.name.trim(),
-            category: formData.category,
+            category: formData.category.trim(),
             quantity,
-            unit: formData.unit,
+            unit: formData.unit.trim(),
             reorderLevel,
-            expirationDate:
-                formData.expirationDate,
-            status: "Available",
+            expirationDate: formData.expirationDate,
+            ...(editingId ? { expectedQuantity: current.quantity } : {}),
         };
 
         setSaving(true);
         try {
-            const saved = await saveMedicine(newMedicine);
-            setInventory((previous) => [...previous, saved]);
-            setShowAddModal(false);
+            const saved = await saveMedicine(newMedicine, editingId);
+            setInventory((previous) => editingId
+                ? previous.map((item) => item.id === editingId ? saved : item)
+                : [...previous, saved]);
+            handleCloseModal();
             setInventoryError("");
-            alert(`${formData.name} has been successfully added.`);
-            resetForm();
+            alert(editingId
+                ? `${saved.name} has been successfully updated.`
+                : `${saved.name} has been successfully added.`);
         } catch (error) {
             setInventoryError(error.message);
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleDeleteMedicine = async (item) => {
+        if (deletingId) return;
+        if (!window.confirm(`Are you sure you want to delete "${item.name}" from the inventory? This cannot be undone.`)) {
+            return;
+        }
+        setDeletingId(item.id);
+        setInventoryError("");
+        try {
+            await removeMedicine(item.id);
+            setInventory((previous) => previous.filter((medicine) => medicine.id !== item.id));
+        } catch (error) {
+            setInventoryError(error.message || "Unable to delete this medicine.");
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -298,9 +362,8 @@ function Inventory() {
 
                 <button
                     className="add-inventory-btn"
-                    onClick={() =>
-                        setShowAddModal(true)
-                    }
+                        onClick={handleOpenAddModal}
+                        type="button"
                 >
                     <Plus size={18} />
                     Add Medicine
@@ -627,23 +690,36 @@ function Inventory() {
                                                 {/* ACTION */}
 
                                                 <td>
-
-                                                    <button
-                                                        className="inventory-view-btn"
-                                                        onClick={() =>
-                                                            handleView(
-                                                                item
-                                                            )
-                                                        }
-                                                    >
-                                                        <Eye
-                                                            size={
-                                                                16
-                                                            }
-                                                        />
-                                                        View
-                                                    </button>
-
+                                                    <div className="inventory-row-actions">
+                                                        <button
+                                                            type="button"
+                                                            className="inventory-view-btn"
+                                                            onClick={() => handleView(item)}
+                                                            aria-label={`View ${item.name}`}
+                                                        >
+                                                            <Eye size={16} />
+                                                            View
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="inventory-edit-btn"
+                                                            onClick={() => handleOpenEditModal(item)}
+                                                            aria-label={`Edit ${item.name}`}
+                                                            title={`Edit ${item.name}`}
+                                                        >
+                                                            <Pencil size={16} />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="inventory-delete-btn"
+                                                            onClick={() => handleDeleteMedicine(item)}
+                                                            disabled={deletingId === item.id}
+                                                            aria-label={`Delete ${item.name}`}
+                                                            title={`Delete ${item.name}`}
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
                                                 </td>
 
                                             </tr>
@@ -656,7 +732,7 @@ function Inventory() {
                                 <tr>
 
                                     <td
-                                        colSpan="7"
+                                            colSpan="7"
                                         className="inventory-empty"
                                     >
 
@@ -1008,12 +1084,11 @@ function Inventory() {
                             <div>
 
                                 <h2>
-                                    Add Medicine
+                                    {editingId ? "Edit Medicine" : "Add Medicine"}
                                 </h2>
 
                                 <p>
-                                    Enter the medicine
-                                    information below.
+                                    {editingId ? "Update the medicine information below." : "Enter the medicine information below."}
                                 </p>
 
                             </div>
@@ -1033,9 +1108,7 @@ function Inventory() {
                         {/* FORM */}
 
                         <form
-                            onSubmit={
-                                handleAddMedicine
-                            }
+                            onSubmit={handleSaveMedicine}
                         >
                             {inventoryError && <p role="alert">{inventoryError}</p>}
 
@@ -1110,6 +1183,9 @@ function Inventory() {
                                         <option value="Drops">
                                             Drops
                                         </option>
+                                        {formData.category && !["Tablet", "Capsule", "Syrup", "Injection", "Cream", "Drops"].includes(formData.category) && (
+                                            <option value={formData.category}>{formData.category}</option>
+                                        )}
 
                                     </select>
 
@@ -1161,6 +1237,9 @@ function Inventory() {
                                         <option value="Vials">
                                             Vials
                                         </option>
+                                        {formData.unit && !["Tablets", "Capsules", "Bottles", "Boxes", "Tubes", "Vials"].includes(formData.unit) && (
+                                            <option value={formData.unit}>{formData.unit}</option>
+                                        )}
 
                                     </select>
 
@@ -1262,7 +1341,7 @@ function Inventory() {
                                         size={18}
                                     />
 
-                                    {saving ? "Saving..." : "Add Medicine"}
+                                    {saving ? "Saving..." : editingId ? "Save Changes" : "Add Medicine"}
 
                                 </button>
 

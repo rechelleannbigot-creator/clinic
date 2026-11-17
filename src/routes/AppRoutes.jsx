@@ -36,6 +36,7 @@ import EmployeeProfiles from "../pages/Clinicstaff/EmployeeProfiles";
 import NewConsultation from "../pages/Clinicstaff/NewConsultation";
 import VisitHistory from "../pages/Clinicstaff/VisitHestory";
 import Profile from "../pages/Clinicstaff/MyProfile";
+import ScanQRCode from "../pages/Clinicstaff/ScanQRcode";
 
 // ==============================
 // Student
@@ -85,6 +86,7 @@ function AppRoutes() {
                     }
                 >
                     <Route index element={<StaffDashboard />} />
+                    <Route path="scan-qr" element={<ScanQRCode />} />
                     <Route path="add-patient" element={<AddPatient />} />
                     <Route path="inventory" element={<Inventory />} />
                     <Route path="staff-reports" element={<StaffReports />} />

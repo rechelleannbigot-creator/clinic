@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, useNavigate, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import "../styles/StaffLayout.css";
@@ -18,6 +18,7 @@ import {
   Bell,
   UserCircle,
   UserPlus,
+  QrCode,
 } from "lucide-react";
 
 function StaffLayout() {
@@ -25,7 +26,7 @@ function StaffLayout() {
   const navigate = useNavigate();
 
   // Sidebar state
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 700);
 
   // Toggle sidebar
   const toggleSidebar = () => {
@@ -39,7 +40,6 @@ function StaffLayout() {
     }
   };
 
-  // Logout
   const handleLogout = async () => {
     try {
       await logout();
@@ -110,6 +110,7 @@ function StaffLayout() {
           >
             Logout
           </button>
+
         </div>
       </header>
 
@@ -152,6 +153,9 @@ function StaffLayout() {
                 Dashboard
               </span>
             </NavLink>
+            <NavLink to="scan-qr" onClick={closeSidebarOnMobile} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} title="Scan QR Code">
+              <span className="nav-icon"><QrCode size={18} /></span><span className="nav-text">Scan QR Code</span>
+            </NavLink>
           </div>
 
           {/* =================================================
@@ -180,7 +184,7 @@ function StaffLayout() {
               </span>
 
               <span className="nav-text">
-                Add Patient
+                Patient Management
               </span>
             </NavLink>
 
@@ -201,7 +205,7 @@ function StaffLayout() {
               </span>
 
               <span className="nav-text">
-                Student Medical Profile
+                Medical Records
               </span>
             </NavLink>
 
@@ -274,7 +278,7 @@ function StaffLayout() {
               </span>
 
               <span className="nav-text">
-                Visit History
+                Consultation History
               </span>
             </NavLink>
           </div>
@@ -305,18 +309,18 @@ function StaffLayout() {
               </span>
 
               <span className="nav-text">
-                Manage Inventory
+                Medicine Inventory
               </span>
             </NavLink>
           </div>
 
           {/* =================================================
-              REPORTS / ACCOUNT
+              ACCOUNT
           ================================================= */}
           <div className="sidebar-section">
 
             <div className="sidebar-section-title">
-              REPORTS & ACCOUNT
+              ACCOUNT
             </div>
 
             {/* Notifications */}
@@ -339,7 +343,6 @@ function StaffLayout() {
                 Notifications
               </span>
             </NavLink>
-
             {/* My Profile */}
             <NavLink
               to="profile"
@@ -377,7 +380,7 @@ function StaffLayout() {
             MAIN CONTENT
         ===================================================== */}
         <main className="content">
-          <Outlet />
+          <Outlet key={user?.uid} />
         </main>
       </div>
     </div>

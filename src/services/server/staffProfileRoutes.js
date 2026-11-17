@@ -20,6 +20,7 @@ function profileForResponse(data, authUser) {
     position: data.position || "",
     department: data.department || "",
     employmentStatus: data.employmentStatus || data.status || "",
+    accountStatus: data.status || "",
     dateHired: data.dateHired || data.hireDate || "",
     role: data.role || "",
   };

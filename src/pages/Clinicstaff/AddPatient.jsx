@@ -26,6 +26,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
+import StudentCredentialsPopup from "./StudentCredentialsPopup";
 import "../../styles/AddPatient.css";
 
 const gradeSections = {
@@ -64,6 +65,7 @@ function AddPatient() {
   const [formData, setFormData] = useState(emptyForm);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
+  const [credentialsPopup, setCredentialsPopup] = useState(null);
 
   const showMessage = (text, type = "success") => {
     setMessage(text);
@@ -168,8 +170,17 @@ function AddPatient() {
   };
 
   const createPatientAccount = async () => {
-    const { emailWarning, ...patient } = await createPatient(formData);
+    const { emailWarning, temporaryPassword, ...patient } = await createPatient(formData);
+    
     setPatients((previous) => [...previous, patient]);
+    
+    if (temporaryPassword) {
+      setCredentialsPopup({
+        ...patient,
+        temporaryPassword,
+      });
+    }
+    
     if (emailWarning) {
       showMessage(
         `Patient ${patient.id} was added, but the setup email was not sent. ${emailWarning} Open the patient and use "Resend Setup Email".`,
@@ -458,6 +469,7 @@ function AddPatient() {
                 <th>Year Level</th>
                 <th>Course / Section</th>
                 <th>Contact</th>
+                <th>Password</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -465,7 +477,7 @@ function AddPatient() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan="8" className="patient-empty-state">
+                  <td colSpan="9" className="patient-empty-state">
                     <p>Loading patient records...</p>
                   </td>
                 </tr>
@@ -490,6 +502,7 @@ function AddPatient() {
                     <td>{patient.yearLevel}</td>
                     <td>{getAcademicInfo(patient)}</td>
                     <td>{patient.contact}</td>
+                    <td>••••••••</td>
 
                     <td>
                       <div className="patient-actions">
@@ -518,7 +531,7 @@ function AddPatient() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" className="patient-empty-state">
+                  <td colSpan="9" className="patient-empty-state">
                     <Users size={34} />
                     <p>No patient records found.</p>
                     <span>Try another search or add a new patient.</span>
@@ -768,6 +781,9 @@ function AddPatient() {
                         </option>
                         <option value="BS Marketing Management">
                           BS Marketing Management
+                          </option>
+                        <option value="BS Hospitality Management">
+                          BS Hospitality Management
                         </option>
                         <option value="Bachelor of Elementary Education">
                           Bachelor of Elementary Education
@@ -1117,6 +1133,14 @@ function AddPatient() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Student Credentials Popup */}
+      {credentialsPopup && (
+        <StudentCredentialsPopup
+          student={credentialsPopup}
+          onClose={() => setCredentialsPopup(null)}
+        />
       )}
     </div>
   );

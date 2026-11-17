@@ -81,6 +81,16 @@ The staff profile uses the signed-in Firebase account and its `users/{uid}` Fire
 
 The backend must be running and deployed Firestore rules must protect user roles and identity fields as described above; ensure profile pictures and other personal fields are not publicly readable. Run profile API tests with `node --test src/services/server/staffProfileRoutes.test.js`.
 
+## Staff dashboard
+
+The staff dashboard uses the authenticated backend and the existing `patients`, `consultations`, and `medicines` collections. Its staff-only endpoints return summaries without consultation diagnoses or medical profile details. Dashboard dates and the 30-day expiry window use Philippine time. Available medicines count unexpired medicine records with positive stock; low stock includes out-of-stock records. Records with invalid stock or expiry data are marked Unknown and excluded from those totals. Medicine issuance counts consultations created today with a medicine; the medical-record total counts patient documents with a nonempty `medicalProfile`.
+
+Notifications cover current stock/expiry alerts and the ten latest registration/consultation events. Read state is stored per staff account in `staffDashboardReads/{uid}/notifications`; it must not be directly accessible to clients under the deployed Firestore rules. Alerts reflect current stock rather than a historical notification log. The dashboard refreshes every minute while visible and when returning to the tab. QR scanning uses the existing patient record ID QR format and requires camera permission on HTTPS or localhost.
+
+The existing system does not currently store consultation scheduling/status, medical-profile update audit events, or clinic announcements, so those cannot be shown as live data. The existing medical profile form does not persist edits; it now reports this instead of claiming a save succeeded. The existing staff reports page remains a demonstration, not a database report or working export. Patient creation does not currently collect a separate student ID, so the scanner shows it only when present in an existing record.
+
+Run dashboard API tests with `node --test src/services/server/staffDashboardRoutes.test.js`. As with other clinical features, verify the authenticated workflow using designated test data and review deployed Firestore rules before production use.
+
 ## Verify each stage
 
 ```bash

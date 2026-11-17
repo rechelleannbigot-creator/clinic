@@ -80,6 +80,108 @@ function normalizeMedicine(body) {
 export function registerClinicRoutes(app, { db, requireClinicStaff, requireSignedIn }) {
   const medicines = db.collection("medicines");
   const consultations = db.collection("consultations");
+  const staffOnly = (req, res, next) => {
+    const role = text(req.staffProfile?.role).toLowerCase().replace(/[\s_-]/g, "");
+    if (!["staff", "clinicstaff"].includes(role)) return res.status(403).json({ message: "Only clinic staff can access the staff dashboard." });
+    next();
+  };
+  const timestamp = (value) => {
+    if (!value) return "";
+    const date = typeof value.toDate === "function" ? value.toDate() : new Date(value);
+    return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+  };
+  const manilaDate = (date) => new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(date);
+  const notificationId = (value) => crypto.createHash("sha256").update(value).digest("hex");
+
+  app.get("/api/staff/dashboard", requireClinicStaff, staffOnly, async (req, res) => {
+    try {
+      const [patientSnapshot, medicineSnapshot, consultationSnapshot, readSnapshot] = await Promise.all([
+        db.collection("patients").get(), medicines.get(), consultations.get(),
+        db.collection("staffDashboardReads").doc(req.authUser.uid).collection("notifications").get(),
+      ]);
+      const today = manilaDate(new Date());
+      const expiringLimit = new Date(`${today}T00:00:00Z`);
+      expiringLimit.setUTCDate(expiringLimit.getUTCDate() + 30);
+      const limit = expiringLimit.toISOString().slice(0, 10);
+      const patients = patientSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const stock = medicineSnapshot.docs.map((doc) => {
+        const item = doc.data();
+        const expiry = item.expirationDate || item.expiry || "";
+        let status = "In Stock";
+        if (!Number.isSafeInteger(item.quantity) || item.quantity < 0 || !Number.isSafeInteger(item.reorderLevel) || item.reorderLevel < 0 || !validDate(expiry)) status = "Unknown";
+        else if (expiry < today) status = "Expired";
+        else if (item.quantity === 0) status = "Out of Stock";
+        else if (item.quantity <= item.reorderLevel) status = "Low Stock";
+        else if (expiry && expiry <= limit) status = "Expiring Soon";
+        return { id: doc.id, name: item.name, quantity: item.quantity, unit: item.unit, expirationDate: expiry, status, reorderLevel: item.reorderLevel };
+      });
+      const visits = consultationSnapshot.docs.map((doc) => {
+        const item = doc.data();
+        return {
+          consultationId: item.consultationId || doc.id, patientName: item.patientName || "",
+          consultationType: item.consultationType || "", consultationDate: item.consultationDate || "",
+          clinicStaff: item.clinicStaff || "", status: item.status || "Recorded",
+          medicine: item.medicine || "", createdAt: timestamp(item.createdAt),
+        };
+      });
+      const activities = [];
+      for (const patient of patients) {
+        const date = timestamp(patient.createdAt);
+        if (date) activities.push({ id: `patient-${patient.id}`, patientName: [patient.firstName, patient.middleName, patient.lastName].filter(Boolean).join(" "), reference: patient.id, description: "Patient registered", date, staff: patient.createdByName || "" });
+      }
+      for (const visit of visits) {
+        if (!visit.createdAt) continue;
+        activities.push({ id: `visit-${visit.consultationId}`, patientName: visit.patientName, reference: visit.consultationId, description: "Consultation recorded", date: visit.createdAt, staff: visit.clinicStaff });
+        if (visit.medicine) activities.push({ id: `issue-${visit.consultationId}`, patientName: visit.patientName, reference: visit.consultationId, description: `Medicine issued: ${visit.medicine}`, date: visit.createdAt, staff: visit.clinicStaff });
+      }
+      activities.sort((a, b) => b.date.localeCompare(a.date));
+      const notifications = [
+        ...stock.filter((item) => (Number.isSafeInteger(item.quantity) && Number.isSafeInteger(item.reorderLevel) && item.quantity <= item.reorderLevel) || (validDate(item.expirationDate) && item.expirationDate <= limit)).map((item) => {
+          const alerts = [];
+          if (Number.isSafeInteger(item.quantity) && Number.isSafeInteger(item.reorderLevel) && item.quantity <= item.reorderLevel) alerts.push(item.quantity === 0 ? "Out of stock" : "Low stock");
+          if (validDate(item.expirationDate) && item.expirationDate <= limit) alerts.push(item.expirationDate < today ? "Expired" : "Expiring within 30 days");
+          return { id: notificationId(`stock:${item.id}:${item.quantity}:${item.reorderLevel}:${item.expirationDate}:${alerts.join(",")}`), title: item.name, message: alerts.join(" · "), date: "" };
+        }),
+        ...activities.filter((item) => item.id.startsWith("patient-") || item.id.startsWith("visit-")).slice(0, 10).map((item) => ({
+          id: notificationId(item.id), title: item.description, message: item.patientName || item.reference, date: item.date,
+        })),
+      ];
+      const readIds = new Set(readSnapshot.docs.map((doc) => doc.id));
+      res.json({
+        stats: {
+          patients: patients.length,
+          consultationsToday: visits.filter((visit) => visit.consultationDate === today).length,
+          availableMedicines: stock.filter((item) => item.status !== "Unknown" && item.quantity > 0 && item.expirationDate >= today).length,
+          lowStock: stock.filter((item) => item.status !== "Unknown" && item.quantity <= item.reorderLevel).length,
+          issuedToday: visits.filter((visit) => visit.medicine && visit.createdAt && manilaDate(new Date(visit.createdAt)) === today).length,
+          medicalRecords: patients.filter((patient) => patient.medicalProfile && typeof patient.medicalProfile === "object" && Object.keys(patient.medicalProfile).length > 0).length,
+        },
+        consultations: visits.filter((visit) => visit.consultationDate === today).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+        medicines: stock, activities: activities.slice(0, 10),
+        notifications: notifications.map((item) => ({ ...item, unread: !readIds.has(item.id) })),
+      });
+    } catch (error) { handleError(res, error, "Load staff dashboard"); }
+  });
+
+  app.post("/api/staff/dashboard/notifications/:id/read", requireClinicStaff, staffOnly, async (req, res) => {
+    try {
+      if (!/^[a-f0-9]{64}$/.test(req.params.id)) throw problem("Invalid notification ID.");
+      await db.collection("staffDashboardReads").doc(req.authUser.uid).collection("notifications").doc(req.params.id).set({ readAt: FieldValue.serverTimestamp() });
+      res.json({ message: "Notification marked as read." });
+    } catch (error) { handleError(res, error, "Mark notification as read"); }
+  });
+
+  app.get("/api/staff/dashboard/patients/:id", requireClinicStaff, staffOnly, async (req, res) => {
+    try {
+      if (!validId(req.params.id)) throw problem("Invalid patient ID.");
+      const snapshot = await db.collection("patients").doc(req.params.id).get();
+      if (!snapshot.exists) throw problem("No registered patient matches this QR code.", 404);
+      const patient = snapshot.data();
+      res.json({ patient: { id: snapshot.id, name: [patient.firstName, patient.middleName, patient.lastName].filter(Boolean).join(" "), studentId: patient.studentId || "", course: patient.course || patient.section || "", yearLevel: patient.yearLevel || "" } });
+    } catch (error) { handleError(res, error, "Find patient"); }
+  });
 
   app.get("/api/medicines", requireClinicStaff, async (_req, res) => {
     try {

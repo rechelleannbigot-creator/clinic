@@ -10,6 +10,14 @@ export const getMedicines = () => list("/api/medicines", "medicines");
 export const getConsultations = (patientId = "") =>
   list(`/api/consultations${patientId ? `?patientId=${encodeURIComponent(patientId)}` : ""}`, "consultations");
 export const getMyConsultations = () => list("/api/my-consultations", "consultations");
+export const getStaffDashboard = () => requestPatientApi("/api/staff/dashboard");
+export const markDashboardNotificationRead = (id) =>
+  requestPatientApi(`/api/staff/dashboard/notifications/${encodeURIComponent(id)}/read`, { method: "POST" });
+export const getDashboardPatient = async (id) => {
+  const result = await requestPatientApi(`/api/staff/dashboard/patients/${encodeURIComponent(id)}`);
+  if (!result.patient?.id) throw new Error("The clinic service returned an invalid patient.");
+  return result.patient;
+};
 
 export async function saveConsultation(data) {
   const result = await requestPatientApi("/api/consultations", { method: "POST", body: JSON.stringify(data) });

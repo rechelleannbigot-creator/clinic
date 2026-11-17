@@ -74,6 +74,7 @@ function StaffReports() {
 
     return (
         <div className="staff-reports-page">
+            <p role="alert">This reports page currently contains demonstration data. It is not connected to clinic records and its download button does not generate a report.</p>
 
             {/* Header */}
             <div className="reports-header">

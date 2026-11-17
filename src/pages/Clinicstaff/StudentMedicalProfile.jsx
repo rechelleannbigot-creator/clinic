@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getPatients } from "../../services/userManagementService";
 import { getConsultations } from "../../services/clinicService";
 import {
@@ -16,9 +17,14 @@ import {
 import "../../styles/StudentMedicalProfile.css";
 
 function StudentMedicalProfile() {
+    const [searchParams] = useSearchParams();
+    const requestedPatientId = searchParams.get("patientId");
     const [students, setStudents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
+    const [saveError, setSaveError] = useState("");
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [formData, setFormData] = useState(null);
 
     useEffect(() => {
         let active = true;
@@ -27,7 +33,7 @@ function StudentMedicalProfile() {
             .then((patients) => {
                 if (!active) return;
 
-                setStudents(patients.map((patient) => {
+                const mappedStudents = patients.map((patient) => {
                     const yearSection = [
                         patient.yearLevel,
                         patient.yearLevel?.startsWith("Grade ")
@@ -58,7 +64,18 @@ function StudentMedicalProfile() {
                             cellphone: patient.contact || "",
                         },
                     };
-                }));
+                });
+                setStudents(mappedStudents);
+                if (requestedPatientId) {
+                    const student = mappedStudents.find((item) => item.id === requestedPatientId);
+                    if (student) {
+                        setSelectedStudent(student);
+                        setFormData({ ...student.profile });
+                    } else {
+                        setLoadError("The requested patient could not be found.");
+                        return;
+                    }
+                }
                 setLoadError("");
             })
             .catch((error) => {
@@ -73,15 +90,13 @@ function StudentMedicalProfile() {
         return () => {
             active = false;
         };
-    }, []);
+    }, [requestedPatientId]);
 
     // ==========================================
     // STATES
     // ==========================================
 
     const [search, setSearch] = useState("");
-    const [selectedStudent, setSelectedStudent] = useState(null);
-    const [formData, setFormData] = useState(null);
     const [saved, setSaved] = useState(false);
     const [consultations, setConsultations] = useState([]);
     const [consultationError, setConsultationError] = useState("");
@@ -105,6 +120,7 @@ function StudentMedicalProfile() {
         setConsultationError("");
         setFormData({ ...student.profile });
         setSaved(false);
+        setSaveError("");
 
         window.scrollTo({
             top: 0,
@@ -159,9 +175,8 @@ function StudentMedicalProfile() {
     const handleSave = (e) => {
         e.preventDefault();
 
-        console.log("Updated Medical Profile:", formData);
-
-        setSaved(true);
+        setSaved(false);
+        setSaveError("Medical profile changes cannot be saved yet. This page is not connected to a medical profile update service.");
 
         window.scrollTo({
             top: 0,
@@ -218,6 +233,7 @@ function StudentMedicalProfile() {
 
                 {/* SUCCESS */}
 
+                {saveError && <p role="alert">{saveError}</p>}
                 {saved && (
                     <div className="profile-success">
                         <CheckCircle size={20} />

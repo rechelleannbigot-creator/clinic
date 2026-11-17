@@ -5,6 +5,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { registerClinicRoutes } from "./clinicRoutes.js";
 import { registerEmployeeRoutes } from "./employeeRoutes.js";
 import { registerStaffProfileRoutes } from "./staffProfileRoutes.js";
+import { registerAdminStaffRoutes } from "./adminStaffRoutes.js";
 import {
   auth,
   db,
@@ -27,14 +28,18 @@ app.use(cors({
 }));
 app.use(express.json({ limit: "1mb" }));
 
-function makeTemporaryPassword() {
-  // 20 random bytes encoded as hex: 40 characters, high entropy.
-  return crypto.randomBytes(20).toString("hex");
+function makeTemporaryPassword(length = 12) {
+  const characters = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  let password = "";
+  for (let i = 0; i < length; i += 1) {
+    password += characters[crypto.randomInt(characters.length)];
+  }
+  return password;
 }
 
-// Builds the Firebase password-setup link and emails it. No password is ever
-// generated for email, stored, or logged.
-async function sendSetupEmail(transporter, patient, patientId) {
+// Emails the temporary password plus a Firebase password-setup link. The
+// temporary password is never stored in Firestore or logged.
+async function sendSetupEmail(transporter, patient, patientId, temporaryPassword) {
   const loginUrl = process.env.LOGIN_URL || "http://localhost:5173/";
   let link;
   try {
@@ -56,8 +61,9 @@ A Clinic Management System account has been created for you.
 
 Patient ID: ${patientId}
 Login email: ${patient.email}
+Temporary password: ${temporaryPassword}
 
-Set your password using this secure link:
+Please change this temporary password after your first login. You can also set your own password using this secure link:
 ${link}
 
 After setting your password, sign in here: ${loginUrl}
@@ -184,9 +190,27 @@ async function requireClinicStaff(req, res, next) {
   });
 }
 
+async function requireAdministrator(req, res, next) {
+  return requireSignedIn(req, res, async () => {
+    try {
+      const userDoc = await db.collection("users").doc(req.authUser.uid).get();
+      const role = String(userDoc.data()?.role || "").toLowerCase().replace(/[\s_-]/g, "");
+      if (!userDoc.exists || !["admin", "administrator"].includes(role)) {
+        return res.status(403).json({ message: "Only administrators can manage staff accounts." });
+      }
+      req.adminProfile = userDoc.data();
+      next();
+    } catch (error) {
+      console.error("Verify administrator access error:", error.message);
+      return res.status(503).json({ message: "Unable to verify administrator access. Please try again." });
+    }
+  });
+}
+
 registerClinicRoutes(app, { db, requireClinicStaff, requireSignedIn });
 registerEmployeeRoutes(app, { db, requireSignedIn });
 registerStaffProfileRoutes(app, { db, requireClinicStaff });
+registerAdminStaffRoutes(app, { db, auth, requireAdmin: requireAdministrator });
 
 app.get("/api/patients", requireClinicStaff, async (_req, res) => {
   try {
@@ -213,11 +237,12 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
       return res.status(400).json({ message: validationMessage });
     }
 
-    // Firebase Auth enforces email uniqueness. The random password is never
-    // saved or emailed; the patient sets their own through a reset link.
+    // Firebase Auth enforces email uniqueness. The temporary password is only
+    // emailed to the patient; it is never saved.
+    const temporaryPassword = makeTemporaryPassword();
     const userRecord = await auth.createUser({
       email: patient.email,
-      password: makeTemporaryPassword(),
+      password: temporaryPassword,
       displayName: [patient.firstName, patient.middleName, patient.lastName].filter(Boolean).join(" "),
       disabled: false,
       emailVerified: false,
@@ -252,6 +277,7 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
         patientId,
         role: "student",
         status: "ACTIVE",
+        mustChangePassword: true,
         createdAt: FieldValue.serverTimestamp(),
       });
       return ref;
@@ -265,7 +291,7 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
     let emailSent = true;
     let emailWarning = null;
     try {
-      await sendSetupEmail(emailTransporter(), patient, patientId);
+      await sendSetupEmail(emailTransporter(), patient, patientId, temporaryPassword);
       await recordSetupEmailResult(patientId, true);
     } catch (mailError) {
       emailSent = false;
@@ -288,6 +314,7 @@ app.post("/api/patients", requireClinicStaff, async (req, res) => {
         setupEmailSent: emailSent,
       },
       emailSent,
+      temporaryPassword,
     });
   } catch (error) {
     console.error("Create patient error:", error.message);
@@ -323,7 +350,11 @@ app.post("/api/patients/:patientId/resend-setup-email", requireClinicStaff, asyn
 
     const patient = snapshot.data();
     try {
-      await sendSetupEmail(emailTransporter(), patient, patientId);
+      const temporaryPassword = makeTemporaryPassword();
+      const userRecord = await auth.getUserByEmail(patient.email);
+      await auth.updateUser(userRecord.uid, { password: temporaryPassword });
+      await db.collection("users").doc(userRecord.uid).set({ mustChangePassword: true }, { merge: true });
+      await sendSetupEmail(emailTransporter(), patient, patientId, temporaryPassword);
     } catch (mailError) {
       console.error("Resend setup email error:", mailError.code || mailError.message);
       await recordSetupEmailResult(patientId, false, mailError.code);
