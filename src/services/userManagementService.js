@@ -47,7 +47,9 @@ export const requestPatientApi = async (path, options = {}) => {
   }
 
   if (!response.ok) {
-    throw new Error(result.message || "Patient service request failed.");
+    const error = new Error(result.message || "Patient service request failed.");
+    error.status = response.status;
+    throw error;
   }
 
   return result;

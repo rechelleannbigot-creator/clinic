@@ -1,883 +1,248 @@
-import { useState } from "react";
-import {
-    Search,
-    Plus,
-    Eye,
-    Pill,
-    User,
-    Calendar,
-    X,
-    FileText,
-    ClipboardList,
-} from "lucide-react";
-
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Html5Qrcode } from "html5-qrcode";
+import { AlertTriangle, CalendarDays, ClipboardList, Eye, Pill, QrCode, Users, X } from "lucide-react";
+import { getPatients } from "../../services/userManagementService";
+import { getIssuances, getMedicines, saveIssuance } from "../../services/clinicService";
 import "../../styles/MedicineIssuance.css";
 
+const blankForm = { medicineId: "", quantity: "", dosage: "", instructions: "", reason: "" };
+const nameOf = (patient) => [patient.firstName, patient.middleName, patient.lastName].filter(Boolean).join(" ");
+const studentIdOf = (patient) => String(patient.studentId || patient.studentNumber || "");
+const localDate = (value) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(date);
+};
+const displayDate = (value) => value && !Number.isNaN(new Date(value).getTime())
+  ? new Date(value).toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "medium", timeStyle: "short" })
+  : "Not available";
+
+function qrId(value) {
+  const input = value.trim();
+  try {
+    const parsed = JSON.parse(input);
+    if (typeof parsed === "string") return parsed.trim();
+    if (parsed && typeof parsed === "object") return String(parsed.patientId ?? parsed.studentId ?? parsed.id ?? "").trim();
+    return "";
+  } catch {
+    return input;
+  }
+}
+
 function MedicineIssuance() {
-    const [search, setSearch] = useState("");
-    const [showModal, setShowModal] = useState(false);
-    const [selectedIssuance, setSelectedIssuance] = useState(null);
+  const [patients, setPatients] = useState([]);
+  const [medicines, setMedicines] = useState([]);
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [patientSearch, setPatientSearch] = useState("");
+  const [patient, setPatient] = useState(null);
+  const [form, setForm] = useState(blankForm);
+  const [scanning, setScanning] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [pending, setPending] = useState(null);
+  const [details, setDetails] = useState(null);
+  const [search, setSearch] = useState("");
+  const [medicineFilter, setMedicineFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [patientFilter, setPatientFilter] = useState("");
+  const [order, setOrder] = useState("newest");
+  const [page, setPage] = useState(1);
+  const savingRef = useRef(false);
 
-    const [issuances, setIssuances] = useState([
-        {
-            id: "ISS-001",
-            patient: "Juan Dela Cruz",
-            patientId: "P-001",
-            diagnosis: "Fever",
-            medicine: "Paracetamol",
-            quantity: 10,
-            unit: "Tablets",
-            date: "2026-09-01",
-            issuedBy: "Maria Santos",
-            status: "Issued",
-            remarks: "Take 1 tablet every 6 hours as needed.",
-        },
-        {
-            id: "ISS-002",
-            patient: "Ana Reyes",
-            patientId: "P-002",
-            diagnosis: "Bacterial Infection",
-            medicine: "Amoxicillin",
-            quantity: 15,
-            unit: "Capsules",
-            date: "2026-08-31",
-            issuedBy: "John Garcia",
-            status: "Issued",
-            remarks: "Take after meals.",
-        },
-        {
-            id: "ISS-003",
-            patient: "Pedro Ramos",
-            patientId: "P-003",
-            diagnosis: "Body Pain",
-            medicine: "Ibuprofen",
-            quantity: 5,
-            unit: "Tablets",
-            date: "2026-08-30",
-            issuedBy: "Maria Santos",
-            status: "Issued",
-            remarks: "Take as prescribed.",
-        },
-        {
-            id: "ISS-004",
-            patient: "Sofia Mendoza",
-            patientId: "P-004",
-            diagnosis: "Allergic Rhinitis",
-            medicine: "Cetirizine",
-            quantity: 10,
-            unit: "Tablets",
-            date: "2026-08-29",
-            issuedBy: "John Garcia",
-            status: "Pending",
-            remarks: "For approval.",
-        },
-    ]);
+  async function load() {
+    const [studentList, stock, history] = await Promise.all([getPatients(), getMedicines(), getIssuances()]);
+    setPatients(studentList);
+    setMedicines(stock);
+    setRecords(history);
+  }
 
-    const [formData, setFormData] = useState({
-        patient: "",
-        patientId: "",
-        diagnosis: "",
-        medicine: "",
-        quantity: "",
-        unit: "",
-        date: "2026-09-08",
-        remarks: "",
-    });
+  useEffect(() => {
+    let active = true;
+    Promise.all([getPatients(), getMedicines(), getIssuances()])
+      .then(([studentList, stock, history]) => {
+        if (active) { setPatients(studentList); setMedicines(stock); setRecords(history); }
+      })
+      .catch((loadError) => { if (active) { setError(loadError.message); setLoadFailed(true); } })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
 
-    /* =========================
-       FILTER ISSUANCES
-    ========================= */
+  useEffect(() => {
+    if (!pending) return undefined;
+    const warn = (event) => { event.preventDefault(); event.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [pending]);
 
-    const filteredIssuances = issuances.filter((issuance) =>
-        `
-        ${issuance.id}
-        ${issuance.patient}
-        ${issuance.patientId}
-        ${issuance.diagnosis}
-        ${issuance.medicine}
-        ${issuance.status}
-        `
-            .toLowerCase()
-            .includes(search.toLowerCase())
-    );
-
-    /* =========================
-       STATISTICS
-    ========================= */
-
-    const totalIssued = issuances.filter(
-        (issuance) => issuance.status === "Issued"
-    ).length;
-
-    const totalPending = issuances.filter(
-        (issuance) => issuance.status === "Pending"
-    ).length;
-
-    const patientsServed = new Set(
-        issuances.map((issuance) => issuance.patientId)
-    ).size;
-
-    /* =========================
-       HANDLE FORM INPUT
-    ========================= */
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+  useEffect(() => {
+    if (!scanning) return undefined;
+    const scanner = new Html5Qrcode("issuance-qr-reader");
+    let cancelled = false;
+    let handled = false;
+    const start = async () => {
+      try {
+        await scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 230, height: 230 } }, (value) => {
+          if (cancelled || handled) return;
+          handled = true;
+          const id = qrId(value).toLowerCase();
+          const matches = id ? patients.filter((item) => item.id.toLowerCase() === id || studentIdOf(item).toLowerCase() === id) : [];
+          if (matches.length === 1) {
+            setPatient(matches[0]);
+            setPatientSearch(nameOf(matches[0]));
+            setError("");
+          } else setError(matches.length ? "This QR code matches multiple students. Search by patient ID instead." : "No registered student matches this QR code.");
+          setScanning(false);
+        }, () => {});
+        if (cancelled && scanner.isScanning) { await scanner.stop(); scanner.clear(); }
+      } catch (scanError) {
+        console.error("QR scanner error:", scanError);
+        if (!cancelled) { setError("Unable to open the camera. Allow camera access and use HTTPS or localhost."); setScanning(false); }
+      }
     };
-
-    /* =========================
-       PATIENT SELECTION
-    ========================= */
-
-    const handlePatientChange = (e) => {
-        const value = e.target.value;
-
-        const patients = {
-            "Juan Dela Cruz": "P-001",
-            "Ana Reyes": "P-002",
-            "Pedro Ramos": "P-003",
-            "Sofia Mendoza": "P-004",
-        };
-
-        setFormData((prev) => ({
-            ...prev,
-            patient: value,
-            patientId: patients[value] || "",
-        }));
+    start();
+    return () => {
+      cancelled = true;
+      if (scanner.isScanning) scanner.stop().then(() => scanner.clear()).catch((stopError) => console.error("Unable to stop QR scanner:", stopError));
     };
+  }, [scanning, patients]);
 
-    /* =========================
-       MEDICINE SELECTION
-    ========================= */
+  const matches = useMemo(() => {
+    const term = patientSearch.trim().toLowerCase();
+    if (!term || patient) return [];
+    return patients.filter((item) => [nameOf(item), item.id, studentIdOf(item)].some((value) => value.toLowerCase().includes(term))).slice(0, 10);
+  }, [patientSearch, patient, patients]);
+  const medicine = medicines.find((item) => item.id === form.medicineId);
+  const filtered = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return records.filter((item) => {
+      return (!term || [item.patientName, item.patientId, item.studentId].some((value) => String(value || "").toLowerCase().includes(term))) &&
+        (!patientFilter || item.patientId === patientFilter) &&
+        (!medicineFilter || item.medicineId === medicineFilter) &&
+        (!dateFilter || localDate(item.createdAt) === dateFilter);
+    }).sort((a, b) => order === "newest" ? (b.createdAt || "").localeCompare(a.createdAt || "") : (a.createdAt || "").localeCompare(b.createdAt || ""));
+  }, [records, search, medicineFilter, dateFilter, patientFilter, order]);
+  const pages = Math.max(1, Math.ceil(filtered.length / 10));
+  const currentPage = Math.min(page, pages);
+  const totalQuantity = records.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+  const todayQuantity = records.filter((item) => localDate(item.createdAt) === localDate(new Date())).reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
 
-    const handleMedicineChange = (e) => {
-        const value = e.target.value;
+  function prepare(event) {
+    event.preventDefault();
+    const quantity = Number(form.quantity);
+    if (!patient || !medicine || !Number.isSafeInteger(quantity) || quantity < 1 ||
+        !form.dosage.trim() || !form.instructions.trim() || !form.reason.trim()) {
+      setError("Select a student and medicine, and complete all fields with a positive whole-number quantity.");
+      return;
+    }
+    if (!Number.isSafeInteger(medicine.quantity) || quantity > medicine.quantity) {
+      setError("The quantity exceeds available stock. Refresh inventory and try again.");
+      return;
+    }
+    setError("");
+    setConfirming(true);
+  }
 
-        const medicineUnits = {
-            Paracetamol: "Tablets",
-            Amoxicillin: "Capsules",
-            Ibuprofen: "Tablets",
-            Cetirizine: "Tablets",
-        };
+  async function submit() {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    setSaving(true);
+    const request = pending || { requestId: crypto.randomUUID(), patientId: patient.id, ...form, quantity: Number(form.quantity) };
+    setPending(request);
+    setError("");
+    try {
+      const saved = await saveIssuance(request);
+      setPending(null);
+      setConfirming(false);
+      setForm(blankForm);
+      setPatient(null);
+      setPatientSearch("");
+      setSuccess(`Medicine issued successfully. Reference: ${saved.issuanceId}`);
+      try { await load(); } catch (loadError) { setError(`Issuance saved, but data could not be refreshed: ${loadError.message}`); }
+    } catch (saveError) {
+      if (!pending && [400, 401, 403, 404, 409].includes(saveError.status)) {
+        setPending(null);
+        setConfirming(false);
+      }
+      setError(!pending && saveError.status && saveError.status < 500
+        ? saveError.message
+        : `${saveError.message} The result is uncertain; retry this same request before leaving this page.`);
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
+    }
+  }
 
-        setFormData((prev) => ({
-            ...prev,
-            medicine: value,
-            unit: medicineUnits[value] || "",
-        }));
-    };
+  const stats = [
+    { label: "Total medicines issued", value: totalQuantity, Icon: Pill },
+    { label: "Patients served", value: new Set(records.map((item) => item.patientId).filter(Boolean)).size, Icon: Users },
+    { label: "Issuance transactions", value: records.length, Icon: ClipboardList },
+    { label: "Medicines issued today", value: todayQuantity, Icon: CalendarDays },
+  ];
 
-    /* =========================
-       SUBMIT ISSUANCE
-    ========================= */
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const nextNumber = issuances.length + 1;
-
-        const newIssuance = {
-            id: `ISS-${String(nextNumber).padStart(3, "0")}`,
-            patient: formData.patient,
-            patientId: formData.patientId,
-            diagnosis: formData.diagnosis,
-            medicine: formData.medicine,
-            quantity: Number(formData.quantity),
-            unit: formData.unit,
-            date: formData.date,
-            issuedBy: "Current Staff",
-            status: "Issued",
-            remarks: formData.remarks,
-        };
-
-        setIssuances((prev) => [newIssuance, ...prev]);
-
-        setFormData({
-            patient: "",
-            patientId: "",
-            diagnosis: "",
-            medicine: "",
-            quantity: "",
-            unit: "",
-            date: "2026-09-08",
-            remarks: "",
-        });
-
-        setShowModal(false);
-    };
-
-    /* =========================
-       VIEW DETAILS
-    ========================= */
-
-    const handleView = (issuance) => {
-        setSelectedIssuance(issuance);
-    };
-
-    return (
-        <div className="issuance-page">
-
-            {/* =========================
-                HEADER
-            ========================= */}
-
-            <div className="issuance-header">
-                <div>
-                    <div className="page-title-icon">
-                        <Pill size={25} />
-                    </div>
-
-                    <div>
-                        <h1>Medicine Issuance</h1>
-                        <p>
-                            Issue medicines to patients and monitor
-                            medicine issuance records.
-                        </p>
-                    </div>
-                </div>
-
-                <button
-                    className="issue-medicine-btn"
-                    onClick={() => setShowModal(true)}
-                >
-                    <Plus size={18} />
-                    Issue Medicine
-                </button>
+  return <div className="issuance-page">
+    <header className="mi-header"><div><p className="mi-eyebrow">CLINIC SERVICES</p><h1>Medicine Issuance</h1><p>Issue available medicine and review dispensing history.</p></div><button type="button" className="mi-secondary" disabled={loading || saving || !!pending} onClick={async () => {
+      setLoading(true);
+      setError("");
+      try { await load(); setLoadFailed(false); } catch (loadError) { setError(loadError.message); setLoadFailed(true); }
+      finally { setLoading(false); }
+    }}>Refresh data</button></header>
+    {error && <div className="mi-message mi-error" role="alert">{error}</div>}
+    {success && <div className="mi-message mi-success" role="status">{success}</div>}
+    {loading ? <p role="status">Loading medicine issuance...</p> : loadFailed ? <button className="mi-secondary" type="button" onClick={async () => {
+      setLoading(true);
+      setError("");
+      try { await load(); setLoadFailed(false); } catch (loadError) { setError(loadError.message); }
+      finally { setLoading(false); }
+    }}>Retry loading</button> : <>
+      <div className="mi-stats">{stats.map(({ label, value, Icon }) => <div className="mi-stat" key={label}><span><Icon size={22} /></span><div><p>{label}</p><strong>{value}</strong></div></div>)}</div>
+      <section className="mi-card">
+        <div className="mi-section-heading"><div><h2>Issue medicine</h2><p>Select a registered student and medicine from the inventory.</p></div></div>
+        <form onSubmit={prepare}>
+          <fieldset disabled={saving || !!pending} className="mi-fieldset">
+            <div className="mi-grid">
+              <div className="mi-field mi-wide">
+                <label htmlFor="mi-patient-search">Search student by name, student ID or patient ID</label>
+                <div className="mi-search-row"><input id="mi-patient-search" value={patientSearch} autoComplete="off" onChange={(event) => { setPatientSearch(event.target.value); setPatient(null); }} placeholder="Search registered students" /><button type="button" className="mi-secondary" onClick={() => setScanning((value) => !value)}><QrCode size={17} /> {scanning ? "Stop scan" : "Scan QR"}</button></div>
+                {patientSearch.trim() && !patient && <div className="mi-results">{matches.length ? matches.map((item) => <button type="button" key={item.id} onClick={() => { setPatient(item); setPatientSearch(nameOf(item)); }}>{nameOf(item)} · {studentIdOf(item) || "Student ID not provided"} · {item.id}</button>) : <p>No matching students.</p>}</div>}
+                {scanning && <div className="mi-scanner"><div id="issuance-qr-reader" /><p>Position the patient's QR code in the camera frame.</p></div>}
+                {patient && <div className="mi-patient"><strong>{nameOf(patient)}</strong><span>Student ID: {studentIdOf(patient) || "Not provided"} · Patient ID: {patient.id}</span><span>{patient.course || patient.section || "Course / section not provided"} · {patient.yearLevel || "Year level not provided"}</span><button type="button" className="mi-link" onClick={() => { setPatientFilter(patient.id); setPage(1); }}>View this student's history</button></div>}
+              </div>
+              <div className="mi-field"><label htmlFor="mi-medicine">Medicine</label><select required id="mi-medicine" value={form.medicineId} onChange={(event) => setForm({ ...form, medicineId: event.target.value })}><option value="">Select medicine</option>{medicines.map((item) => {
+                const expiry = item.expirationDate || item.expiry || "";
+                const unavailable = !Number.isSafeInteger(item.quantity) || item.quantity <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(expiry) || expiry < localDate(new Date());
+                return <option key={item.id} value={item.id} disabled={unavailable}>{item.name} ({item.quantity} {item.unit}){unavailable ? " - unavailable" : ""}</option>;
+              })}</select>{medicine && <p className={medicine.quantity <= (medicine.reorderLevel ?? 30) ? "mi-warning" : "mi-hint"}>{medicine.quantity <= (medicine.reorderLevel ?? 30) && <AlertTriangle size={15} />} Available: {medicine.quantity} {medicine.unit} · Expiry: {medicine.expirationDate || medicine.expiry || "Not set"}</p>}</div>
+              <div className="mi-field"><label htmlFor="mi-quantity">Quantity</label><input id="mi-quantity" type="number" min="1" step="1" max={medicine?.quantity} required value={form.quantity} onChange={(event) => setForm({ ...form, quantity: event.target.value })} /></div>
+              <div className="mi-field"><label htmlFor="mi-dosage">Dosage</label><input id="mi-dosage" required maxLength={5000} value={form.dosage} onChange={(event) => setForm({ ...form, dosage: event.target.value })} placeholder="e.g. One tablet" /></div>
+              <div className="mi-field"><label htmlFor="mi-reason">Reason for issuance</label><input id="mi-reason" required maxLength={5000} value={form.reason} onChange={(event) => setForm({ ...form, reason: event.target.value })} /></div>
+              <div className="mi-field mi-wide"><label htmlFor="mi-instructions">Instructions</label><textarea id="mi-instructions" required maxLength={5000} value={form.instructions} onChange={(event) => setForm({ ...form, instructions: event.target.value })} /></div>
             </div>
-
-            {/* =========================
-                STATISTICS
-            ========================= */}
-
-            <div className="issuance-stats">
-
-                <div className="issuance-stat-card">
-                    <div className="issuance-stat-icon blue">
-                        <Pill size={23} />
-                    </div>
-
-                    <div>
-                        <span>Total Issuances</span>
-                        <strong>{issuances.length}</strong>
-                    </div>
-                </div>
-
-                <div className="issuance-stat-card">
-                    <div className="issuance-stat-icon green">
-                        <ClipboardList size={23} />
-                    </div>
-
-                    <div>
-                        <span>Issued</span>
-                        <strong>{totalIssued}</strong>
-                    </div>
-                </div>
-
-                <div className="issuance-stat-card">
-                    <div className="issuance-stat-icon orange">
-                        <Calendar size={23} />
-                    </div>
-
-                    <div>
-                        <span>Pending</span>
-                        <strong>{totalPending}</strong>
-                    </div>
-                </div>
-
-                <div className="issuance-stat-card">
-                    <div className="issuance-stat-icon purple">
-                        <User size={23} />
-                    </div>
-
-                    <div>
-                        <span>Patients Served</span>
-                        <strong>{patientsServed}</strong>
-                    </div>
-                </div>
-
-            </div>
-
-            {/* =========================
-                ISSUANCE CARD
-            ========================= */}
-
-            <div className="issuance-card">
-
-                <div className="issuance-card-header">
-
-                    <div>
-                        <h2>Issuance History</h2>
-
-                        <p>
-                            View all medicines issued to clinic patients.
-                        </p>
-                    </div>
-
-                    <div className="issuance-search">
-                        <Search size={18} />
-
-                        <input
-                            type="text"
-                            placeholder="Search patient, diagnosis or medicine..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
-
-                </div>
-
-                {/* =========================
-                    TABLE
-                ========================= */}
-
-                <div className="issuance-table-container">
-
-                    <table className="issuance-table">
-
-                        <thead>
-                            <tr>
-                                <th>Issuance ID</th>
-                                <th>Patient</th>
-                                <th>Diagnosis</th>
-                                <th>Medicine</th>
-                                <th>Quantity</th>
-                                <th>Date Issued</th>
-                                <th>Issued By</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            {filteredIssuances.length > 0 ? (
-
-                                filteredIssuances.map((issuance) => (
-
-                                    <tr key={issuance.id}>
-
-                                        {/* ID */}
-                                        <td>
-                                            <span className="issuance-id">
-                                                {issuance.id}
-                                            </span>
-                                        </td>
-
-                                        {/* PATIENT */}
-                                        <td>
-                                            <div className="patient-info">
-
-                                                <div className="patient-avatar">
-                                                    {issuance.patient
-                                                        .charAt(0)
-                                                        .toUpperCase()}
-                                                </div>
-
-                                                <div>
-                                                    <strong>
-                                                        {issuance.patient}
-                                                    </strong>
-
-                                                    <small>
-                                                        {issuance.patientId}
-                                                    </small>
-                                                </div>
-
-                                            </div>
-                                        </td>
-
-                                        {/* DIAGNOSIS */}
-                                        <td>
-                                            <span className="diagnosis-text">
-                                                {issuance.diagnosis}
-                                            </span>
-                                        </td>
-
-                                        {/* MEDICINE */}
-                                        <td>
-                                            <div className="medicine-name">
-                                                <Pill size={16} />
-                                                <strong>
-                                                    {issuance.medicine}
-                                                </strong>
-                                            </div>
-                                        </td>
-
-                                        {/* QUANTITY */}
-                                        <td>
-                                            <strong>
-                                                {issuance.quantity}
-                                            </strong>{" "}
-                                            {issuance.unit}
-                                        </td>
-
-                                        {/* DATE */}
-                                        <td>
-                                            {issuance.date}
-                                        </td>
-
-                                        {/* ISSUED BY */}
-                                        <td>
-                                            {issuance.issuedBy}
-                                        </td>
-
-                                        {/* STATUS */}
-                                        <td>
-                                            <span
-                                                className={`issuance-status ${issuance.status
-                                                    .toLowerCase()
-                                                    .replace(" ", "-")}`}
-                                            >
-                                                {issuance.status}
-                                            </span>
-                                        </td>
-
-                                        {/* ACTION */}
-                                        <td>
-
-                                            <button
-                                                className="view-issuance-btn"
-                                                title="View details"
-                                                onClick={() =>
-                                                    handleView(issuance)
-                                                }
-                                            >
-                                                <Eye size={16} />
-                                            </button>
-
-                                        </td>
-
-                                    </tr>
-
-                                ))
-
-                            ) : (
-
-                                <tr>
-                                    <td
-                                        colSpan="9"
-                                        className="issuance-empty"
-                                    >
-                                        <FileText size={40} />
-
-                                        <strong>
-                                            No issuance records found
-                                        </strong>
-
-                                        <span>
-                                            Try changing your search.
-                                        </span>
-                                    </td>
-                                </tr>
-
-                            )}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-            {/* =========================
-                ISSUE MEDICINE MODAL
-            ========================= */}
-
-            {showModal && (
-
-                <div
-                    className="issuance-modal-overlay"
-                    onClick={() => setShowModal(false)}
-                >
-
-                    <div
-                        className="issuance-modal"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-
-                        {/* MODAL HEADER */}
-
-                        <div className="issuance-modal-header">
-
-                            <div>
-                                <div className="modal-icon">
-                                    <Pill size={21} />
-                                </div>
-
-                                <div>
-                                    <h2>Issue Medicine</h2>
-
-                                    <p>
-                                        Record medicine issued to a patient.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button
-                                className="issuance-close-btn"
-                                onClick={() => setShowModal(false)}
-                            >
-                                <X size={20} />
-                            </button>
-
-                        </div>
-
-                        {/* FORM */}
-
-                        <form onSubmit={handleSubmit}>
-
-                            <div className="issuance-form-grid">
-
-                                {/* PATIENT */}
-
-                                <div className="issuance-form-group">
-
-                                    <label>
-                                        Patient
-                                    </label>
-
-                                    <select
-                                        name="patient"
-                                        value={formData.patient}
-                                        onChange={handlePatientChange}
-                                        required
-                                    >
-                                        <option value="">
-                                            Select patient
-                                        </option>
-
-                                        <option>
-                                            Juan Dela Cruz
-                                        </option>
-
-                                        <option>
-                                            Ana Reyes
-                                        </option>
-
-                                        <option>
-                                            Pedro Ramos
-                                        </option>
-
-                                        <option>
-                                            Sofia Mendoza
-                                        </option>
-
-                                    </select>
-
-                                </div>
-
-                                {/* PATIENT ID */}
-
-                                <div className="issuance-form-group">
-
-                                    <label>
-                                        Patient ID
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        value={formData.patientId}
-                                        placeholder="Patient ID"
-                                        readOnly
-                                    />
-
-                                </div>
-
-                                {/* DIAGNOSIS */}
-
-                                <div className="issuance-form-group full">
-
-                                    <label>
-                                        Diagnosis
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="diagnosis"
-                                        value={formData.diagnosis}
-                                        onChange={handleChange}
-                                        placeholder="Enter patient's diagnosis"
-                                        required
-                                    />
-
-                                </div>
-
-                                {/* MEDICINE */}
-
-                                <div className="issuance-form-group">
-
-                                    <label>
-                                        Medicine
-                                    </label>
-
-                                    <select
-                                        name="medicine"
-                                        value={formData.medicine}
-                                        onChange={handleMedicineChange}
-                                        required
-                                    >
-
-                                        <option value="">
-                                            Select medicine
-                                        </option>
-
-                                        <option>
-                                            Paracetamol
-                                        </option>
-
-                                        <option>
-                                            Amoxicillin
-                                        </option>
-
-                                        <option>
-                                            Ibuprofen
-                                        </option>
-
-                                        <option>
-                                            Cetirizine
-                                        </option>
-
-                                    </select>
-
-                                </div>
-
-                                {/* UNIT */}
-
-                                <div className="issuance-form-group">
-
-                                    <label>
-                                        Unit
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        value={formData.unit}
-                                        placeholder="Unit"
-                                        readOnly
-                                    />
-
-                                </div>
-
-                                {/* QUANTITY */}
-
-                                <div className="issuance-form-group">
-
-                                    <label>
-                                        Quantity
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        name="quantity"
-                                        value={formData.quantity}
-                                        onChange={handleChange}
-                                        min="1"
-                                        placeholder="Enter quantity"
-                                        required
-                                    />
-
-                                </div>
-
-                                {/* DATE */}
-
-                                <div className="issuance-form-group">
-
-                                    <label>
-                                        Date Issued
-                                    </label>
-
-                                    <input
-                                        type="date"
-                                        name="date"
-                                        value={formData.date}
-                                        onChange={handleChange}
-                                        required
-                                    />
-
-                                </div>
-
-                                {/* REMARKS */}
-
-                                <div className="issuance-form-group full">
-
-                                    <label>
-                                        Remarks
-                                    </label>
-
-                                    <textarea
-                                        name="remarks"
-                                        value={formData.remarks}
-                                        onChange={handleChange}
-                                        rows="4"
-                                        placeholder="Enter additional notes..."
-                                    />
-
-                                </div>
-
-                            </div>
-
-                            {/* MODAL BUTTONS */}
-
-                            <div className="issuance-modal-actions">
-
-                                <button
-                                    type="button"
-                                    className="issuance-cancel-btn"
-                                    onClick={() => setShowModal(false)}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    className="issuance-save-btn"
-                                >
-                                    <Pill size={17} />
-                                    Issue Medicine
-                                </button>
-
-                            </div>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-            )}
-
-            {/* =========================
-                VIEW DETAILS MODAL
-            ========================= */}
-
-            {selectedIssuance && (
-
-                <div
-                    className="issuance-modal-overlay"
-                    onClick={() => setSelectedIssuance(null)}
-                >
-
-                    <div
-                        className="issuance-details-modal"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-
-                        <div className="issuance-modal-header">
-
-                            <div>
-                                <div className="modal-icon">
-                                    <FileText size={21} />
-                                </div>
-
-                                <div>
-                                    <h2>Issuance Details</h2>
-
-                                    <p>
-                                        {selectedIssuance.id}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button
-                                className="issuance-close-btn"
-                                onClick={() =>
-                                    setSelectedIssuance(null)
-                                }
-                            >
-                                <X size={20} />
-                            </button>
-
-                        </div>
-
-                        <div className="issuance-details">
-
-                            <div className="detail-item">
-                                <span>Patient</span>
-                                <strong>
-                                    {selectedIssuance.patient}
-                                </strong>
-                            </div>
-
-                            <div className="detail-item">
-                                <span>Patient ID</span>
-                                <strong>
-                                    {selectedIssuance.patientId}
-                                </strong>
-                            </div>
-
-                            <div className="detail-item">
-                                <span>Diagnosis</span>
-                                <strong>
-                                    {selectedIssuance.diagnosis}
-                                </strong>
-                            </div>
-
-                            <div className="detail-item">
-                                <span>Medicine</span>
-                                <strong>
-                                    {selectedIssuance.medicine}
-                                </strong>
-                            </div>
-
-                            <div className="detail-item">
-                                <span>Quantity</span>
-                                <strong>
-                                    {selectedIssuance.quantity}{" "}
-                                    {selectedIssuance.unit}
-                                </strong>
-                            </div>
-
-                            <div className="detail-item">
-                                <span>Date Issued</span>
-                                <strong>
-                                    {selectedIssuance.date}
-                                </strong>
-                            </div>
-
-                            <div className="detail-item">
-                                <span>Issued By</span>
-                                <strong>
-                                    {selectedIssuance.issuedBy}
-                                </strong>
-                            </div>
-
-                            <div className="detail-item">
-                                <span>Status</span>
-
-                                <span
-                                    className={`issuance-status ${selectedIssuance.status
-                                        .toLowerCase()
-                                        .replace(" ", "-")}`}
-                                >
-                                    {selectedIssuance.status}
-                                </span>
-                            </div>
-
-                            <div className="detail-item full-detail">
-                                <span>Remarks</span>
-
-                                <p>
-                                    {selectedIssuance.remarks ||
-                                        "No remarks provided."}
-                                </p>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            )}
-
+            <div className="mi-actions"><button className="mi-primary" type="submit" disabled={!patients.length || !medicines.length}>Review issuance</button></div>
+          </fieldset>
+        </form>
+      </section>
+      <section className="mi-card">
+        <div className="mi-section-heading"><div><h2>Issuance history</h2><p>Includes medicines issued during consultations.</p></div></div>
+        {patientFilter && <div className="mi-filter-note">Showing history for {records.find((item) => item.patientId === patientFilter)?.patientName || patientFilter}. <button type="button" className="mi-link" onClick={() => { setPatientFilter(""); setPage(1); }}>Show all</button></div>}
+        <div className="mi-filters">
+          <input aria-label="Search issuance history" placeholder="Search student name or ID" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} />
+          <select aria-label="Filter by medicine" value={medicineFilter} onChange={(event) => { setMedicineFilter(event.target.value); setPage(1); }}><option value="">All medicines</option>{[...new Map(records.filter((item) => item.medicineId).map((item) => [item.medicineId, item.medicineName])).entries()].map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>
+          <input aria-label="Filter by date" type="date" value={dateFilter} onChange={(event) => { setDateFilter(event.target.value); setPage(1); }} />
+          <select aria-label="Sort issuance history" value={order} onChange={(event) => { setOrder(event.target.value); setPage(1); }}><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select>
         </div>
-    );
+        <div className="mi-table-wrap"><table><thead><tr>{["Issuance ID", "Student ID", "Student name", "Medicine", "Quantity", "Dosage", "Instructions", "Issuance date", "Issued by", "Action"].map((heading) => <th key={heading}>{heading}</th>)}</tr></thead><tbody>{filtered.slice((currentPage - 1) * 10, currentPage * 10).map((item) => <tr key={item.issuanceId}><td>{item.issuanceId}</td><td>{item.studentId || "Not provided"}</td><td>{item.patientName}</td><td>{item.medicineName}</td><td>{item.quantity} {item.unit}</td><td>{item.dosage}</td><td>{item.instructions}</td><td>{displayDate(item.createdAt)}</td><td>{item.issuedBy}</td><td><button type="button" className="mi-link" onClick={() => setDetails(item)}><Eye size={16} /> View</button></td></tr>)}</tbody></table></div>
+        {!filtered.length && <p className="mi-empty">No issuance records found.</p>}
+        {pages > 1 && <div className="mi-pagination"><button type="button" className="mi-secondary" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>Previous</button><span>Page {currentPage} of {pages}</span><button type="button" className="mi-secondary" disabled={currentPage === pages} onClick={() => setPage(currentPage + 1)}>Next</button></div>}
+      </section>
+    </>}
+    {confirming && <div className="mi-overlay"><div className="mi-modal" role="dialog" aria-modal="true" aria-labelledby="mi-confirm-title"><h2 id="mi-confirm-title">Confirm issuance</h2><p>Issue {form.quantity} {medicine?.unit} of {medicine?.name} to {patient && nameOf(patient)}? Stock will be deducted when saved.</p>{pending && <p className="mi-warning">The previous result is uncertain. Retry the same request to safely confirm it.</p>}{error && <p className="mi-error mi-message" role="alert">{error}</p>}<div className="mi-actions"><button type="button" className="mi-secondary" disabled={saving || !!pending} onClick={() => setConfirming(false)}>Cancel</button><button type="button" className="mi-primary" disabled={saving} onClick={submit}>{saving ? "Saving..." : pending ? "Retry request" : "Confirm issuance"}</button></div></div></div>}
+    {details && <div className="mi-overlay"><div className="mi-modal" role="dialog" aria-modal="true" aria-labelledby="mi-details-title"><div className="mi-modal-heading"><h2 id="mi-details-title">Issuance details</h2><button className="mi-icon-button" type="button" aria-label="Close details" onClick={() => setDetails(null)}><X size={20} /></button></div><dl className="mi-details">{[["Reference", details.issuanceId], ["Student", details.patientName], ["Student ID", details.studentId || "Not provided"], ["Patient ID", details.patientId], ["Course / section", details.course], ["Year level", details.yearLevel], ["Medicine", details.medicineName], ["Quantity", `${details.quantity} ${details.unit || ""}`], ["Dosage", details.dosage], ["Instructions", details.instructions], ["Reason", details.reason], ["Date and time", displayDate(details.createdAt)], ["Issued by", details.issuedBy]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value || "Not available"}</dd></div>)}</dl><button type="button" className="mi-secondary" onClick={() => { setPatientFilter(details.patientId); setPage(1); setDetails(null); }}>View student's history</button></div></div>}
+  </div>;
 }
 
 export default MedicineIssuance;

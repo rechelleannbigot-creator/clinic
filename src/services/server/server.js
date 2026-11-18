@@ -3,9 +3,11 @@ import cors from "cors";
 import crypto from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { registerClinicRoutes } from "./clinicRoutes.js";
+import { registerIssuanceRoutes } from "./issuanceRoutes.js";
 import { registerEmployeeRoutes } from "./employeeRoutes.js";
 import { registerStaffProfileRoutes } from "./staffProfileRoutes.js";
 import { registerAdminStaffRoutes } from "./adminStaffRoutes.js";
+import { registerAdminProfileRoutes } from "./adminProfileRoutes.js";
 import {
   auth,
   db,
@@ -208,9 +210,11 @@ async function requireAdministrator(req, res, next) {
 }
 
 registerClinicRoutes(app, { db, requireClinicStaff, requireSignedIn });
+registerIssuanceRoutes(app, { db, requireClinicStaff });
 registerEmployeeRoutes(app, { db, requireSignedIn });
 registerStaffProfileRoutes(app, { db, requireClinicStaff });
 registerAdminStaffRoutes(app, { db, auth, requireAdmin: requireAdministrator });
+registerAdminProfileRoutes(app, { db, auth, requireAdmin: requireAdministrator });
 
 app.get("/api/patients", requireClinicStaff, async (_req, res) => {
   try {

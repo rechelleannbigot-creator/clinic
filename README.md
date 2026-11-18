@@ -71,6 +71,16 @@ The form keeps the same request ID when a save fails, so retrying the unchanged 
 
 Run the API route tests with `node --test src/services/server/clinicRoutes.test.js`. They use an isolated in-memory test database; verify the complete signed-in workflow separately with an explicitly designated test patient and stock in a safe Firebase environment.
 
+## Medicine issuance
+
+Staff and administrators can open Medicine Issuance from their dashboards. Search registered patients by name, student ID when available, or patient ID; the scanner accepts the existing patient-ID QR code. Patient registration currently does not collect a separate student ID, so missing IDs are shown as "Not provided". Camera scanning requires HTTPS or localhost.
+
+Standalone issuances are stored in Firestore `medicineIssuances`; they use the existing `patients` and `medicines` records. A Firestore transaction checks stock and expiry and commits the issuance and stock deduction together. Repeating an unchanged request with the same request ID does not deduct stock again. If a response is uncertain, retry the same request before navigating away or reloading. The history also includes medicine issued through existing consultations; those older entries remain consultation records and disappear from this view if the consultation is deleted. Dates and daily totals use Philippine time.
+
+The staff/admin-only API provides `GET /api/medicine-issuances`, `GET /api/medicine-issuances?patientId=...`, `GET /api/medicine-issuances/:id`, and `POST /api/medicine-issuances`. Patient search and stock use the existing `/api/patients` and `/api/medicines` endpoints. The server derives the issuing staff member from the authenticated profile. Before production use, also deny direct client access to `medicineIssuances` in the deployed Firestore rules, as for consultations and medicines, and verify the workflow with designated test records in a safe Firebase environment.
+
+Run `node --test src/services/server/issuanceRoutes.test.js` for isolated API tests.
+
 ## Email failure recovery
 
 If SMTP fails after the account is created, the account and records are kept (no duplicates) and `setupEmailSent: false` is saved. The UI shows a warning, and the patient details modal offers **Resend Setup Email** (`POST /api/patients/:patientId/resend-setup-email`), which sends a fresh link.

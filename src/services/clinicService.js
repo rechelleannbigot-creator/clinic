@@ -7,6 +7,13 @@ async function list(path, key) {
 }
 
 export const getMedicines = () => list("/api/medicines", "medicines");
+export const getIssuances = (patientId = "") =>
+  list(`/api/medicine-issuances${patientId ? `?patientId=${encodeURIComponent(patientId)}` : ""}`, "issuances");
+export async function saveIssuance(data) {
+  const result = await requestPatientApi("/api/medicine-issuances", { method: "POST", body: JSON.stringify(data) });
+  if (!result.issuance?.issuanceId) throw new Error("The clinic service did not return the saved issuance. Retry without changing the form.");
+  return result.issuance;
+}
 export const getConsultations = (patientId = "") =>
   list(`/api/consultations${patientId ? `?patientId=${encodeURIComponent(patientId)}` : ""}`, "consultations");
 export const getMyConsultations = () => list("/api/my-consultations", "consultations");

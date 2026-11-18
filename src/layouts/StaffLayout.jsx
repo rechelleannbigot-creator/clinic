@@ -19,6 +19,7 @@ import {
   UserCircle,
   UserPlus,
   QrCode,
+  Pill,
 } from "lucide-react";
 
 function StaffLayout() {
@@ -311,6 +312,9 @@ function StaffLayout() {
               <span className="nav-text">
                 Medicine Inventory
               </span>
+            </NavLink>
+            <NavLink to="medicine-issuance" onClick={closeSidebarOnMobile} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} title="Medicine Issuance">
+              <span className="nav-icon"><Pill size={18} /></span><span className="nav-text">Medicine Issuance</span>
             </NavLink>
           </div>
 

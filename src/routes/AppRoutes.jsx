@@ -89,6 +89,7 @@ function AppRoutes() {
                     <Route path="scan-qr" element={<ScanQRCode />} />
                     <Route path="add-patient" element={<AddPatient />} />
                     <Route path="inventory" element={<Inventory />} />
+                    <Route path="medicine-issuance" element={<MedicineIssuance />} />
                     <Route path="staff-reports" element={<StaffReports />} />
                     <Route path="notifications" element={<Notifications />} />
                     <Route path="student-medical-profile" element={<StudentMedicalProfile />} />
