@@ -387,7 +387,7 @@ function AdminLayout() {
                             to="notifications"
                             onClick={closeSidebarOnMobile}
                             className={navClass}
-                            title="Notifications"
+                            title="Announcements"
                         >
 
                             <span className="nav-icon">
@@ -395,7 +395,7 @@ function AdminLayout() {
                             </span>
 
                             <span className="nav-text">
-                                Notifications
+                                Announcements
                             </span>
 
                         </NavLink>

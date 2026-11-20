@@ -8,6 +8,9 @@ import { registerEmployeeRoutes } from "./employeeRoutes.js";
 import { registerStaffProfileRoutes } from "./staffProfileRoutes.js";
 import { registerAdminStaffRoutes } from "./adminStaffRoutes.js";
 import { registerAdminProfileRoutes } from "./adminProfileRoutes.js";
+import { registerReportRoutes } from "./reportRoutes.js";
+import { registerAnalyticsRoutes } from "./analyticsRoutes.js";
+import { registerAnnouncementRoutes } from "./announcementRoutes.js";
 import {
   auth,
   db,
@@ -215,6 +218,9 @@ registerEmployeeRoutes(app, { db, requireSignedIn });
 registerStaffProfileRoutes(app, { db, requireClinicStaff });
 registerAdminStaffRoutes(app, { db, auth, requireAdmin: requireAdministrator });
 registerAdminProfileRoutes(app, { db, auth, requireAdmin: requireAdministrator });
+registerReportRoutes(app, { db, auth, requireAdmin: requireAdministrator });
+registerAnalyticsRoutes(app, { db, requireAdmin: requireAdministrator });
+registerAnnouncementRoutes(app, { db, requireSignedIn });
 
 app.get("/api/patients", requireClinicStaff, async (_req, res) => {
   try {

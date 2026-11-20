@@ -17,7 +17,7 @@ import Consultations from "../pages/Admin/Consultations";
 import MedicineInventory from "../pages/Admin/MedicineInventory";
 import MedicineIssuance from "../pages/Admin/MedicineIssuance";
 import Reports from "../pages/Admin/Reports";
-import Notification from "../pages/Admin/Notification";
+import Announcements from "../pages/Admin/Announcements";
 import Analytics from "../pages/Admin/Analytics";
 import MyProfile from "../pages/Admin/MyProfile";
 import Logout from "../pages/Admin/Logout";
@@ -31,6 +31,7 @@ import AddPatient from "../pages/Clinicstaff/AddPatient";
 import Inventory from "../pages/Clinicstaff/Inventory";
 import StaffReports from "../pages/Clinicstaff/StaffReports";
 import Notifications from "../pages/Clinicstaff/Notifications";
+import StaffAnnouncements from "../pages/Clinicstaff/StaffAnnouncements";
 import StudentMedicalProfile from "../pages/Clinicstaff/StudentMedicalProfile";
 import EmployeeProfiles from "../pages/Clinicstaff/EmployeeProfiles";
 import NewConsultation from "../pages/Clinicstaff/NewConsultation";
@@ -45,6 +46,7 @@ import StudentLayout from "../layouts/StudentLayout";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import MedicalProfile from "../pages/Student/MedicalProfile";
 import StudentNotifications from "../pages/Student/StudentNotification";
+import StudentAnnouncements from "../pages/Student/StudentAnnouncements";
 import History from "../pages/Student/History";
 import StudentProfile from "../pages/Student/StudentProfile";
 function AppRoutes() {
@@ -70,7 +72,7 @@ function AppRoutes() {
                     <Route path="medicine-inventory" element={<MedicineInventory />} />
                     <Route path="medicine-issuance" element={<MedicineIssuance />} />
                     <Route path="reports" element={<Reports />} />
-                    <Route path="notifications" element={<Notification />} />
+                    <Route path="notifications" element={<Announcements />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="my-profile" element={<MyProfile />} />
                     <Route path="logout" element={<Logout />} />
@@ -92,6 +94,7 @@ function AppRoutes() {
                     <Route path="medicine-issuance" element={<MedicineIssuance />} />
                     <Route path="staff-reports" element={<StaffReports />} />
                     <Route path="notifications" element={<Notifications />} />
+                    <Route path="announcements" element={<StaffAnnouncements />} />
                     <Route path="student-medical-profile" element={<StudentMedicalProfile />} />
                     <Route path="employee-profiles" element={<EmployeeProfiles />} />
                     <Route path="New-Consultation" element={<NewConsultation />} />
@@ -110,7 +113,8 @@ function AppRoutes() {
                 >
                     <Route index element={<StudentDashboard />} />
                     <Route path="dashboard" element={<StudentDashboard />} />
-                    <Route path="notifications" element={<StudentNotifications />} />/
+                    <Route path="notifications" element={<StudentNotifications />} />
+                    <Route path="announcements" element={<StudentAnnouncements />} />
                     <Route path="medical-profile" element={<MedicalProfile />} />
                     <Route path="history" element={<History />} />
                     <Route path="studentprofile" element={<StudentProfile />} />

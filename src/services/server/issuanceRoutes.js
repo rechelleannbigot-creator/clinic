@@ -34,7 +34,7 @@ function normalize(body) {
   return data;
 }
 
-function legacyRecord(doc, patients) {
+export function legacyRecord(doc, patients) {
   const item = doc.data();
   const patient = patients.get(item.patientId) || {};
   return {

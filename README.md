@@ -81,6 +81,14 @@ The staff/admin-only API provides `GET /api/medicine-issuances`, `GET /api/medic
 
 Run `node --test src/services/server/issuanceRoutes.test.js` for isolated API tests.
 
+## Administrator reports
+
+The admin Reports page reads current records through `GET /api/admin/reports`, protected by the backend administrator role check. It uses existing `patients`, `consultations`, `medicines`, `medicineIssuances`, and staff `users` records; no report collection or records are created. The page refreshes every minute while visible and when returning to the tab. Generate reloads the records and freezes the current filtered, sorted results for PDF, Excel, and print; changing filters or sorting requires generating again. Date ranges use Philippine calendar dates and exclude records with missing dates. Inventory date filters use the medicine creation date, not expiration.
+
+Medicine-issued totals sum quantities, including medicine issued during consultations. Low stock includes zero stock and quantities at or below the recorded reorder level; medicines with invalid or missing stock/reorder data have unknown status and are excluded. The system has no dedicated transaction ledger: the transaction report is an activity view derived from patient registrations, consultations, and issuances. A consultation with medicine represents two different activity events. Events and legacy consultation issuances disappear if their underlying records are deleted; missing historical staff or dates are shown as unavailable. Staff status is checked against Firebase Authentication as well as the saved profile.
+
+The deployed Firestore rules must protect these collections and role fields from direct unauthorized access as described above; backend authorization alone cannot compensate for permissive rules. Generated reports contain sensitive information and should only be downloaded or printed to approved locations. Run `node --test src/services/server/reportRoutes.test.js src/pages/Admin/reportModel.test.js src/pages/Admin/reportExport.test.js` for isolated report tests; verify the signed-in workflow with designated test records in a safe Firebase environment.
+
 ## Email failure recovery
 
 If SMTP fails after the account is created, the account and records are kept (no duplicates) and `setupEmailSent: false` is saved. The UI shows a warning, and the patient details modal offers **Resend Setup Email** (`POST /api/patients/:patientId/resend-setup-email`), which sends a fresh link.

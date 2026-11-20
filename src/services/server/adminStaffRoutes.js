@@ -57,7 +57,7 @@ function dateValue(value) {
   return String(value);
 }
 
-function staffForResponse(uid, data, authUser = null, temporaryPassword = null) {
+export function staffForResponse(uid, data, authUser = null, temporaryPassword = null) {
   const createdAt = dateValue(data.createdAt);
   const createdAtMs = createdAt ? new Date(createdAt).getTime() : NaN;
   const now = Date.now();
